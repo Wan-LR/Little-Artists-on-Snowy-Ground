@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>帖子</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --line:      #ece7df;
+      --accent:    #e33932;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 28px 18px 56px; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 32px;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .site-title .dot { color: var(--accent); }
+
+    .site-meta {
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+    }
+
+    /* ===== 关键改动:瀑布流布局 ===== */
+    .grid {
+      column-count: 3;       /* 桌面端 3 列 */
+      column-gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { column-count: 2; }       /* 平板 2 列 */
+    }
+
+    @media (max-width: 480px) {
+      .grid { column-count: 2; column-gap: 14px; }  /* 手机 2 列(也可改成 1) */
+    }
+    /* ============================== */
+
+    .post-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--line);
+
+      /* 关键:防止卡片被分到两列中间 + 用 margin 替代 gap */
+      break-inside: avoid;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .post-card:active {
+      transform: translateY(-1px);
+      transition-duration: 0.1s;
+    }
+
+    .post-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* 关键:不再强制 4:3,让图片显示原始比例 */
+    .post-card .image {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0ece4 0%, #e6e0d4 100%);
+    }
+
+    .post-card .image img {
+      width: 100%;
+      height: auto;            /* 跟着图片原始比例走 */
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .post-card:hover .image img {
+      transform: scale(1.05);
+    }
+
+    .post-card .title {
+      padding: 16px 16px 18px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    @media (max-width: 480px) {
+      .post-card .title { padding: 12px 12px 14px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1 class="site-title">帖子<span class="dot">.</span></h1>
+      <div class="site-meta">最近更新</div>
+    </header>
+
+    <!--
+      错落效果由图片本身的尺寸决定:
+        竖图(高 > 宽) → 卡片更高
+        横图(宽 > 高) → 卡片更矮
+        方图          → 卡片中等
+      想要明显的错落感,就给不同帖子配不同比例的图.
+    -->
+
+    <div class="grid">
+
+      <a class="post-card" href="#post-1">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post1/600/800" alt="" loading="lazy">
+        </div>
+        <h2 class="title">竖图帖子,卡片会变高</h2>
+      </a>
+
+      <a class="post-card" href="#post-2">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post2/600/400" alt="" loading="lazy">
+        </div>
+        <h2 class="title">横图帖子,卡片偏矮</h2>
+      </a>
+
+      <a class="post-card" href="#post-3">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post3/600/600" alt="" loading="lazy">
+        </div>
+        <h2 class="title">方图帖子,标题可以写得长一些撑起卡片</h2>
+      </a>
+
+      <a class="post-card" href="#post-4">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post4/600/900" alt="" loading="lazy">
+        </div>
+        <h2 class="title">很高的竖图</h2>
+      </a>
+
+      <a class="post-card" href="#post-5">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post5/600/350" alt="" loading="lazy">
+        </div>
+        <h2 class="title">很扁的横图</h2>
+      </a>
+
+      <a class="post-card" href="#post-6">
+        <div class="image">
+          <img src="https://picsum.photos/seed/post6/600/500" alt="" loading="lazy">
+        </div>
+        <h2 class="title">普通比例</h2>
+      </a>
+
+    </div>
+
+  </div>
+</body>
+</html>

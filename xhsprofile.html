@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>咱们又鸟 · 个人主页</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌 (沿用站点现有色彩 / 字体 / 阴影)
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 18px 64px; }
+    }
+
+
+    /* ============================================================
+       1. 顶部导航栏 (Logo + 返回)
+       ============================================================ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-logo {
+      display: inline-block;
+      line-height: 0;
+    }
+
+    .site-logo img {
+      height: 90px;
+      width: auto;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .site-logo img { height: 60px; }
+    }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+
+    /* ============================================================
+       2. 个人信息区 (头像 + 用户名 + 简介 + 数据)
+       ============================================================ */
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      padding: 8px 0 40px;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    @media (max-width: 600px) {
+      .profile {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+    }
+
+    /* 大头像 (可点击放大) */
+    .avatar-large {
+      width: 130px;
+      height: 130px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #e33932, #c2241d); /* 加载失败兜底 */
+      box-shadow: var(--shadow);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.25s ease;
+    }
+
+    .avatar-large:hover {
+      transform: scale(1.04);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .avatar-large:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 32px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .profile-bio {
+      color: var(--ink-soft);
+      font-size: 14.5px;
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 28px;
+    }
+
+    @media (max-width: 600px) {
+      .profile-stats { justify-content: center; }
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 19px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .stat-label {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+
+    /* ============================================================
+       3. 我的帖子区 (标题 + 卡片网格)
+       ============================================================ */
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .section-title .count {
+      font-size: 16px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .post-grid {
+      column-count: 3;
+      column-gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .post-grid { column-count: 2; }
+    }
+
+    @media (max-width: 480px) {
+      .post-grid { column-count: 2; column-gap: 14px; }
+    }
+
+    .post-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      break-inside: avoid;
+      margin-bottom: 24px;
+      width: 100%;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .post-card .image {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0ece4 0%, #e6e0d4 100%);
+    }
+
+    .post-card .image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .post-card:hover .image img {
+      transform: scale(1.05);
+    }
+
+    .post-card .title {
+      padding: 16px 16px 18px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    @media (max-width: 480px) {
+      .post-card .title { padding: 12px 12px 14px; font-size: 14px; }
+    }
+
+
+    /* ============================================================
+       4. 头像放大查看 (Lightbox)
+       ────────────────────────────────────────────────────────────
+       点头像弹出全屏遮罩,显示放大版头像。
+       关闭方式:点遮罩 / 点 × / 按 ESC
+       ============================================================ */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 13, 10, 0.88);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      cursor: zoom-out;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox img {
+      width: min(420px, 86vmin);
+      height: min(420px, 86vmin);
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      transform: scale(0.85);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .lightbox.show img {
+      transform: scale(1);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: rotate(90deg);
+    }
+
+    .lightbox-close svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       头像放大遮罩 (默认隐藏,点头像才显示)
+       ============================================================ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="头像放大">
+    <button class="lightbox-close" id="lightboxClose" aria-label="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <img src="images/coco.png" alt="头像放大查看">
+  </div>
+
+  <div class="container">
+
+    <!-- ═══════════ 1. 顶部导航栏 ═══════════ -->
+    <header>
+      <a href="xhs1.html" class="site-logo">
+        <img src="images/tomatologo.png" alt="帖子">
+      </a>
+      <a href="xhs1.html" class="back-link">← 返回列表</a>
+    </header>
+
+    <!-- ═══════════ 2. 个人信息区 ═══════════
+         头像点击会弹出 lightbox 查看大图 -->
+    <section class="profile">
+      <button class="avatar-large" id="avatarBtn" aria-label="查看头像大图">
+        <img src="images/coco.png" alt="@咱们又鸟 的头像">
+      </button>
+      <div class="profile-text">
+        <h1 class="profile-name">@咱们又鸟</h1>
+        <p class="profile-bio">主包 · 妹妹的姐姐 · 日常碎片记录员</p>
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="stat-num">1</span>
+            <span class="stat-label">帖子</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">42</span>
+            <span class="stat-label">关注</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">128</span>
+            <span class="stat-label">粉丝</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 3. 我的帖子 ═══════════
+         目前只有 1 条,点击跳转到帖子详情页 -->
+    <h2 class="section-title">
+      我的帖子 <span class="count">1</span>
+    </h2>
+
+    <div class="post-grid">
+      <a class="post-card" href="xhshuajia.html">
+        <div class="image">
+          <img src="images/huajiaphoto.png" alt="" loading="lazy">
+        </div>
+        <h2 class="title">语文书的配图是不是有问题啊</h2>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    /* ============================================================
+       头像放大查看 — 显隐控制
+       触发:点头像 → 显示 lightbox
+       关闭:点遮罩 / 点 × / 按 ESC
+       ============================================================ */
+    const avatarBtn = document.getElementById('avatarBtn');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function openLightbox() {
+      lightbox.classList.add('show');
+      document.body.style.overflow = 'hidden';   // 锁定背景滚动
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    avatarBtn.addEventListener('click', openLightbox);
+
+    // 点遮罩任意空白处关闭
+    lightbox.addEventListener('click', closeLightbox);
+
+    // 点关闭按钮关闭(阻止冒泡到遮罩)
+    lightboxClose.addEventListener('click', e => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+
+    // ESC 键关闭
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && lightbox.classList.contains('show')) {
+        closeLightbox();
+      }
+    });
+  </script>
+</body>
+</html>

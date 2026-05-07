@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>十二生肖 — 千百度百科</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #3252e3;
+      --accent-hover: #c2241d;
+      --accent-soft: #fde8e7;
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.8;
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(50,82,227,.04) 0, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(227,57,50,.03) 0, transparent 45%);
+    }
+
+    /* ── 顶部栏 ── */
+    .top-bar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(250,247,242,.85);
+      -webkit-backdrop-filter: blur(18px) saturate(1.6);
+      backdrop-filter: blur(18px) saturate(1.6);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .top-logo { flex-shrink: 0; cursor: pointer; transition: opacity .2s; }
+    .top-logo:hover { opacity: .7; }
+    .top-logo img { height: 38px; display: block; }
+
+    .top-search { flex: 1; max-width: 440px; position: relative; }
+    .ts-wrap {
+      position: relative; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 999px;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .ts-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(50,82,227,.10); }
+    .ts-wrap svg.si { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ink-faint); pointer-events: none; }
+    .ts-wrap:focus-within svg.si { color: var(--accent); }
+    .ts-input { width: 100%; height: 40px; padding: 0 44px 0 38px; background: transparent; border: none; border-radius: 999px; font-family: var(--font-body); font-size: 14px; color: var(--ink); }
+    .ts-input::placeholder { color: var(--ink-faint); }
+    .ts-input:focus { outline: none; }
+    .ts-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--accent); color: #fff; cursor: pointer; display: grid; place-items: center; transition: background .2s; }
+    .ts-btn:hover { background: var(--accent-hover); }
+    .ts-btn svg { width: 13px; height: 13px; }
+
+    /* ── 主体 ── */
+    .page-body { max-width: 740px; margin: 0 auto; padding: 48px 24px 100px; }
+
+    /* ── 大标题区 ── */
+    .hero { margin-bottom: 40px; animation: fadeUp .5s ease backwards; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    .hero-eyebrow { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+    .hero-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(42px,8vw,64px); letter-spacing: -.025em; line-height: 1.1; color: var(--ink); }
+    .hero-phonetic { font-size: 16px; font-weight: 300; color: var(--ink-faint); margin-top: 8px; letter-spacing: .03em; }
+    .hero-oneliner { font-size: 18px; color: var(--ink-soft); margin-top: 16px; max-width: 560px; }
+
+    /* ── 主图 ── */
+    .main-image { width: 100%; border-radius: var(--radius); overflow: hidden; margin-bottom: 40px; border: 1px solid var(--line); animation: fadeUp .55s ease .08s backwards; }
+    .main-image img { width: 100%; display: block;  background: var(--line-soft); }
+    .main-image figcaption { padding: 10px 16px; font-size: 12px; color: var(--ink-faint); background: var(--surface); text-align: center; }
+
+    /* ── 信息卡片 ── */
+    .info-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 36px; animation: fadeUp .55s ease .14s backwards; }
+    .info-card-title { font-family: var(--font-display); font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .info-grid { display: grid; grid-template-columns: 80px 1fr; font-size: 14px; }
+    .info-grid dt { padding: 9px 0; color: var(--ink-faint); font-weight: 500; border-bottom: 1px solid var(--line-soft); }
+    .info-grid dd { padding: 9px 0; color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+    .info-grid dt:last-of-type, .info-grid dd:last-of-type { border-bottom: none; }
+
+    /* ── 正文 ── */
+    .section { margin-bottom: 36px; animation: fadeUp .55s ease backwards; }
+    .section:nth-of-type(2) { animation-delay: .18s; }
+    .section:nth-of-type(3) { animation-delay: .22s; }
+    .section:nth-of-type(4) { animation-delay: .26s; }
+    .section:nth-of-type(5) { animation-delay: .30s; }
+
+    .section-title { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; color: var(--ink); margin-bottom: 14px; padding-left: 14px; border-left: 3px solid var(--accent); }
+    .section p { font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ── 穿插图 ── */
+    .section-image { width: 100%; border-radius: 10px; overflow: hidden; margin: 18px 0; border: 1px solid var(--line); }
+    .section-image img { width: 100%; display: block; object-fit: cover; aspect-ratio: 2/1; background: var(--line-soft); }
+    .section-image figcaption { padding: 8px 14px; font-size: 12px; color: var(--ink-faint); background: var(--surface); text-align: center; }
+
+    /* ── 引用块 ── */
+    .quote-block { background: var(--line-soft); border-radius: 10px; padding: 20px 24px; margin: 18px 0; position: relative; }
+    .quote-block::before { content: '\201C'; font-family: var(--font-display); font-size: 48px; font-weight: 800; color: var(--accent); opacity: .18; position: absolute; top: 6px; left: 16px; line-height: 1; }
+    .quote-block p { font-size: 15px; color: var(--ink); font-style: italic; padding-left: 8px; }
+    .quote-block .quote-src { font-size: 12px; color: var(--ink-faint); font-style: normal; margin-top: 8px; padding-left: 8px; }
+
+    /* ── 标签 ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+    .tag { padding: 5px 14px; font-size: 12px; color: var(--ink-soft); background: var(--line-soft); border-radius: 999px; cursor: default; transition: background .2s, color .2s; }
+    .tag:hover { background: var(--accent-soft); color: var(--accent); }
+
+    /* ── 页脚 ── */
+    .page-footer { text-align: center; font-size: 12.5px; color: var(--ink-faint); padding: 28px 24px; border-top: 1px solid var(--line-soft); }
+
+    /* ── 响应式 ── */
+    @media (max-width: 520px) {
+      .top-bar { padding: 10px 16px; gap: 12px; }
+      .top-logo img { height: 30px; }
+      .page-body { padding: 32px 16px 80px; }
+      .hero-title { font-size: 38px; }
+      .hero-oneliner { font-size: 16px; }
+      .info-card { padding: 20px; }
+      .info-grid { grid-template-columns: 68px 1fr; font-size: 13px; }
+      .section-title { font-size: 19px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部栏 -->
+  <header class="top-bar">
+    <div class="top-logo" onclick="window.location.href='qianbaidu.html'" title="返回首页">
+      <img src="images/qianbaidu.png" alt="千百度">
+    </div>
+    <form class="top-search" id="topSearchForm" novalidate>
+      <div class="ts-wrap">
+        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="ts-input" id="topSearchInput" placeholder="搜一下…" autocomplete="off">
+        <button type="submit" class="ts-btn" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+      </div>
+    </form>
+  </header>
+
+  <!-- 主体 -->
+  <main class="page-body">
+
+    <!-- 大标题 -->
+    <div class="hero">
+      <p class="hero-eyebrow">千百度百科</p>
+      <h1 class="hero-title">雪地里的小画家</h1>
+      <p class="hero-phonetic"></p>
+      <p class="hero-oneliner">该课文以韵文形式展现四种动物爪（蹄）的形状特征</p>
+    </div>
+
+    <!-- 主图 -->
+    <figure class="main-image">
+      <img src="images/huajiayuanwen.png" alt="雪地里的小画家">
+      <figcaption>原文</figcaption>
+    </figure>
+
+    
+
+
+  <footer class="page-footer">© 2025 千百度 · 千百度百科 · 内容绝对不一定正确</footer>
+
+  <script>
+    const KEYWORDS_B64 = 'eyLopb/nuqLmn78iOiAieGhzMS5odG1sIiwgIueVquiMhCI6ICJ4aHMxLmh0bWwiLCAi5ZGY5belIjogImxvZ2luLmh0bWwifQ==';
+    let KEYWORDS = {};
+    try { const r = atob(KEYWORDS_B64); const b = Uint8Array.from(r, c => c.charCodeAt(0)); KEYWORDS = JSON.parse(new TextDecoder('utf-8').decode(b)); } catch(e) {}
+    document.getElementById('topSearchForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const q = document.getElementById('topSearchInput').value.trim().toLowerCase();
+      if (!q) return;
+      for (const [k, url] of Object.entries(KEYWORDS)) { if (k.toLowerCase() === q) { window.location.href = url; return; } }
+      window.location.href = 'qianbaidu.html';
+    });
+  </script>
+</body>
+</html>

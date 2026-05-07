@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yq居然已经是六年以前了 当年的小学生今年要上大学了</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌 (颜色 / 字体 / 阴影 / 圆角)
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --radius-sm: 10px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    /* ============================================================
+       全局重置 & 页面容器
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 36px 24px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 20px 16px 64px; }
+    }
+
+
+    /* ============================================================
+       1. 顶部导航栏 (Logo + 返回)
+       ============================================================ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-logo {
+      display: inline-block;
+      line-height: 0;
+    }
+
+    .site-logo img {
+      height: 90px;
+      width: auto;
+      display: block;
+    }
+
+    .site-logo .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: 2px;
+    }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+
+    /* ============================================================
+       2. 帖子主图 (Hero)
+       ============================================================ */
+    .hero {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0ece4 0%, #e6e0d4 100%);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .hero img {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 520px;
+      object-fit: cover;
+    }
+
+
+    /* ============================================================
+       3. 作者信息 (头像 + 用户ID + 时间)
+       ============================================================ */
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .avatar.sm { width: 36px; height: 36px; font-size: 14px; }
+
+    .meta-text { line-height: 1.3; }
+
+    .user-id {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .meta-sub {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      margin-top: 2px;
+    }
+
+
+    /* ============================================================
+       4. 标题
+       ============================================================ */
+    .post-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 38px;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .post-title { font-size: 28px; }
+    }
+
+
+    /* ============================================================
+       5. 正文
+       ============================================================ */
+    .post-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #2a2a2a;
+      margin-bottom: 36px;
+    }
+
+    .post-body p { margin-bottom: 18px; }
+    .post-body p:last-child { margin-bottom: 0; }
+
+    .post-body ol {
+      padding-left: 22px;
+      margin-bottom: 18px;
+    }
+
+    .post-body ol li {
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .post-body ol li::marker {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+
+    /* ============================================================
+       6. 帖子 Tags
+       ============================================================ */
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -16px 0 32px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      background: #eaf1ff;
+      color: #2563eb;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: all 0.18s ease;
+    }
+
+    .tag::before {
+      content: '#';
+      margin-right: 2px;
+      opacity: 0.7;
+    }
+
+    .tag:hover {
+      background: #2563eb;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+
+    /* ============================================================
+       7. 操作栏 (点赞 / 评论数 / 分享)
+       ============================================================ */
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 4px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 40px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transition: all 0.18s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--line-soft);
+      color: var(--ink);
+    }
+
+    .action-btn svg {
+      width: 18px; height: 18px;
+      stroke-width: 1.8;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .action-btn.liked {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .action-btn.liked svg {
+      fill: var(--accent);
+      stroke: var(--accent);
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+
+    .action-btn .count {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .action-btn.share-btn {
+      margin-left: auto;
+    }
+
+
+    /* ============================================================
+       8. 评论区 — 标题
+       ============================================================ */
+    .comments-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .comments-title .num {
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+
+    /* ============================================================
+       9. 评论区 — 输入框
+       ============================================================ */
+    .comment-input {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      transition: border-color 0.2s;
+    }
+
+    .comment-input:focus-within {
+      border-color: var(--ink);
+    }
+
+    .input-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .comment-input textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink);
+      background: transparent;
+      min-height: 24px;
+      max-height: 160px;
+    }
+
+    .comment-input textarea::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .input-foot {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .input-hint {
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    .submit-btn {
+      padding: 8px 18px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.18s;
+      letter-spacing: 0.01em;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      background: var(--line);
+      color: var(--ink-faint);
+      cursor: not-allowed;
+    }
+
+
+    /* ============================================================
+       10. 评论列表
+       ============================================================ */
+    .comment-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comment {
+      display: flex;
+      gap: 12px;
+      padding: 18px 4px;
+      border-bottom: 1px solid var(--line-soft);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .comment:last-child { border-bottom: none; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-body { flex: 1; min-width: 0; }
+
+    .comment-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .comment-head .user-id { font-size: 14px; }
+    .comment-head .time {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    .comment-text {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #2a2a2a;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .comment-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px 4px 6px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .comment-action:hover { color: var(--ink); background: var(--line-soft); }
+
+    .comment-action svg {
+      width: 14px; height: 14px;
+      stroke-width: 1.8;
+      transition: transform 0.2s;
+    }
+
+    .comment-action.liked {
+      color: var(--accent);
+    }
+
+    .comment-action.liked svg {
+      fill: var(--accent);
+      stroke: var(--accent);
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+
+    /* ============================================================
+       ★ 10.5 嵌套回复  【最近改动 — 新增】
+       ────────────────────────────────────────────────────────────
+       结构:.comment-replies > .comment 嵌在父评论的 .comment-body 里
+       视觉:左侧灰色细线表示层级关系
+       ============================================================ */
+    .comment-replies {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0 0 0 16px;
+      border-left: 2px solid var(--line);
+    }
+
+    .comment-replies .comment {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comment-replies .comment:first-child { padding-top: 4px; }
+    .comment-replies .comment:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .comment-replies .reply-to {
+      color: #2563eb;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+
+
+    /* ============================================================
+       11. 顶部 Toast 弹窗 (评论拦截提示)
+       ============================================================ */
+    .toast {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 22px 14px 18px;
+      margin-top: 18px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14.5px;
+      letter-spacing: 0.005em;
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: calc(100vw - 32px);
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast .toast-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    @media (max-width: 480px) {
+      .toast {
+        font-size: 13px;
+        padding: 12px 18px 12px 14px;
+        white-space: normal;
+        text-align: center;
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    .comment-input.shake {
+      animation: shake 0.4s ease;
+      border-color: var(--accent) !important;
+    }
+
+
+    /* ============================================================
+       12. 头像渐变色变体 (av-1 ~ av-6)
+       ============================================================ */
+    .av-1 { background: linear-gradient(135deg, #e33932, #c2241d); }
+    .av-2 { background: linear-gradient(135deg, #2d8a87, #1f6663); }
+    .av-3 { background: linear-gradient(135deg, #d4a226, #b08418); }
+    .av-4 { background: linear-gradient(135deg, #8e4a7e, #6f3760); }
+    .av-5 { background: linear-gradient(135deg, #6b8e5a, #4f6d40); }
+    .av-6 { background: linear-gradient(135deg, #c97b3a, #a55e22); }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部 Toast 弹窗 (默认隐藏) -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-dot"></span>
+    <span class="toast-text">你不想留下任何评论</span>
+  </div>
+
+  <div class="container">
+
+    <!-- ═══════════ 1. 顶部导航栏 ═══════════ -->
+    <header>
+      <a href="xhspl.html" class="site-logo">
+        <img src="images/tomatologo.png">
+      </a>
+      <a href="xhspl.html" class="back-link">← 返回列表</a>
+    </header>
+
+    <!-- ═══════════ 2. 帖子主图 ═══════════ -->
+    <div class="hero">
+      <img src="images/yiqing.png" alt="毛米">
+    </div>
+
+    <!-- ═══════════ 3. 作者信息 ═══════════ -->
+    <div class="post-meta">
+      <div class="avatar av-1">B</div>
+      <div class="meta-text">
+        <div class="user-id">@巴黎不甜</div>
+        <div class="meta-sub">3 小时前 · 阅读 11,293</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ 4. 标题 ═══════════ -->
+    <h1 class="post-title">yq居然已经是六年以前了 当年的小学生今年要上大学了</h1>
+
+    <!-- ═══════════ 5. 正文 ═══════════ -->
+    <div class="post-body">
+      <p>说今年是2026还没什么感觉，结果昨天和亲戚吃饭的时候发现之前面目可憎的小屁孩居然要上大学了（没有说现在不面目可憎的意思）</p>
+      <p>后面说起疫情上网课的时候，他说他那个时候才小学左右，小学吗！ 我那个时候都快高考了 现在已是社畜...</p>
+      <p>前几年感染的感觉至今还在追我 现在脖子也老痛 嗓子也不舒服 还得了哮喘...</p>
+      <p>长大之后的时间真的跟尿一样流走了...</p>
+    </div>
+
+    <!-- ═══════════ 6. Tags ═══════════ -->
+    <div class="post-tags">
+      <span class="tag">时光时光慢些吧</span>
+      <span class="tag">尿频尿急尿不尽</span>
+    </div>
+
+    <!-- ═══════════ 7. 操作栏 ═══════════ -->
+    <div class="post-actions">
+      <button class="action-btn" id="likeBtn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="count" id="likeCount">6823</span>
+      </button>
+      <button class="action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="count" id="commentTopCount">4</span>
+      </button>
+      <button class="action-btn share-btn" onclick="alert('链接已复制!')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        分享
+      </button>
+    </div>
+
+    <!-- ═══════════ 8. 评论区标题 ═══════════ -->
+    <h2 class="comments-title">
+      评论 <span class="num" id="commentNumLabel"></span>
+    </h2>
+
+    <!-- ═══════════ 9. 评论输入框 ═══════════ -->
+    <div class="comment-input">
+      <div class="avatar sm av-3">你</div>
+      <div class="input-wrap">
+        <textarea id="commentInput" placeholder="留下你的看法..." rows="1"></textarea>
+        <div class="input-foot">
+            <button class="submit-btn" id="submitBtn" disabled>发布</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ★ 10. 评论列表  【最近改动】═══════════
+         替换了之前的"评论加载失败"占位 UI,
+         评论由 JS 中的 seedComments 数组渲染 -->
+    <ul class="comment-list" id="commentList"></ul>
+
+  </div>
+
+  <script>
+    /* ============================================================
+       通用:复用的 SVG 图标字符串
+       ============================================================ */
+    const HEART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const REPLY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5M4 12h11a5 5 0 0 1 5 5v3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+
+    /* ============================================================
+       ★ 行内格式化  【最近改动 — 新增】
+       ────────────────────────────────────────────────────────────
+       支持的语法:
+         ***xxx***  → 粗体 + 斜体
+         **xxx**    → 粗体
+         *xxx*      → 斜体
+       用法:数据里直接写,比如 '我服了***新城疫***啥时候过去'
+       ============================================================ */
+    function appendFormatted(parent, text) {
+      const regex = /\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+      let last = 0, m;
+      while ((m = regex.exec(text)) !== null) {
+        if (m.index > last) {
+          parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+        }
+        if (m[1]) {
+          // ***xxx*** → <strong><em>xxx</em></strong>
+          const s = document.createElement('strong');
+          const e = document.createElement('em');
+          e.textContent = m[1];
+          s.appendChild(e);
+          parent.appendChild(s);
+        } else if (m[2]) {
+          // **xxx** → <strong>xxx</strong>
+          const s = document.createElement('strong');
+          s.textContent = m[2];
+          parent.appendChild(s);
+        } else if (m[3]) {
+          // *xxx* → <em>xxx</em>
+          const e = document.createElement('em');
+          e.textContent = m[3];
+          parent.appendChild(e);
+        }
+        last = m.index + m[0].length;
+      }
+      if (last < text.length) {
+        parent.appendChild(document.createTextNode(text.slice(last)));
+      }
+    }
+
+
+    /* ============================================================
+       ★ 种子评论数据  【最近改动 — 新增】
+       ────────────────────────────────────────────────────────────
+       4 条契合本帖主题(时间流逝 / 网课记忆 / 阳后后遗症)的评论。
+       第 2 条和第 3 条带嵌套回复,演示对话效果。
+       ============================================================ */
+    const seedComments = [
+      {
+        userId: '@阳黑椰椰',
+        avatar: 'av-3',
+        initial: 'Y',
+        time: '2 小时前',
+        text: '看到这个标题倒抽一口冷气...',
+        likes: 142
+      },
+      {
+        userId: '@缺钱生死战浮云',
+        avatar: 'av-4',
+        initial: 'Q',
+        time: '1 小时前',
+        text: '不用恍惚了贴主 因为变种来了...',
+        likes: 89,
+        replies: [
+          {
+            userId: '@巴黎不甜',
+            replyTo: '@缺钱生死战浮云',
+            avatar: 'av-1',
+            initial: 'Q',
+            time: '52 分钟前',
+            text: '我真服了这个破***旧城疫***什么时候能过去',
+            likes: 28
+          },
+        ]
+      },
+      {
+        userId: '@耳鼻喉王医生在线',
+        avatar: 'av-2',
+        initial: 'E',
+        time: '46 分钟前',
+        text: '哮喘这个真的 阳过之后落下的 每年秋冬都得请假 楼主多保重',
+        likes: 67,
+        replies: [
+          {
+            userId: '@巴黎不甜',
+            replyTo: '@耳鼻喉王医生在线',
+            avatar: 'av-1',
+            initial: 'B',
+            time: '20 分钟前',
+            text: '握手 现在跑两步就喘 以前跑五公里跟玩似的 请问怎么调理呀',
+            likes: 5
+          }
+        ]
+      },
+      {
+        userId: '@北冰洋立足于叶',
+        avatar: 'av-5',
+        initial: 'B',
+        time: '8 分钟前',
+        text: 'tag 笑死我了',
+        likes: 234
+      }
+    ];
+
+
+    /* ============================================================
+       1. 评论渲染函数 (★ 升级:支持 replyTo 标签 + 嵌套 replies)
+       ★ 升级:文字渲染走 appendFormatted,支持 *斜* **粗** ***粗斜***
+       ============================================================ */
+    const commentList = document.getElementById('commentList');
+
+    function renderComment(c, prepend = false) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${c.avatar}">${c.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${c.userId}</span>
+            <span class="time">${c.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${c.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${c.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+
+      // 如果是回复(有 replyTo),前面加蓝色"回复 @xxx:"前缀
+      const textEl = li.querySelector('.comment-text');
+      if (c.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + c.replyTo + ':';
+        textEl.appendChild(replyMark);
+      }
+      appendFormatted(textEl, c.text);
+
+      // 如果该评论有嵌套回复,渲染它们
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        const repliesUl = document.createElement('ul');
+        repliesUl.className = 'comment-replies';
+        c.replies.forEach(r => {
+          const replyLi = renderReplyItem(r);
+          repliesUl.appendChild(replyLi);
+        });
+        li.querySelector('.comment-body').appendChild(repliesUl);
+      }
+
+      if (prepend) commentList.prepend(li);
+      else commentList.appendChild(li);
+      return li;
+    }
+
+    // 单独渲染一条回复(结构跟主评论一样,但不再递归嵌套)
+    function renderReplyItem(r) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${r.avatar}">${r.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${r.userId}</span>
+            <span class="time">${r.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${r.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${r.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+      const textEl = li.querySelector('.comment-text');
+      if (r.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + r.replyTo + ':';
+        textEl.appendChild(replyMark);
+      }
+      appendFormatted(textEl, r.text);
+      return li;
+    }
+
+    seedComments.forEach(c => renderComment(c));
+
+
+    /* ============================================================
+       2. 帖子主点赞按钮
+       ★ Bug fix:postLikes 初值 128 → 6823 跟显示对齐
+       ============================================================ */
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    let postLiked = false;
+    let postLikes = 6823;
+
+    likeBtn.addEventListener('click', () => {
+      postLiked = !postLiked;
+      postLikes += postLiked ? 1 : -1;
+      likeCount.textContent = postLikes;
+      likeBtn.classList.toggle('liked', postLiked);
+      likeBtn.setAttribute('aria-pressed', postLiked);
+    });
+
+
+    /* ============================================================
+       3. 评论点赞 (事件委托)
+       ============================================================ */
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.like-comment');
+      if (!btn) return;
+      const isLiked = btn.classList.toggle('liked');
+      let n = parseInt(btn.dataset.likes, 10);
+      n += isLiked ? 1 : -1;
+      btn.dataset.likes = n;
+      btn.querySelector('.lc').textContent = n;
+      btn.setAttribute('aria-pressed', isLiked);
+    });
+
+
+    /* ============================================================
+       4. 评论输入框
+       ============================================================ */
+    const input = document.getElementById('commentInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const commentNumLabel = document.getElementById('commentNumLabel');
+    const commentTopCount = document.getElementById('commentTopCount');
+    let commentTotal = seedComments.length;
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      submitBtn.disabled = input.value.trim().length === 0;
+    });
+
+
+    /* ============================================================
+       5. 提交评论 (拦截 → 触发顶部弹窗)
+       ============================================================ */
+    function submit() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      showToast();
+
+      const inputBox = document.querySelector('.comment-input');
+      inputBox.classList.remove('shake');
+      void inputBox.offsetWidth;
+      inputBox.classList.add('shake');
+    }
+
+
+    /* ============================================================
+       6. Toast 弹窗显隐控制
+       ============================================================ */
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast() {
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    toast.addEventListener('click', () => {
+      toast.classList.remove('show');
+      clearTimeout(toastTimer);
+    });
+
+
+    /* ============================================================
+       7. 提交事件绑定
+       ============================================================ */
+    submitBtn.addEventListener('click', submit);
+
+    input.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submit();
+      }
+    });
+  </script>
+</body>
+</html>

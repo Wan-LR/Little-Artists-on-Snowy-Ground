@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工单中心 · 内网工作台</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+
+      /* 工单状态配色 */
+      --st-pending:  #e33932;  /* 待处理 - 红 */
+      --st-pending-bg: #fde8e7;
+      --st-progress: #1e6fa3;  /* 处理中 - 蓝 */
+      --st-progress-bg: #e0f0fe;
+      --st-resolved: #1e9b50;  /* 已解决 - 绿 */
+      --st-resolved-bg: rgba(30, 155, 80, 0.13);
+      --st-closed:   #6b6b6b;  /* 已关闭 - 灰 */
+      --st-closed-bg: #ece7df;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 18px 64px; }
+    }
+
+
+    /* ============================================================
+       顶部导航 (Logo + 内网徽章 + 返回)
+       ============================================================ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .site-logo { display: inline-block; line-height: 0; }
+    .site-logo img { height: 90px; width: auto; display: block; }
+    @media (max-width: 640px) { .site-logo img { height: 60px; } }
+
+    .intranet-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: #fef7e0;
+      border: 1px solid #f4d893;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #7c5a17;
+      letter-spacing: 0.05em;
+    }
+
+    .intranet-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #c8941e;
+    }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+
+    /* ============================================================
+       页面标题
+       ============================================================ */
+    .page-head {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 32px;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .page-title { font-size: 26px; }
+    }
+
+    .page-sub {
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+
+
+    /* ============================================================
+       工单板块标题
+       ============================================================ */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .section-title .count {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .section-title .count.urgent { color: var(--accent); }
+    .section-title .count.normal { color: var(--ink-faint); }
+
+
+    /* ============================================================
+       工单列表 + 单个工单卡片
+       ============================================================ */
+    .ticket-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ticket-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 18px 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+      position: relative;
+      text-decoration: none;   /* ★ 让 <a> 当卡片用时不带下划线 */
+      color: inherit;          /* ★ 让 <a> 文字颜色不变蓝 */
+    }
+
+    .ticket-card:hover {
+      border-color: var(--ink-soft);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    /* 左侧优先级色条 */
+    .ticket-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: var(--line);
+    }
+
+    .ticket-card.priority-high::before { background: var(--accent); }
+    .ticket-card.priority-medium::before { background: #d4a226; }
+    .ticket-card.priority-low::before { background: var(--line); }
+
+    /* 第一行:标题 + 时间 */
+    .ticket-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .ticket-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ticket-time {
+      font-size: 12px;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* 第二行:工单号 + 元信息 + 状态标签 */
+    .ticket-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ticket-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .ticket-id {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ticket-meta-left .sep {
+      color: var(--ink-faint);
+      opacity: 0.6;
+    }
+
+    .priority-label {
+      font-weight: 700;
+    }
+    .priority-label.high   { color: var(--accent); }
+    .priority-label.medium { color: #b88517; }
+    .priority-label.low    { color: var(--ink-faint); }
+
+    /* 状态胶囊 */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    .status-tag::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .status-pending {
+      background: var(--st-pending-bg);
+      color: var(--st-pending);
+    }
+    .status-pending::before { background: var(--st-pending); }
+
+    .status-progress {
+      background: var(--st-progress-bg);
+      color: var(--st-progress);
+    }
+    .status-progress::before { background: var(--st-progress); }
+
+    .status-resolved {
+      background: var(--st-resolved-bg);
+      color: var(--st-resolved);
+    }
+    .status-resolved::before { background: var(--st-resolved); }
+
+    .status-closed {
+      background: var(--st-closed-bg);
+      color: var(--st-closed);
+    }
+    .status-closed::before { background: var(--st-closed); }
+
+    /* 已处理板块的两种状态:已删除(暗红) / 已限流(琥珀色,跟限流横幅同色系) */
+    .status-deleted {
+      background: rgba(227, 57, 50, 0.08);
+      color: #8a1d18;
+    }
+    .status-deleted::before { background: #8a1d18; }
+
+    .status-restricted {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-restricted::before { background: #b45309; }
+
+    .ticket-card.highlight {
+    background: var(--accent-soft);                     /* #fde8e7 浅红 */
+    border-color: rgba(227, 57, 50, 0.28);
+    }
+
+    .ticket-card.highlight:hover {
+    border-color: var(--accent);                         /* hover 时变实红 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04),
+                0 12px 30px -10px rgba(227, 57, 50, 0.22);  /* 红色调阴影 */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ═══════════ 顶部导航 ═══════════ -->
+    <header>
+      <div class="header-left">
+        <a href="xhs1.html" class="site-logo">
+          <img src="images/tomatologo.png" alt="内网">
+        </a>
+        <span class="intranet-badge">内网工作台</span>
+      </div>
+      <a href="javascript:history.back()" class="back-link">← 返回</a>
+    </header>
+
+    <!-- ═══════════ 页面标题 ═══════════ -->
+    <div class="page-head">
+      <h1 class="page-title">工单中心</h1>
+      <p class="page-sub">处理用户反馈 · 跟进个人提交</p>
+    </div>
+
+
+    <!-- ═══════════ 板块 1 · 待我处理 ═══════════ -->
+    <section class="section">
+      <div class="section-title">
+        <h2>待我处理</h2>
+        <span class="count urgent">3</span>
+      </div>
+
+      <div class="ticket-list">
+
+        <!-- 工单 1 - 高优先级 - 待处理 -->
+        <div class="ticket-card priority-high">
+          <div class="ticket-head">
+            <div class="ticket-title">用户反馈评论功能无法加载</div>
+            <div class="ticket-time">2 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240315</span>
+              <span class="sep">·</span>
+              <span>提交人 @设计师小王</span>
+              <span class="sep">·</span>
+              <span class="priority-label high">高</span>
+            </div>
+            <span class="status-tag status-pending">待处理</span>
+          </div>
+        </div>
+
+        <!-- 工单 2 - 中优先级 - 处理中 -->
+        <div class="ticket-card priority-medium">
+          <div class="ticket-head">
+            <div class="ticket-title">商品订单页面加载缓慢,部分图片无法显示</div>
+            <div class="ticket-time">5 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240314</span>
+              <span class="sep">·</span>
+              <span>提交人 @最后一号玩家</span>
+              <span class="sep">·</span>
+              <span class="priority-label medium">中</span>
+            </div>
+            <span class="status-tag status-progress">处理中</span>
+          </div>
+        </div>
+
+        <!-- 工单 3 - 低优先级 - 待处理 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">个人信息修改后无法保存,提示网络异常</div>
+            <div class="ticket-time">昨天</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240313</span>
+              <span class="sep">·</span>
+              <span>提交人 @马武</span>
+              <span class="sep">·</span>
+              <span class="priority-label low">低</span>
+            </div>
+            <span class="status-tag status-pending">待处理</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════ 板块 2 · 已处理 ═══════════
+         5 张卡片,4 张是 TZ-XXXXXX 编号,第 5 张是用户那篇语文书的帖子 -->
+    <section class="section">
+      <div class="section-title">
+        <h2>我已处理</h2>
+        <span class="count normal">5</span>
+      </div>
+
+      <div class="ticket-list">
+
+        <!-- 已处理 1 - 已删除 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">XXXXXXXXXXXXXX</div>
+            <div class="ticket-time">3 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-031247</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-deleted">已删除</span>
+          </div>
+        </div>
+
+        <!-- 已处理 2 - 已限流 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">XXXXXXXXXXXXX</div>
+            <div class="ticket-time">2 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-058923</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+        </div>
+
+        <!-- 已处理 3 - 已删除 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">XXXXXXXX</div>
+            <div class="ticket-time">1 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-074156</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-deleted">已删除</span>
+          </div>
+        </div>
+
+        <!-- 已处理 4 - 已限流 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">XXXXXXXXX</div>
+            <div class="ticket-time">6 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-082039</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+        </div>
+
+        <!-- ★ 已处理 5 - 用户自己的那篇帖子 - 已限流 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">语文书的配图是不是有问题啊</div>
+            <div class="ticket-time">3 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-098765</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════ 板块 3 · 我提交的 ═══════════ -->
+    <section class="section">
+      <div class="section-title">
+        <h2>我提交的</h2>
+        <span class="count normal">3</span>
+      </div>
+
+      <div class="ticket-list">
+
+        <!-- 工单 1 - 处理中 -->
+        <div class="ticket-card priority-medium">
+          <div class="ticket-head">
+            <div class="ticket-title">笔记本电脑系统蓝屏频繁,影响日常使用</div>
+            <div class="ticket-time">1 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#M-20240316</span>
+              <span class="sep">·</span>
+              <span>提交至 IT 支持组</span>
+              <span class="sep">·</span>
+              <span class="priority-label medium">中</span>
+            </div>
+            <span class="status-tag status-progress">处理中</span>
+          </div>
+        </div>
+
+        <!-- 工单 2 - 已解决 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">工位升降桌马达故障,无法正常调节高度</div>
+            <div class="ticket-time">3 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#M-20240310</span>
+              <span class="sep">·</span>
+              <span>提交至 行政部</span>
+              <span class="sep">·</span>
+              <span class="priority-label low">低</span>
+            </div>
+            <span class="status-tag status-resolved">已解决</span>
+          </div>
+        </div>
+
+        <!-- 工单 3 - 已解决 (★ 高亮 + 可点击跳转) -->
+        <a class="ticket-card priority-high highlight" href="xhsgongdantijiao.html">
+          <div class="ticket-head">
+            <div class="ticket-title">帖子无故被删以及限流</div>
+            <div class="ticket-time">1 周前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#M-20240308</span>
+              <span class="sep">·</span>
+              <span>提交至 IT 支持组</span>
+              <span class="sep">·</span>
+              <span class="priority-label high">高</span>
+            </div>
+            <span class="status-tag status-resolved">已解决</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

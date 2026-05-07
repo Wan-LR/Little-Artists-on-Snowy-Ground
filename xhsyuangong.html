@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>员工登录</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌 (与主站保持一致)
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-hover: #c2241d;
+      --accent-soft: #fde8e7;
+      --shadow:      0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(227, 57, 50, 0.06) 0, transparent 38%),
+        radial-gradient(circle at 88% 82%, rgba(227, 57, 50, 0.05) 0, transparent 42%);
+    }
+
+    /* ============================================================
+       1. 页面布局
+       ============================================================ */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    .top-logo { margin-bottom: 28px; line-height: 0; }
+    .top-logo img { height: 72px; width: auto; display: block; }
+    @media (max-width: 480px) {
+      .top-logo img { height: 56px; }
+    }
+
+
+    /* ============================================================
+       2. 登录卡片
+       ============================================================ */
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px 36px 32px;
+    }
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 22px 26px; }
+    }
+
+    .login-header {
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .login-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .login-title::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .login-subtitle {
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+
+
+    /* ============================================================
+       3. 表单
+       ============================================================ */
+    .form-field {
+      margin-bottom: 18px;
+      position: relative;        /* ★ 给 autofill 弹层定位用 */
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap > svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--ink-faint);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px 0 42px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      color: var(--ink);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input::placeholder { color: var(--ink-faint); }
+    .form-input:hover { border-color: #d6d0c4; }
+    .form-input:focus {
+      outline: none;
+      background: var(--surface);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .input-wrap:focus-within > svg { color: var(--accent); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--ink-faint);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .toggle-pw:hover { color: var(--ink-soft); background: var(--line-soft); }
+    .toggle-pw svg { width: 18px; height: 18px; }
+
+
+    /* ============================================================
+       3.5 自动填充弹层 (仅第二个账号触发)
+       ============================================================ */
+    .autofill-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow-lift);
+      padding: 5px;
+      z-index: 50;
+      opacity: 0;
+      transform: translateY(-4px);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .autofill-popover.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .autofill-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+      font-family: var(--font-body);
+    }
+    .autofill-option:hover { background: var(--line-soft); }
+
+    .autofill-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 8px;
+    }
+    .autofill-icon svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    .autofill-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .autofill-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .autofill-mask {
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.05em;
+    }
+
+
+    /* ============================================================
+       4. 错误提示 + 登录按钮
+       ============================================================ */
+    .error-msg {
+      display: none;
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(227, 57, 50, 0.2);
+    }
+    .error-msg.show { display: block; }
+
+    .submit-btn {
+      width: 100%;
+      height: 48px;
+      margin-top: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px -4px rgba(227, 57, 50, 0.4);
+    }
+    .submit-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 6px 18px -4px rgba(227, 57, 50, 0.5);
+    }
+    .submit-btn:active { transform: translateY(1px); }
+    .submit-btn:disabled {
+      background: var(--ink-faint);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .page-footer {
+      margin-top: 32px;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <a href="xhs1.html" class="top-logo" aria-label="返回首页">
+      <img src="images/tomatologo.png" alt="">
+    </a>
+
+    <div class="login-card">
+
+      <div class="login-header">
+        <h1 class="login-title">员工登录</h1>
+        <p class="login-subtitle">请使用公司分配的账号登录后台</p>
+      </div>
+
+      <div class="error-msg" id="errorMsg">账号或密码不正确,请重新输入</div>
+
+      <form id="loginForm" novalidate>
+
+        <!-- 账号 -->
+        <div class="form-field">
+          <label class="form-label" for="account">账号</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input
+              type="text"
+              id="account"
+              class="form-input"
+              placeholder="请输入工号或邮箱"
+              autocomplete="off"
+              required
+            >
+          </div>
+
+          <!-- 自动填充弹层(默认隐藏,仅第二账号触发) -->
+          <div class="autofill-popover" id="autofillPopover" role="listbox">
+            <button type="button" class="autofill-option" id="autofillOption">
+              <span class="autofill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="15" r="4"/>
+                  <line x1="10.85" y1="12.15" x2="19" y2="4"/>
+                  <line x1="18" y1="5" x2="20" y2="7"/>
+                  <line x1="15" y1="8" x2="17" y2="10"/>
+                </svg>
+              </span>
+              <span class="autofill-text">
+                <span class="autofill-label">使用保存的密码</span>
+                <span class="autofill-mask" id="autofillMask">••••••••</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 密码 -->
+        <div class="form-field">
+          <label class="form-label" for="password">密码</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              type="password"
+              id="password"
+              class="form-input"
+              placeholder="请输入密码"
+              autocomplete="current-password"
+              required
+            >
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="显示/隐藏密码">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">登 录</button>
+
+      </form>
+
+    </div>
+
+    <p class="page-footer">© 2025 西红柿好吃公司 · 仅限授权员工访问</p>
+
+  </div>
+
+  <script>
+    /* ============================================================
+       账号数据 — base64 编码
+       ============================================================ */
+    const ACCOUNTS_B64 =
+      'eyJUT01BVE82NDIiOiB7InAiOiAiVGhlIFNpbXMiLCAiciI6ICJ5dWFuZ29uZ3hpYW9sYW4uaHRtbCJ9LCAiVE9NQVRPODQ1IjogeyJwIjogInN1aWJpYW4iLCAiciI6ICJ4aHNpdC5odG1sIn19';
+
+    // 解码成对象 — { 账号: { p: 密码, r: 跳转链接 } }
+    let ACCOUNTS = {};
+    try { ACCOUNTS = JSON.parse(atob(ACCOUNTS_B64)); } catch (e) { console.error('账号数据解码失败', e); }
+
+    // 第二个账号的 key(用于触发自动填充弹层)
+    const SECOND_ACCOUNT_KEY = Object.keys(ACCOUNTS)[1] || '';
+
+
+    /* ============================================================
+       密码显隐切换
+       ============================================================ */
+    const pwInput = document.getElementById('password');
+    const togglePw = document.getElementById('togglePw');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    const eyeOpen = `
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>`;
+    const eyeClosed = `
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>`;
+
+    togglePw.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      eyeIcon.innerHTML = show ? eyeOpen : eyeClosed;
+    });
+
+
+    /* ============================================================
+       自动填充弹层
+       ────────────────────────────────────────────────────────────
+       触发条件:账号输入框的值是第二个账号的前缀(>=2 字符)
+                或完全等于第二个账号
+       点击弹层 → 自动填上账号 + 对应密码,焦点移到登录按钮
+       ============================================================ */
+    const accountInput = document.getElementById('account');
+    const popover = document.getElementById('autofillPopover');
+    const autofillOption = document.getElementById('autofillOption');
+    const autofillMask = document.getElementById('autofillMask');
+
+    function updateAutofillVisibility() {
+      const v = accountInput.value.trim();
+      const k = SECOND_ACCOUNT_KEY;
+      if (!k) return;
+
+      // 至少敲了 2 个字符,且这些字符是第二账号 key 的前缀
+      const matches = v.length >= 9 && k.toLowerCase().startsWith(v.toLowerCase());
+      if (matches) {
+        // 让遮罩长度跟真实密码一致(只显示圆点,不暴露密码)
+        const realPw = ACCOUNTS[k]?.p || '';
+        autofillMask.textContent = '•'.repeat(Math.min(realPw.length, 12));
+        popover.classList.add('show');
+      } else {
+        popover.classList.remove('show');
+      }
+    }
+
+    accountInput.addEventListener('input', updateAutofillVisibility);
+    accountInput.addEventListener('focus', updateAutofillVisibility);
+
+    // 点输入框外面 → 关掉弹层
+    document.addEventListener('click', (e) => {
+      if (!popover.contains(e.target) && e.target !== accountInput) {
+        popover.classList.remove('show');
+      }
+    });
+
+    // 点弹层 → 自动填上账号 + 密码
+    autofillOption.addEventListener('click', () => {
+      const k = SECOND_ACCOUNT_KEY;
+      if (!k || !ACCOUNTS[k]) return;
+      accountInput.value = k;
+      pwInput.value = ACCOUNTS[k].p;
+      popover.classList.remove('show');
+      // 焦点放到登录按钮,方便回车提交
+      document.getElementById('submitBtn').focus();
+    });
+
+
+    /* ============================================================
+       表单提交 — 不同账号跳转不同页面
+       ============================================================ */
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      errorMsg.classList.remove('show');
+
+      const account = accountInput.value.trim();
+      const password = pwInput.value;
+
+      if (!account || !password) {
+        errorMsg.textContent = '账号和密码都要填哦';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '登录中…';
+
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '登 录';
+
+        const entry = ACCOUNTS[account];
+        if (entry && entry.p === password) {
+          // ★ 用账号自带的 r 跳转,两个账号去不同页面
+          window.location.href = entry.r;
+        } else {
+          errorMsg.textContent = '账号或密码不正确,请重新输入';
+          errorMsg.classList.add('show');
+        }
+      }, 600);
+    });
+  </script>
+</body>
+</html>

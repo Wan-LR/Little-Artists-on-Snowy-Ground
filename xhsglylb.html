@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>请选择在线的管理员</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌 (沿用站点配色)
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --online:    #22c55e;            /* 在线绿 */
+      --xiaolan-1: #4a9fc4;            /* 小蓝头像渐变起色 */
+      --xiaolan-2: #2d6f99;            /* 小蓝头像渐变终色 */
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 18px 64px; }
+    }
+
+
+    /* ============================================================
+       1. 顶部导航栏
+       ============================================================ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-logo { display: inline-block; line-height: 0; }
+    .site-logo img { height: 90px; width: auto; display: block; }
+    @media (max-width: 640px) { .site-logo img { height: 60px; } }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+
+    /* ============================================================
+       2. 页面标题 + 副标题
+       ============================================================ */
+    .page-head {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 36px;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .page-title { font-size: 26px; }
+    }
+
+    .page-sub {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      max-width: 560px;
+    }
+
+
+    /* ============================================================
+       3. 管理员卡片网格 (3 × 3)
+       ============================================================ */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .admin-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .admin-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 26px 16px 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: all 0.25s ease;
+    }
+
+    /* 唯一可点击的卡片 (小蓝) */
+    .admin-card.online {
+      cursor: pointer;
+      opacity: 1;
+      border-color: rgba(34, 197, 94, 0.35);
+      box-shadow: var(--shadow);
+    }
+
+    .admin-card.online:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lift);
+      border-color: var(--online);
+    }
+
+    .admin-card.online:active {
+      transform: translateY(-1px);
+    }
+
+    /* 头像 */
+    .admin-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #d8d4cd, #b9b3aa);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .admin-avatar svg {
+      width: 32px;
+      height: 32px;
+      stroke-width: 1.6;
+    }
+
+    .admin-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 小蓝的头像背景:蓝色渐变(图片加载失败时的兜底) */
+    .admin-avatar.xiaolan {
+      background: linear-gradient(135deg, var(--xiaolan-1), var(--xiaolan-2));
+    }
+
+    /* 名字 */
+    .admin-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    /* 状态行 */
+    .admin-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #c0c0c0;
+    }
+
+    .admin-card.online .admin-status {
+      color: var(--online);
+      font-weight: 600;
+    }
+
+    .admin-card.online .status-dot {
+      background: var(--online);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(0.8); opacity: 0.55; }
+    }
+
+
+    /* ============================================================
+       ★ 4. 账号异常提示 (点小蓝触发,自动跳转)
+       ────────────────────────────────────────────────────────────
+       全屏遮罩 + 居中卡片,3 秒后自动跳转到小蓝卡片的 href
+       ============================================================ */
+    .redirect-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 13, 10, 0.55);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .redirect-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .redirect-card {
+      background: var(--surface);
+      padding: 36px 40px;
+      border-radius: var(--radius);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.28);
+      text-align: center;
+      max-width: 360px;
+      width: calc(100% - 40px);
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .redirect-modal.show .redirect-card {
+      transform: scale(1);
+    }
+
+    .redirect-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #fde8e7;
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+    }
+
+    .redirect-icon svg {
+      width: 30px;
+      height: 30px;
+      stroke-width: 2.2;
+    }
+
+    .redirect-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .redirect-reason {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+    }
+
+    .redirect-loading {
+      font-size: 13px;
+      color: var(--ink-faint);
+      display: inline-flex;
+      align-items: baseline;
+    }
+
+    .redirect-loading .dots span {
+      display: inline-block;
+      animation: dotPulse 1.4s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    .redirect-loading .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .redirect-loading .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.3; }
+      40%      { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- ═══════════ 1. 顶部导航 ═══════════ -->
+    <header>
+      <a href="xhs1.html" class="site-logo">
+        <img src="images/tomatologo.png" alt="帖子">
+      </a>
+      <a href="javascript:history.back()" class="back-link">← 返回</a>
+    </header>
+
+    <!-- ═══════════ 2. 页面标题 ═══════════ -->
+    <div class="page-head">
+      <h1 class="page-title">请选择在线的管理员</h1>
+      <p class="page-sub">系统检测到您的帖子已被限流,请选择一位在线的管理员协助处理申诉。</p>
+    </div>
+
+    <!-- ═══════════ 3. 管理员网格 (9 个,只有小蓝可点) ═══════════ -->
+    <div class="admin-grid">
+
+      <!-- 1号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员1号</div>
+        <div class="admin-status"><span class="status-dot"></span>忙碌中</div>
+      </div>
+
+      <!-- 2号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员2号</div>
+        <div class="admin-status"><span class="status-dot"></span>处理中</div>
+      </div>
+
+      <!-- 3号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员3号</div>
+        <div class="admin-status"><span class="status-dot"></span>暂离</div>
+      </div>
+
+      <!-- 4号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员4号</div>
+        <div class="admin-status"><span class="status-dot"></span>会议中</div>
+      </div>
+
+      <!-- ★ 小蓝 (唯一可点击) -->
+      <a class="admin-card online" href="xiaolan.html" id="xiaolanCard">
+        <div class="admin-avatar xiaolan">
+          <img src="images/lanji.png" alt="小蓝">
+        </div>
+        <div class="admin-name">小蓝</div>
+        <div class="admin-status"><span class="status-dot"></span>在线</div>
+      </a>
+
+      <!-- 5号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员5号</div>
+        <div class="admin-status"><span class="status-dot"></span>忙碌中</div>
+      </div>
+
+      <!-- 6号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员6号</div>
+        <div class="admin-status"><span class="status-dot"></span>处理中</div>
+      </div>
+
+      <!-- 7号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员7号</div>
+        <div class="admin-status"><span class="status-dot"></span>暂离</div>
+      </div>
+
+      <!-- 8号 -->
+      <div class="admin-card" aria-disabled="true">
+        <div class="admin-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="admin-name">管理员8号</div>
+        <div class="admin-status"><span class="status-dot"></span>会议中</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       ★ 账号异常提示遮罩 (默认隐藏,点小蓝才显示)
+       ============================================================ -->
+  <div class="redirect-modal" id="redirectModal" role="dialog" aria-live="assertive">
+    <div class="redirect-card">
+      <div class="redirect-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="redirect-title">抱歉,您的账号异常</div>
+      <div class="redirect-reason">无法申诉</div>
+      <div class="redirect-loading">
+        自动为您跳转<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       点小蓝 → 弹"账号异常"卡片 → 3 秒后自动跳转
+       跳转地址直接读取小蓝 <a> 的 href 属性,
+       想换跳转目标只改 HTML 里那一处 href 就行
+       ============================================================ */
+    const REDIRECT_DELAY = 3000;   // ← 想改延迟改这里 (毫秒)
+
+    const xiaolanCard   = document.getElementById('xiaolanCard');
+    const redirectModal = document.getElementById('redirectModal');
+
+    xiaolanCard.addEventListener('click', e => {
+      e.preventDefault();                                 // 阻止 a 标签默认立即跳转
+      const targetUrl = xiaolanCard.getAttribute('href'); // 从 href 读取目标地址
+      redirectModal.classList.add('show');
+      document.body.style.overflow = 'hidden';            // 锁定背景滚动
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, REDIRECT_DELAY);
+    });
+  </script>
+</body>
+</html>

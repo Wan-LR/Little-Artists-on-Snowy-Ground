@@ -69,52 +69,7 @@
       .site-logo img { height: 32px; }
     }
 
-    /* ===== 右上角:最近更新 + 我的 + 设置 ===== */
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .site-meta {
-      font-size: 13px;
-      color: var(--ink-soft);
-      letter-spacing: 0.02em;
-      margin-right: 4px;
-    }
-
-    .profile-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 14px;
-      color: var(--ink-soft);
-      text-decoration: none;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      transition: all 0.2s;
-    }
-
-    .profile-link:hover {
-      color: var(--ink);
-      border-color: var(--ink);
-      transform: translateY(-1px);
-    }
-
-    .profile-link svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: 2;
-    }
-
-    @media (max-width: 480px) {
-      .site-meta { display: none; }   /* 手机端只保留按钮,省空间 */
-    }
-
+    
     /* ===== 关键改动:瀑布流布局 ===== */
     .grid {
       column-count: 3;       /* 桌面端 3 列 */
@@ -210,21 +165,7 @@
       </a>
       <div class="header-right">
         <div class="site-meta">最近更新</div>
-        <a href="xhsprofile.html" class="profile-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-          我的
-        </a>
-        <!-- ★ 新增:设置按钮 -->
-        <a href="xhssettings.html" class="profile-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-          设置
-        </a>
+
       </div>
     </header>
 
@@ -238,46 +179,36 @@
 
     <div class="grid">
 
-      <a class="post-card" href="xhsyingwu.html">
+      <a class="post-card" href="xhsyingwupl.html">
         <div class="image">
           <img src="images/yingwu.png" alt="" loading="lazy">
         </div>
         <h2 class="title">问问大家国内能养金刚鹦鹉吗？</h2>
       </a>
 
-      <a class="post-card" href="xhstroisbody.html">
+      <a class="post-card" href="xhstroisbodypl.html">
         <div class="image">
           <img src="images/troisbody.png" alt="" loading="lazy">
         </div>
         <h2 class="title">《仨体》阅读 Day2</h2>
       </a>
 
-      <a class="post-card" href="xhsbuxiu.html">
+      <a class="post-card" href="xhsbuxiupl.html">
         <div class="image">
           <img src="images/buxiu.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">一人接一句不腐歌词</h2>
+        <h2 class="title">一人接一句不朽歌词</h2>
       </a>
       
-      <a class="post-card" href="xhsyiqing.html">
+      <a class="post-card" href="xhsyiqingpl.html">
         <div class="image">
           <img src="images/yiqing.png" alt="" loading="lazy">
         </div>
         <h2 class="title">yq居然已经是六年以前了 当年的小学生今年要上大学了</h2>
       </a>
+  
 
-      
-
-      <a class="post-card" href="xhshuajia.html">
-        <div class="image">
-          <img src="images/huajiaphoto.png" alt="" loading="lazy">
-        </div>
-        <h2 class="title">语文书的配图是不是有问题啊</h2>
-        <div class="mine-tag">(你)</div>
-      </a>
-      </a>
-
-      <a class="post-card" href="xhsyubian.html">
+      <a class="post-card" href="xhsyubianpl.html">
         <div class="image">
           <img src="images/yubian.png" alt="" loading="lazy">
         </div>

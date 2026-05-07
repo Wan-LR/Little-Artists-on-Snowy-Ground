@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工单详情 · #M-20240308</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌
+       ============================================================ */
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --resolved:  #1e9b50;
+      --it-1:      #4a9fc4;
+      --it-2:      #2d6f99;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 18px 64px; }
+    }
+
+
+    /* ============================================================
+       1. 顶部导航
+       ============================================================ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .site-logo { display: inline-block; line-height: 0; }
+    .site-logo img { height: 90px; width: auto; display: block; }
+    @media (max-width: 640px) { .site-logo img { height: 60px; } }
+
+    .intranet-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: #fef7e0;
+      border: 1px solid #f4d893;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #7c5a17;
+      letter-spacing: 0.05em;
+    }
+
+    .intranet-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #c8941e;
+    }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+
+    /* ============================================================
+       2. 工单信息卡 (ticket header)
+       ============================================================ */
+    .ticket-header {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 26px;
+      margin-bottom: 24px;
+    }
+
+    .ticket-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ticket-id {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+    }
+
+    .tag-pill::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .tag-resolved {
+      background: rgba(30, 155, 80, 0.13);
+      color: var(--resolved);
+    }
+    .tag-resolved::before { background: var(--resolved); }
+
+    .tag-priority {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .tag-priority::before { background: var(--accent); }
+
+    .ticket-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .ticket-title { font-size: 20px; }
+    }
+
+    .ticket-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .ticket-info .label {
+      color: var(--ink-faint);
+      margin-right: 5px;
+    }
+
+    .ticket-info .value {
+      color: var(--ink-soft);
+      font-weight: 600;
+      font-family: var(--font-display);
+    }
+
+
+    /* ============================================================
+       3. 对话区
+       ============================================================ */
+    .conversation-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+      color: var(--ink-soft);
+      margin: 8px 4px 14px;
+    }
+
+    .conversation {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 24px 22px 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .message {
+      display: flex;
+      gap: 10px;
+      max-width: 78%;
+    }
+
+    .message.from-staff {
+      align-self: flex-start;
+    }
+
+    .message.from-me {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    /* 头像 */
+    .msg-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .msg-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* IT 头像 — 蓝色渐变方块,白色 "IT" 字 */
+    .msg-avatar.staff {
+      background: linear-gradient(135deg, var(--it-1), var(--it-2));
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* 消息主体(发件人 + 气泡 + 时间) */
+    .msg-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .message.from-me .msg-content {
+      align-items: flex-end;
+    }
+
+    .msg-name {
+      font-size: 12px;
+      color: var(--ink-faint);
+      padding: 0 4px;
+    }
+
+    .msg-bubble {
+      padding: 11px 15px;
+      border-radius: 14px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      letter-spacing: -0.005em;
+      white-space: pre-line;     /* 让消息里的换行生效 */
+      word-wrap: break-word;
+    }
+
+    /* IT 支持组(左侧)— 白色气泡,左下角小尖 */
+    .message.from-staff .msg-bubble {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* 我(右侧)— 红色气泡,右下角小尖 */
+    .message.from-me .msg-bubble {
+      background: var(--accent);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--ink-faint);
+      padding: 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+
+    /* ============================================================
+       4. 系统消息 (工单已关闭)
+       ============================================================ */
+    .system-msg {
+      display: flex;
+      justify-content: center;
+      margin-top: 6px;
+      padding: 4px 0;
+    }
+
+    .system-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(30, 155, 80, 0.10);
+      color: var(--resolved);
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+    }
+
+    .system-text::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--resolved);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ═══════════ 1. 顶部导航 ═══════════ -->
+    <header>
+      <div class="header-left">
+        <a href="xhs1.html" class="site-logo">
+          <img src="images/tomatologo.png" alt="内网">
+        </a>
+        <span class="intranet-badge">内网工作台</span>
+      </div>
+      <a href="javascript:history.back()" class="back-link">← 返回工单列表</a>
+    </header>
+
+
+    <!-- ═══════════ 2. 工单信息卡 ═══════════ -->
+    <div class="ticket-header">
+      <div class="ticket-tags">
+        <span class="ticket-id">#M-20240308</span>
+        <span class="tag-pill tag-resolved">已解决</span>
+        <span class="tag-pill tag-priority">高优先级</span>
+      </div>
+      <h1 class="ticket-title">帖子无故被删以及限流</h1>
+      <div class="ticket-info">
+        <div><span class="label">提交人</span><span class="value">萧蓝</span></div>
+        <div><span class="label">提交至</span><span class="value">IT 支持组</span></div>
+        <div><span class="label">提交时间</span><span class="value">3 小时前</span></div>
+      </div>
+    </div>
+
+
+    <!-- ═══════════ 3. 对话区 ═══════════ -->
+    <h2 class="conversation-title">沟通记录</h2>
+
+    <div class="conversation">
+
+      <!-- 1. 我 - 主诉 -->
+      <div class="message from-me">
+        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-content">
+          <div class="msg-name">我</div>
+          <div class="msg-bubble">今日下午我的已处理项目中突然多了很多被删除以及限流的帖子，根据时间来看都是近一周处理的，但这些帖子都不是我本人处理，我担心有数据泄露等故障，请尽快核实,谢谢!</div>
+          <div class="msg-time">3 小时前 · 16:35</div>
+        </div>
+      </div>
+
+      <!-- 2. IT - 收到工单 -->
+      <div class="message from-staff">
+        <div class="msg-avatar staff">IT</div>
+        <div class="msg-content">
+          <div class="msg-name">IT 支持组</div>
+          <div class="msg-bubble">您好,工单已收到。我们将协助您查询该帖子的处理记录,请稍候。</div>
+          <div class="msg-time">7 天前 · 16:42</div>
+        </div>
+      </div>
+
+      <!-- 3. IT - 查询结果 -->
+      <div class="message from-staff">
+        <div class="msg-avatar staff">IT</div>
+        <div class="msg-content">
+          <div class="msg-name">IT 支持组</div>
+          <div class="msg-bubble">经查:已处理的帖子触发内容审核流程,原因为「不实信息」，处理类型为「限流」以及「删除」,系IT部审核后处理，没有数据泄露风险，不用担心</div>
+          <div class="msg-time">5 天前 · 10:20</div>
+        </div>
+      </div>
+
+      <!-- 4. 我 - 追问 -->
+      <div class="message from-me">
+        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-content">
+          <div class="msg-name">我</div>
+          <div class="msg-bubble">具体是哪一位审核人员处理的?能否告知处理依据?</div>
+          <div class="msg-time">5 天前 · 11:08</div>
+        </div>
+      </div>
+
+      <!-- 5. IT - 揭示处理人(就是用户自己) -->
+      <div class="message from-staff">
+        <div class="msg-avatar staff">IT</div>
+        <div class="msg-content">
+          <div class="msg-name">IT 支持组</div>
+          <div class="msg-bubble">处理人:市场部 · 内容运营专员 · 周一然(工号 E-2024-0073)
+处理依据:内部审核规范条款 3.2.1</div>
+          <div class="msg-time">3 天前 · 14:51</div>
+        </div>
+      </div>
+
+      <!-- 6. 我 - 困惑 -->
+      <div class="message from-me">
+        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-content">
+          <div class="msg-name">我</div>
+          <div class="msg-bubble">……周一然不是我吗?</div>
+          <div class="msg-time">3 天前 · 14:53</div>
+        </div>
+      </div>
+
+      <!-- 7. IT - 走流程 -->
+      <div class="message from-staff">
+        <div class="msg-avatar staff">IT</div>
+        <div class="msg-content">
+          <div class="msg-name">IT 支持组</div>
+          <div class="msg-bubble">经核实,提交人与处理人为同一员工。系统已记录此情况。
+经流程复核,操作合规,工单关闭。如有进一步异议,请通过 OA 反馈至直属主管 张敏。</div>
+          <div class="msg-time">1 天前 · 09:30</div>
+        </div>
+      </div>
+
+      <!-- 8. 我 - 沉默 -->
+      <div class="message from-me">
+        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-content">
+          <div class="msg-name">我</div>
+          <div class="msg-bubble">……</div>
+          <div class="msg-time">1 天前 · 09:34</div>
+        </div>
+      </div>
+
+      <!-- 系统消息:工单已关闭 -->
+      <div class="system-msg">
+        <span class="system-text">工单已关闭 · 处理状态:已解决</span>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

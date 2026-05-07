@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>已处理Case</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --line:      #ece7df;
+      --accent:    #e33932;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 28px 18px 56px; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 32px;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-logo {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .site-logo .logo-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .site-logo .logo-sub {
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 480px) {
+      .site-logo .logo-title { font-size: 22px; }
+      .site-logo .logo-sub { display: none; }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--ink-soft);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: all 0.3s;
+    }
+
+    .progress-pill .dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .progress-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: background 0.3s;
+    }
+
+    .progress-pill .dot.on {
+      background: var(--accent);
+    }
+
+    .progress-pill.done {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .profile-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: all 0.2s;
+    }
+
+    .profile-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateY(-1px);
+    }
+
+    .profile-link svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
+    }
+
+    @media (max-width: 600px) {
+      .profile-link span { display: none; }
+      .profile-link { padding: 8px 10px; }
+    }
+
+    /* ===== 瀑布流 ===== */
+    .grid {
+      column-count: 3;
+      column-gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { column-count: 2; }
+    }
+
+    @media (max-width: 480px) {
+      .grid { column-count: 2; column-gap: 14px; }
+    }
+
+    .post-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.4s ease;
+      border: 1px solid var(--line);
+      break-inside: avoid;
+      margin-bottom: 24px;
+      width: 100%;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .post-card:active {
+      transform: translateY(-1px);
+      transition-duration: 0.1s;
+    }
+
+    .post-card .image {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0ece4 0%, #e6e0d4 100%);
+      position: relative;
+    }
+
+    .post-card .image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                  filter 0.4s ease;
+    }
+
+    .post-card:hover .image img {
+      transform: scale(1.05);
+    }
+
+    /* 已查看状态 */
+    .post-card.viewed .image img {
+      filter: grayscale(0.6) brightness(0.95);
+    }
+
+    .post-card.viewed {
+      opacity: 0.72;
+    }
+
+    /* 查看勾选标 */
+    .check-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(227, 57, 50, 0.3);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 0.3s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 2;
+    }
+
+    .post-card.viewed .check-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .check-badge svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .post-card .title {
+      padding: 16px 16px 8px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .case-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0 16px 14px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(227, 57, 50, 0.08);
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+
+    .case-tag::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      .post-card .title { padding: 12px 12px 6px; font-size: 14px; }
+      .case-tag { margin: 0 12px 12px; font-size: 10px; }
+    }
+
+    /* ===== 提示条 ===== */
+    .hint {
+      text-align: center;
+      margin: -8px 0 28px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+
+    /* ===== 弹窗 ===== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 26, 26, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 40px 36px 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.3);
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .modal-backdrop.show .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b5e 0%, #e33932 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(227, 57, 50, 0.35);
+      animation: bounce 0.6s ease 0.2s both;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .modal-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .modal-label {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .modal-text {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .modal-btn {
+      display: inline-block;
+      padding: 11px 28px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      background: var(--ink);
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-1px);
+      background: #000;
+    }
+
+    /* 五彩纸屑 */
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 8px;
+      height: 14px;
+      pointer-events: none;
+      z-index: 99;
+      opacity: 0;
+    }
+
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <a href="#" class="site-logo">
+        <span class="logo-title">已处理 Case</span>
+        <span class="logo-sub">/ 西红柿运维</span>
+      </a>
+      <div class="header-right">
+        <div class="progress-pill" id="progress">
+          <span id="progress-num">0 / 5</span>
+          <span class="dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        </div>
+        <a href="#" class="profile-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>我的</span>
+        </a>
+        <a href="#" class="profile-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>设置</span>
+        </a>
+      </div>
+    </header>
+
+    <p class="hint">点击逐条复核 · 共 5 条</p>
+
+    <div class="grid">
+
+      <a class="post-card" href="javascript:void(0)" data-id="1">
+        <div class="image">
+          <img src="https://picsum.photos/seed/case01/400/520" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">这条评论怎么一直发不出去啊救命</h2>
+        <span class="case-tag">已删除</span>
+      </a>
+
+      <a class="post-card" href="javascript:void(0)" data-id="2">
+        <div class="image">
+          <img src="https://picsum.photos/seed/case02/400/360" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">西红柿 bug 预警:评论区集体失忆了</h2>
+        <span class="case-tag">已删除</span>
+      </a>
+
+      <a class="post-card" href="javascript:void(0)" data-id="3">
+        <div class="image">
+          <img src="https://picsum.photos/seed/case03/400/460" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">有人也刷不出别人的评论吗(急</h2>
+        <span class="case-tag">已删除</span>
+      </a>
+
+      <a class="post-card" href="javascript:void(0)" data-id="4">
+        <div class="image">
+          <img src="https://picsum.photos/seed/case04/400/320" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">点了发送转了三圈 然后就没有然后了</h2>
+        <span class="case-tag">已删除</span>
+      </a>
+
+      <a class="post-card" href="javascript:void(0)" data-id="5">
+        <div class="image">
+          <img src="https://picsum.photos/seed/case05/400/480" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">我评论了三次都没显示,是不是被屏蔽了</h2>
+        <span class="case-tag">已删除</span>
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- ===== 弹窗 ===== -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="modal-label">RESOLVED</div>
+      <h3 class="modal-title">啊,西红柿首页的<br>评论好像修好了</h3>
+      <p class="modal-text">5 条 case 全部复核完毕,可以去前台喝杯水了 ☕</p>
+      <button class="modal-btn" id="modal-close">收到</button>
+    </div>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.post-card');
+    const dots = document.querySelectorAll('.progress-pill .dot');
+    const progressNum = document.getElementById('progress-num');
+    const progressPill = document.getElementById('progress');
+    const modal = document.getElementById('modal');
+    const modalClose = document.getElementById('modal-close');
+
+    const viewed = new Set();
+    const total = cards.length;
+
+    function updateProgress() {
+      const n = viewed.size;
+      progressNum.textContent = `${n} / ${total}`;
+      dots.forEach((d, i) => {
+        d.classList.toggle('on', i < n);
+      });
+      if (n === total) {
+        progressPill.classList.add('done');
+      }
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = card.dataset.id;
+        if (viewed.has(id)) return;
+        viewed.add(id);
+        card.classList.add('viewed');
+        updateProgress();
+        if (viewed.size === total) {
+          setTimeout(() => {
+            modal.classList.add('show');
+            confetti();
+          }, 700);
+        }
+      });
+    });
+
+    modalClose.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('show');
+    });
+
+    // 五彩纸屑
+    function confetti() {
+      const colors = ['#e33932', '#ff8a65', '#ffb74d', '#1a1a1a', '#6b6b6b'];
+      for (let i = 0; i < 40; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animation = `fall ${1.8 + Math.random() * 1.5}s cubic-bezier(0.4, 0, 0.6, 1) ${Math.random() * 0.4}s forwards`;
+        c.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+      }
+    }
+  </script>
+</body>
+</html>

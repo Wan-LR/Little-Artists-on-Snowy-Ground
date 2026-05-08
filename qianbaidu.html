@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>搜一下</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       设计令牌 — 与主站保持一致
+       ============================================================ */
+    :root {
+      --bg:        #ffffff;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #3252e3;
+      --accent-hover: #c2241d;
+      --accent-soft: #fde8e7;
+      --shadow-search: 0 2px 4px rgba(0,0,0,0.04), 0 16px 40px -12px rgba(0,0,0,0.12);
+      --shadow-lift:   0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(227, 57, 50, 0.06) 0, transparent 38%),
+        radial-gradient(circle at 88% 82%, rgba(227, 57, 50, 0.05) 0, transparent 42%);
+    }
+
+    /* ============================================================
+       页面布局 — 内容垂直居中
+       ============================================================ */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 96px;
+    }
+
+    /* ============================================================
+       LOGO
+       ============================================================ */
+    .logo-wrap { margin-bottom: 0px; line-height: 0; }
+    .logo-wrap img { height: 200px; width: auto; display: block; }
+    @media (max-width: 480px) {
+      .logo-wrap { margin-bottom: 40px; }
+      .logo-wrap img { height: 110px; }
+    }
+
+    /* ============================================================
+       搜索框
+       ============================================================ */
+    .search-form {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .search-wrap {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow-search);
+      transition: box-shadow 0.25s, border-color 0.25s;
+    }
+    .search-wrap:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05), 0 24px 48px -16px rgba(0,0,0,0.16);
+    }
+    .search-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05), 0 24px 48px -16px rgba(227, 57, 50, 0.22);
+    }
+
+    .search-wrap > svg.icon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--ink-faint);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .search-wrap:focus-within > svg.icon { color: var(--accent); }
+
+    .search-input {
+      width: 100%;
+      height: 60px;
+      padding: 0 70px 0 56px;
+      background: transparent;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--ink);
+      border-radius: 999px;
+    }
+    .search-input::placeholder { color: var(--ink-faint); }
+    .search-input:focus { outline: none; }
+
+    .search-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 4px 10px -2px rgba(227, 57, 50, 0.4);
+    }
+    .search-btn:hover { background: var(--accent-hover); }
+    .search-btn:active { transform: translateY(-50%) scale(0.94); }
+    .search-btn svg { width: 18px; height: 18px; }
+
+    @media (max-width: 480px) {
+      .search-input { height: 54px; font-size: 15px; padding: 0 62px 0 50px; }
+      .search-wrap > svg.icon { left: 18px; }
+      .search-btn { width: 40px; height: 40px; right: 7px; }
+    }
+
+    /* ============================================================
+       页脚
+       ============================================================ */
+    .page-footer {
+      position: fixed;
+      bottom: 24px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    /* ============================================================
+       弹窗
+       ============================================================ */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 26, 26, 0.45);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 100;
+    }
+    .modal-mask.show { display: flex; animation: fadeIn 0.2s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lift);
+      padding: 36px 32px 28px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      transform: scale(0.94) translateY(8px);
+      animation: popIn 0.28s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+    }
+    @keyframes popIn {
+      to { transform: scale(1) translateY(0); }
+    }
+
+    .modal-emoji { font-size: 44px; line-height: 1; margin-bottom: 16px; }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 24px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      height: 44px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-btn:hover { background: var(--accent-hover); }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- LOGO 位置:换图就改 src,目录结构和登录页一致 -->
+    <div class="logo-wrap">
+      <img src="images/qianbaidu.png" alt="LOGO">
+    </div>
+
+    <!-- 搜索框 -->
+    <form class="search-form" id="searchForm" novalidate>
+      <div class="search-wrap">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="寻你一下 你就知道！"
+          autocomplete="off"
+        >
+        <button type="submit" class="search-btn" aria-label="搜索">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+  </div>
+
+  <p class="page-footer">© 2025 千百度</p>
+
+  <!-- 找不到关键词时的弹窗 -->
+  <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 class="modal-title" id="modalTitle">你为什么要搜索这个？</h2>
+      <button type="button" class="modal-btn" id="modalCloseBtn">我 知 道 了</button>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       关键词 → 跳转页面 配置(base64 编码)
+
+       ============================================================ */
+    const KEYWORDS_B64 =
+      'eyLopb/nuqLmn78iOiAieGhzMS5odG1sIiwgIueVquiMhCI6ICJ4aHMxLmh0bWwiLCAi5ZGY5belIjogImxvZ2luLmh0bWwifQ==';
+
+    let KEYWORDS = {};
+    try {
+      // 中文用 atob 解出来是 UTF-8 字节,需要再 decode 一次
+      const raw = atob(KEYWORDS_B64);
+      const bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
+      const text = new TextDecoder('utf-8').decode(bytes);
+      KEYWORDS = JSON.parse(text);
+    } catch (e) {
+      console.error('关键词数据解码失败', e);
+    }
+
+
+    /* ============================================================
+       搜索逻辑
+       ============================================================ */
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('searchInput');
+    const modalMask = document.getElementById('modalMask');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const raw = input.value.trim();
+      if (!raw) { input.focus(); return; }
+
+      const key = raw.toLowerCase();
+      let matchedUrl = null;
+      for (const [k, url] of Object.entries(KEYWORDS)) {
+        if (k.toLowerCase() === key) { matchedUrl = url; break; }
+      }
+
+      if (matchedUrl) {
+        window.location.href = matchedUrl;
+      } else {
+        showModal();
+      }
+    });
+
+
+    /* ============================================================
+       弹窗控制
+       ============================================================ */
+    function showModal() { modalMask.classList.add('show'); }
+    function hideModal() {
+      modalMask.classList.remove('show');
+      input.focus();
+      input.select();
+    }
+    modalCloseBtn.addEventListener('click', hideModal);
+    modalMask.addEventListener('click', e => { if (e.target === modalMask) hideModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modalMask.classList.contains('show')) hideModal();
+    });
+  </script>
+
+</body>
+</html>

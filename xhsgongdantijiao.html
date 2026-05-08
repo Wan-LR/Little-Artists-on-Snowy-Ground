@@ -275,7 +275,13 @@
       font-size: 12px;
       letter-spacing: 0.5px;
     }
-
+    .msg-avatar.me {
+    background: linear-gradient(135deg, #c97b3a, #a55e22);  /* 暖橙渐变 */
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;        /* 单字比双字 IT 大一点 */
+    }
     /* 消息主体(发件人 + 气泡 + 时间) */
     .msg-content {
       display: flex;
@@ -398,7 +404,7 @@
 
       <!-- 1. 我 - 主诉 -->
       <div class="message from-me">
-        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-avatar me">X</div>
         <div class="msg-content">
           <div class="msg-name">我</div>
           <div class="msg-bubble">今日下午我的已处理项目中突然多了很多被删除以及限流的帖子，根据时间来看都是近一周处理的，但这些帖子都不是我本人处理，我担心有数据泄露等故障，请尽快核实,谢谢!</div>
@@ -410,9 +416,9 @@
       <div class="message from-staff">
         <div class="msg-avatar staff">IT</div>
         <div class="msg-content">
-          <div class="msg-name">IT 支持组</div>
+          <div class="msg-name">IT 支持组 <strong><em>TOMATO845</em></strong></div>
           <div class="msg-bubble">您好,工单已收到。我们将协助您查询该帖子的处理记录,请稍候。</div>
-          <div class="msg-time">7 天前 · 16:42</div>
+          <div class="msg-time">3 小时前 · 16:42</div>
         </div>
       </div>
 
@@ -420,18 +426,18 @@
       <div class="message from-staff">
         <div class="msg-avatar staff">IT</div>
         <div class="msg-content">
-          <div class="msg-name">IT 支持组</div>
+          <div class="msg-name">IT 支持组 <strong><em>TOMATO845</em></strong></div>
           <div class="msg-bubble">经查:已处理的帖子触发内容审核流程,原因为「不实信息」，处理类型为「限流」以及「删除」,系IT部审核后处理，没有数据泄露风险，不用担心</div>
-          <div class="msg-time">5 天前 · 10:20</div>
+          <div class="msg-time">3 小时前 · 10:20</div>
         </div>
       </div>
 
       <!-- 4. 我 - 追问 -->
       <div class="message from-me">
-        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-avatar me">X</div>
         <div class="msg-content">
           <div class="msg-name">我</div>
-          <div class="msg-bubble">具体是哪一位审核人员处理的?能否告知处理依据?</div>
+          <div class="msg-bubble">不实信息由IT部门审理? 而且为什么被挂到了我名下？ 这个处理不太妥当吧</div>
           <div class="msg-time">5 天前 · 11:08</div>
         </div>
       </div>
@@ -440,41 +446,30 @@
       <div class="message from-staff">
         <div class="msg-avatar staff">IT</div>
         <div class="msg-content">
-          <div class="msg-name">IT 支持组</div>
-          <div class="msg-bubble">处理人:市场部 · 内容运营专员 · 周一然(工号 E-2024-0073)
-处理依据:内部审核规范条款 3.2.1</div>
-          <div class="msg-time">3 天前 · 14:51</div>
+          <div class="msg-name">IT 支持组 <strong><em>TOMATO845</em></strong></div>
+          <div class="msg-bubble">感谢您的谨慎，这些记录会在明早之前被删除，谢谢理解。</div>
+          <div class="msg-time">3 小时前 · 14:51</div>
         </div>
       </div>
 
-      <!-- 6. 我 - 困惑 -->
-      <div class="message from-me">
-        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
-        <div class="msg-content">
-          <div class="msg-name">我</div>
-          <div class="msg-bubble">……周一然不是我吗?</div>
-          <div class="msg-time">3 天前 · 14:53</div>
-        </div>
-      </div>
 
       <!-- 7. IT - 走流程 -->
       <div class="message from-staff">
         <div class="msg-avatar staff">IT</div>
         <div class="msg-content">
-          <div class="msg-name">IT 支持组</div>
-          <div class="msg-bubble">经核实,提交人与处理人为同一员工。系统已记录此情况。
-经流程复核,操作合规,工单关闭。如有进一步异议,请通过 OA 反馈至直属主管 张敏。</div>
-          <div class="msg-time">1 天前 · 09:30</div>
+          <div class="msg-name">IT 支持组 <strong><em>TOMATO845</em></strong></div>
+          <div class="msg-bubble">系统已记录此情况。经流程复核,操作合规,工单关闭。如有进一步异议,请通过 OA 反馈。</div>
+          <div class="msg-time">3 小时前 · 09:30</div>
         </div>
       </div>
 
       <!-- 8. 我 - 沉默 -->
       <div class="message from-me">
-        <div class="msg-avatar"><img src="images/coco.png" alt="我"></div>
+        <div class="msg-avatar me">X</div>
         <div class="msg-content">
           <div class="msg-name">我</div>
           <div class="msg-bubble">……</div>
-          <div class="msg-time">1 天前 · 09:34</div>
+          <div class="msg-time">3 小时前 · 09:34</div>
         </div>
       </div>
 

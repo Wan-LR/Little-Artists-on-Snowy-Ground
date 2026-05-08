@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cmail · 收件箱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e10;
+    --panel: #131519;
+    --panel-2: #181a20;
+    --panel-3: #1c1e25;
+    --hover: #1f2229;
+    --line: #2a2c34;
+    --line-soft: #23252c;
+    --text: #e8eaed;
+    --text-mute: #8b8f99;
+    --text-dim: #5c606b;
+    --accent: #e8a44c;
+    --accent-soft: rgba(232, 164, 76, 0.12);
+    --accent-deep: #c97f2a;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --info: #6ea3ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Manrope', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--accent); }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+  .app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; }
+
+  /* TOP BAR */
+  .topbar {
+    display: grid; grid-template-columns: 220px 1fr auto;
+    align-items: center; padding: 0 18px;
+    background: var(--panel); border-bottom: 1px solid var(--line);
+    gap: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #1a1206;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 20px; font-weight: 600;
+    line-height: 1; padding-bottom: 2px;
+    box-shadow: 0 2px 6px rgba(232, 164, 76, 0.25);
+  }
+  .brand-name { font-family: 'Instrument Serif', serif; font-size: 18px; letter-spacing: 0.3px; }
+  .brand-name em { font-style: italic; color: var(--accent); }
+
+  .search { position: relative; max-width: 560px; width: 100%; justify-self: center; }
+  .search svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; stroke: var(--text-dim); fill: none;
+    stroke-width: 2; stroke-linecap: round; pointer-events: none;
+  }
+  .search input {
+    width: 100%; padding: 9px 14px 9px 38px;
+    background: var(--panel-3); border: 1px solid transparent; border-radius: 8px;
+    color: var(--text); font-family: inherit; font-size: 13px;
+    outline: none; transition: all 0.18s;
+  }
+  .search input::placeholder { color: var(--text-dim); }
+  .search input:focus { background: var(--panel-2); border-color: var(--line); box-shadow: 0 0 0 3px rgba(255,255,255,0.04); }
+  .search-shortcut {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim);
+    background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;
+    letter-spacing: 0.5px; pointer-events: none;
+  }
+
+  .user { display: flex; align-items: center; gap: 10px; }
+  .user-info { text-align: right; line-height: 1.2; }
+  .user-name { font-size: 12px; color: var(--text); font-weight: 500; }
+  .user-email { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-dim); letter-spacing: 0.2px; }
+  .user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #1a1206;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px; font-weight: 600; line-height: 1; padding-bottom: 2px;
+    cursor: pointer; border: 1.5px solid rgba(232,164,76,0.4);
+    transition: transform 0.18s;
+  }
+  .user-avatar:hover { transform: scale(1.05); }
+  .logout-btn {
+    margin-left: 4px; background: transparent; border: none;
+    color: var(--text-mute); cursor: pointer; padding: 8px;
+    border-radius: 6px; transition: all 0.15s;
+  }
+  .logout-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+  .logout-btn:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
+
+  .main { display: grid; grid-template-columns: 220px 360px 1fr; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 16px 12px; display: flex; flex-direction: column; overflow-y: auto;
+  }
+  .compose-btn {
+    width: 100%; padding: 11px 14px;
+    background: var(--accent); color: #1a1206;
+    border: none; border-radius: 10px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 8px; transition: all 0.18s; margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(232,164,76,0.2);
+  }
+  .compose-btn:hover { background: #f4b35e; transform: translateY(-1px); }
+  .compose-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .folder-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 0 12px; margin: 8px 0 8px;
+  }
+  .folder-list { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+  .folder {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 12px; border-radius: 8px;
+    cursor: pointer; color: var(--text-mute); font-size: 13px;
+    transition: all 0.15s; user-select: none;
+  }
+  .folder:hover { background: var(--hover); color: var(--text); }
+  .folder.active { background: var(--accent-soft); color: var(--accent); }
+  .folder.active .folder-icon { stroke: var(--accent); }
+  .folder-icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .folder-name { flex: 1; }
+  .folder-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    color: var(--text-dim); background: rgba(255,255,255,0.04);
+    padding: 1px 7px; border-radius: 100px; min-width: 22px; text-align: center;
+  }
+  .folder.active .folder-count { background: var(--accent-soft); color: var(--accent); }
+  .folder.memos-folder.active { background: var(--accent-soft); }
+  .folder.memos-folder { border: 1px dashed transparent; }
+
+  .storage { margin-top: auto; padding: 14px 12px 6px; border-top: 1px solid var(--line-soft); }
+  .storage-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 7px; }
+  .storage-bar { height: 4px; background: var(--panel-3); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .storage-fill { height: 100%; width: 17%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-deep) 100%); border-radius: 2px; }
+  .storage-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); }
+
+  /* LIST */
+  .list-pane { background: var(--panel-2); border-right: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
+  .list-header { padding: 16px 20px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .list-title { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); letter-spacing: -0.2px; }
+  .list-title em { font-style: italic; color: var(--accent); }
+  .list-count { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-dim); letter-spacing: 0.5px; }
+  .list-body { flex: 1; overflow-y: auto; }
+  .list-empty { text-align: center; color: var(--text-dim); padding: 60px 20px; font-family: 'Instrument Serif', serif; font-style: italic; font-size: 15px; }
+
+  .item {
+    display: grid; grid-template-columns: auto 1fr auto;
+    column-gap: 12px; padding: 13px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    cursor: pointer; transition: background 0.15s; position: relative;
+  }
+  .item:hover { background: var(--hover); }
+  .item.selected { background: var(--accent-soft); }
+  .item.selected::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
+
+  .item-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--panel-3); display: flex; align-items: center; justify-content: center; font-family: 'Instrument Serif', serif; font-size: 14px; color: var(--text-mute); flex-shrink: 0; margin-top: 2px; grid-row: 1 / 3; }
+  .item-avatar.tone-blue   { background: rgba(110, 163, 255, 0.15); color: var(--info); }
+  .item-avatar.tone-amber  { background: var(--accent-soft); color: var(--accent); }
+  .item-avatar.tone-green  { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+  .item-avatar.tone-rose   { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
+  .item-avatar.tone-violet { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+  .item-avatar.tone-mute   { background: rgba(255, 255, 255, 0.05); color: var(--text-mute); }
+
+  .item-line1 { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; min-width: 0; }
+  .item-from { font-size: 13.5px; font-weight: 500; color: var(--text-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .item.unread .item-from { color: var(--text); font-weight: 600; }
+  .item-date { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-dim); flex-shrink: 0; grid-row: 1; grid-column: 3; }
+  .item-subject { font-size: 13px; color: var(--text-mute); margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item.unread .item-subject { color: var(--text); font-weight: 500; }
+  .item-preview { font-size: 12px; color: var(--text-dim); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item-line-bottom { grid-column: 2 / 3; display: flex; align-items: center; gap: 8px; }
+  .item-flag { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 3px var(--accent-soft); grid-row: 1; grid-column: 3; align-self: center; margin-top: 0; }
+  .item.unread .item-flag { display: block; }
+  .item:not(.unread) .item-flag { display: none; }
+
+  .item-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
+  .item-tag.system    { background: rgba(110, 163, 255, 0.12); color: var(--info); }
+  .item-tag.alert     { background: rgba(239, 68, 68, 0.12); color: #fca5a5; }
+  .item-tag.community { background: rgba(168, 85, 247, 0.12); color: #c084fc; }
+
+  .item-star { background: transparent; border: none; cursor: pointer; color: var(--text-dim); padding: 4px; margin-left: -4px; border-radius: 4px; transition: all 0.15s; display: flex; align-items: center; }
+  .item-star svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: all 0.15s; }
+  .item-star.starred { color: var(--accent); }
+  .item-star.starred svg { fill: var(--accent); }
+  .item-star:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
+
+  /* memo list item */
+  .item.memo-item { grid-template-columns: 1fr auto; }
+  .item.memo-item .item-avatar { display: none; }
+  .item.memo-item .item-line1 { grid-column: 1 / 2; }
+  .item.memo-item .item-subject { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--text); font-weight: 400; grid-column: 1 / 2; margin-bottom: 5px; }
+  .item.memo-item .item-preview { grid-column: 1 / 2; color: var(--text-mute); font-size: 12.5px; }
+  .item.memo-item .item-date { grid-row: 1; grid-column: 2; }
+
+  /* DETAIL */
+  .detail-pane { background: var(--bg); overflow-y: auto; display: flex; flex-direction: column; }
+  .detail-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); gap: 14px; padding: 40px; }
+  .detail-empty svg { width: 56px; height: 56px; stroke: var(--text-dim); fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
+  .detail-empty-text { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 17px; }
+  .detail-empty-sub { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; }
+
+  .detail { flex: 1; display: flex; flex-direction: column; animation: detail-in 0.3s ease; }
+  @keyframes detail-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .detail-toolbar { padding: 12px 28px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 6px; }
+  .tool-btn { background: transparent; border: none; color: var(--text-mute); cursor: pointer; padding: 7px 9px; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; }
+  .tool-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tool-btn:hover { background: var(--hover); color: var(--text); }
+  .tool-btn.danger:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
+  .tool-divider { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+
+  .detail-content { padding: 28px 36px 60px; max-width: 760px; width: 100%; margin: 0 auto; }
+  .detail-subject { font-family: 'Instrument Serif', serif; font-size: 28px; line-height: 1.25; letter-spacing: -0.3px; color: var(--text); margin-bottom: 22px; }
+  .detail-subject em { font-style: italic; color: var(--accent); }
+
+  .detail-meta { display: grid; grid-template-columns: 40px 1fr; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid var(--line); margin-bottom: 28px; align-items: center; }
+  .detail-meta-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Instrument Serif', serif; font-size: 18px; }
+  .detail-meta-info { display: flex; flex-direction: column; gap: 3px; }
+  .detail-from { font-size: 13.5px; color: var(--text); font-weight: 500; }
+  .detail-from-email { color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 11.5px; margin-left: 6px; font-weight: 400; }
+  .detail-to { font-size: 11.5px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .detail-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); margin-left: auto; align-self: flex-start; padding-top: 4px; }
+
+  .detail-body { font-size: 14.5px; line-height: 1.75; color: var(--text); white-space: pre-wrap; word-wrap: break-word; }
+  .detail-body p { margin-bottom: 1em; }
+  .detail-body em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--accent); }
+  .detail-body code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; }
+  .detail-body blockquote { border-left: 2px solid var(--line); padding: 4px 0 4px 18px; color: var(--text-mute); margin: 14px 0; font-family: 'Instrument Serif', serif; font-style: italic; font-size: 15px; }
+  .detail-body .signature { color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line-soft); padding-top: 14px; margin-top: 28px; }
+
+  .detail.memo-detail .detail-meta { grid-template-columns: 1fr; }
+  .detail.memo-detail .detail-meta-avatar { display: none; }
+  .detail.memo-detail .detail-from-email { display: none; }
+  .detail.memo-detail .memo-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .memo-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); border: 1px solid var(--line); padding: 2px 8px; border-radius: 100px; letter-spacing: 0.5px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel); border: 1px solid var(--line); color: var(--text); padding: 11px 18px; border-radius: 100px; font-size: 12.5px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: all 0.25s ease; z-index: 100; display: flex; align-items: center; gap: 9px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ============ 监控清单(checklist) ============ */
+  .checklist {
+    margin-top: 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  /* 多个框子之间留间距 */
+  .checklist + .checklist {
+    margin-top: 14px;
+  }
+  .checklist-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-3);
+  }
+  .checklist-header-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  /* 平台名 — 显示在每个框子的左上角 */
+  .checklist-platform {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--text);
+    letter-spacing: 0.2px;
+  }
+  .checklist-platform::before {
+    content: '#';
+    color: var(--accent);
+    margin-right: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .checklist-progress {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .checklist-progress.all-done {
+    color: var(--success);
+  }
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .check-row:last-child { border-bottom: none; }
+  .check-row:hover { background: var(--hover); }
+  .check-box {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--text-dim);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    margin-top: 2px;
+  }
+  .check-box svg {
+    width: 12px; height: 12px;
+    stroke: #1a1206;
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.18s;
+  }
+  .check-row.checked .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .check-row.checked .check-box svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .check-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .check-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 2px;
+    transition: all 0.18s;
+  }
+  .check-detail {
+    font-size: 12px;
+    color: var(--text-mute);
+    line-height: 1.5;
+    transition: all 0.18s;
+  }
+  .check-row.checked .check-name {
+    text-decoration: line-through;
+    text-decoration-color: rgba(232, 164, 76, 0.5);
+    color: var(--text-mute);
+  }
+  .check-row.checked .check-detail {
+    opacity: 0.5;
+  }
+
+  /* ============ 锁定弹窗 ============ */
+  .lock-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  .lock-backdrop.show { opacity: 1; pointer-events: auto; }
+  .lock-card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 30px 28px 24px;
+    max-width: 380px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.94) translateY(8px);
+    transition: transform 0.22s ease;
+  }
+  .lock-backdrop.show .lock-card { transform: scale(1) translateY(0); }
+  .lock-icon-wrap {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid rgba(232, 164, 76, 0.25);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .lock-icon-wrap svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .lock-title { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 6px; color: var(--text); letter-spacing: -0.2px; }
+  .lock-title em { font-style: italic; color: var(--accent); }
+  .lock-subtitle { color: var(--text-mute); font-size: 12.5px; line-height: 1.6; margin-bottom: 16px; }
+  .lock-hint {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 13px; color: var(--text-dim);
+    border-left: 2px solid var(--line); padding: 4px 0 4px 12px;
+    margin-bottom: 18px;
+  }
+  .lock-hint::before {
+    content: 'HINT  '; font-family: 'JetBrains Mono', monospace;
+    font-style: normal; font-size: 9.5px;
+    color: var(--accent); letter-spacing: 1.5px;
+    margin-right: 4px;
+  }
+
+  /* 密码框里的提示图(在文字 hint 上方) */
+  .lock-hint-image {
+    margin-bottom: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--panel-3);
+    border: 1px solid var(--line);
+  }
+  .lock-hint-image img {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    background: var(--panel-3);
+  }
+  /* 没填 hintImage 时的占位框 */
+  .lock-hint-image.placeholder {
+    border: 1px dashed var(--line);
+    background: transparent;
+    height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-dim);
+  }
+  .lock-hint-image.placeholder svg {
+    width: 22px; height: 22px;
+    stroke: var(--text-dim);
+    fill: none; stroke-width: 1.5;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .lock-hint-image.placeholder .ph-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .lock-hint-image.placeholder .ph-sub {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+
+  /* ============ 退出拦截弹窗(账号没监控完) ============ */
+  .block-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  .block-backdrop.show { opacity: 1; pointer-events: auto; }
+  .block-card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 28px 26px 22px;
+    max-width: 380px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.94) translateY(8px);
+    transition: transform 0.22s ease;
+  }
+  .block-backdrop.show .block-card { transform: scale(1) translateY(0); }
+  .block-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .block-icon svg { width: 22px; height: 22px; stroke: var(--danger); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .block-title { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 8px; color: var(--text); letter-spacing: -0.2px; }
+  .block-title em { font-style: italic; color: var(--accent); }
+  .block-text { color: var(--text-mute); font-size: 13px; line-height: 1.65; margin-bottom: 22px; }
+  .block-text code {
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .block-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .block-btn {
+    padding: 9px 16px; border-radius: 8px;
+    border: 1px solid var(--line); background: transparent;
+    color: var(--text); font-family: inherit; font-size: 13px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .block-btn:hover { background: var(--hover); }
+  .block-btn.primary {
+    background: var(--accent); color: #1a1206;
+    border-color: var(--accent); font-weight: 600;
+  }
+  .block-btn.primary:hover { background: #f4b35e; }
+  .lock-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .lock-input {
+    flex: 1; padding: 11px 14px;
+    background: var(--panel-3); border: 1px solid var(--line);
+    border-radius: 8px; color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; letter-spacing: 6px; text-align: center;
+    outline: none; transition: all 0.15s;
+  }
+  .lock-input:focus { border-color: var(--accent); background: var(--panel-2); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .lock-input.shake {
+    animation: lock-shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: var(--danger); color: var(--danger);
+  }
+  @keyframes lock-shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  .lock-submit {
+    padding: 11px 18px; background: var(--accent); color: #1a1206;
+    border: none; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .lock-submit:hover { background: #f4b35e; }
+  .lock-error {
+    color: var(--danger); font-size: 12px; height: 16px;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3px;
+    min-height: 16px;
+  }
+  .lock-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+  .lock-cancel {
+    background: transparent; border: 1px solid var(--line);
+    color: var(--text-mute); padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .lock-cancel:hover { background: var(--hover); color: var(--text); }
+
+  /* 锁定状态下的备忘录正文区 — 占位 */
+  .memo-locked-preview {
+    position: relative; min-height: 280px;
+    background: var(--panel-2); border: 1px dashed var(--line);
+    border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 14px; color: var(--text-dim);
+    padding: 40px 24px; margin-top: 8px;
+  }
+  .memo-locked-preview svg { width: 38px; height: 38px; stroke: var(--text-mute); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .memo-locked-preview .locked-text { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 16px; color: var(--text-mute); }
+  .memo-locked-preview .locked-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; }
+  .memo-locked-preview button {
+    margin-top: 6px; background: var(--accent); color: #1a1206;
+    border: none; padding: 9px 18px; border-radius: 8px;
+    font-family: inherit; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .memo-locked-preview button:hover { background: #f4b35e; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 200px 320px 1fr; }
+    .topbar { grid-template-columns: 200px 1fr auto; }
+  }
+  @media (max-width: 880px) {
+    .main { grid-template-columns: 64px 1fr; }
+    .topbar { grid-template-columns: 64px 1fr auto; }
+    .sidebar { padding: 12px 8px; }
+    .compose-btn { padding: 11px 0; }
+    .compose-btn span, .folder-name, .folder-count, .folder-label, .storage, .brand-name { display: none; }
+    .folder { justify-content: center; padding: 11px 0; }
+    .detail-pane { display: none; }
+    .detail-pane.show-mobile { display: flex; position: fixed; inset: 56px 0 0 0; z-index: 50; }
+    .search { max-width: 100%; }
+    .user-info { display: none; }
+  }
+
+  .app { animation: app-in 0.5s ease; }
+  @keyframes app-in { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div class="brand-name">C<em>mail</em></div>
+    </div>
+
+    <div class="search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="搜索邮件、备忘录、联系人..." autocomplete="off">
+      <span class="search-shortcut">⌘ K</span>
+    </div>
+
+    <div class="user">
+      <div class="user-info">
+        <div class="user-name">webareapes</div>
+        <div class="user-email">webareapes@cmail.com</div>
+      </div>
+      <div class="user-avatar" title="webareapes">W</div>
+      <button class="logout-btn" id="logoutBtn" title="退出登录">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <aside class="sidebar">
+      <button class="compose-btn" id="composeBtn">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>写邮件</span>
+      </button>
+
+      <div class="folder-label">邮件</div>
+      <ul class="folder-list" id="folderList">
+        <li class="folder active" data-folder="inbox">
+          <svg class="folder-icon" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <span class="folder-name">收件箱</span>
+          <span class="folder-count" id="inboxCount">0</span>
+        </li>
+        <li class="folder" data-folder="starred">
+          <svg class="folder-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="folder-name">星标</span>
+          <span class="folder-count" id="starredCount">0</span>
+        </li>
+        <li class="folder" data-folder="sent">
+          <svg class="folder-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span class="folder-name">已发送</span>
+        </li>
+        <li class="folder" data-folder="drafts">
+          <svg class="folder-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span class="folder-name">草稿</span>
+        </li>
+        <li class="folder" data-folder="spam">
+          <svg class="folder-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          <span class="folder-name">垃圾邮件</span>
+        </li>
+      </ul>
+
+      <div class="folder-label" style="margin-top:18px;">私人</div>
+      <ul class="folder-list">
+        <li class="folder memos-folder" data-folder="memos">
+          <svg class="folder-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span class="folder-name">备忘录</span>
+          <span class="folder-count" id="memosCount">0</span>
+        </li>
+      </ul>
+
+      <div class="storage">
+        <div class="storage-label">存储用量</div>
+        <div class="storage-bar"><div class="storage-fill"></div></div>
+        <div class="storage-text">2.6 GB / 15 GB</div>
+      </div>
+    </aside>
+
+    <section class="list-pane">
+      <div class="list-header">
+        <h2 class="list-title" id="listTitle">收件箱</h2>
+        <span class="list-count" id="listCount">0 ITEMS</span>
+      </div>
+      <div class="list-body" id="listBody"></div>
+    </section>
+
+    <section class="detail-pane" id="detailPane">
+      <div class="detail-empty" id="detailEmpty">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 6h16c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"/>
+          <polyline points="2,8 12,14 22,8"/>
+        </svg>
+        <div class="detail-empty-text">从左侧选一项查看</div>
+        <div class="detail-empty-sub">Cmail · Encrypted</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<!-- 退出拦截弹窗(账号没监控完) -->
+<div class="block-backdrop" id="blockBackdrop">
+  <div class="block-card" role="dialog" aria-modal="true">
+    <div class="block-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+    <h3 class="block-title">还在<em>监控</em>中</h3>
+    <p class="block-text">
+      还有 <code id="blockCount">0</code> 个账号。<br>
+      今天务必完成。
+    </p>
+    <div class="block-actions">
+      <button class="block-btn primary" id="blockGoTo">带我去清单</button>
+    </div>
+  </div>
+</div>
+
+<!-- 锁定弹窗 -->
+<div class="lock-backdrop" id="lockBackdrop">
+  <div class="lock-card" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon-wrap">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h3 class="lock-title" id="lockTitle">这条<em>笔记</em>已加密</h3>
+    <p class="lock-subtitle">输入密码以查看内容。</p>
+    <div class="lock-hint-image" id="lockHintImage"></div>
+    <div class="lock-hint" id="lockHint">提示</div>
+    <div class="lock-input-row">
+      <input
+        type="password"
+        class="lock-input"
+        id="lockInput"
+        placeholder="• • • •"
+        autocomplete="off"
+        inputmode="numeric"
+      >
+      <button class="lock-submit" id="lockSubmit">解锁</button>
+    </div>
+    <div class="lock-error" id="lockError"></div>
+    <div class="lock-actions">
+      <button class="lock-cancel" id="lockCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ============================================================
+     ★ 邮件数据
+     ============================================================ */
+  const EMAILS = [
+    {
+      id: 'm1',
+      from: '王天今(知识挖土机)',
+      fromEmail: 'security@cmail.com',
+      avatarTone: 'blue',
+      avatarChar: 'W',
+      subject: '昴星观测收尾',
+      preview: '李远,昴星观测收尾需要尽快完成...',
+      date: '10 小时前',
+      fullDate: '今天 13:47',
+      unread: false,
+      starred: false,
+      tag: 'alert',
+      tagText: '重要',
+      folder: 'inbox',
+      body: `<p>李远,</p>
+<p>昴星观测收尾需要尽快完成</p>
+<p>该星情况比较特殊,但是不用担心,不是很严重的事情</p>
+<p>记得在今晚12点之前删除所有痕迹,记忆清除已经有同事在处理</p>
+<p>这周五之前记得把报告上交</p>
+<p>王天今</p>`
+    },
+
+    {
+      id: 'm3',
+      from: '观测者社区',
+      fromEmail: 'Obscommunity@outlook.com',
+      avatarTone: 'violet',
+      avatarChar: '观',
+      subject: '你关注的「知识挖土机」发布了新日志',
+      preview: '各位同事...',
+      date: '5月7日',
+      fullDate: '2026年5月7日 08:00',
+      unread: false,
+      starred: false,
+      tag: 'community',
+      tagText: '社区',
+      folder: 'inbox',
+      body: `<p><strong>日常观测管理工作简报</strong></p>
+<p>各位同事,</p>
+<p>今天对观测者团队的工作进行了例行监督与调度。总体情况如下:</p>
+<p><strong>任务执行情况</strong><br>
+所有观测者按计划完成当日的星际文明观测任务。<br>
+数据采集、记录及初步分析均符合标准操作流程。<br>
+暂未发现异常信号或潜在新文明迹象。</p>
+<p><strong>资源与调度管理</strong><br>
+调整部分观测器优先级,确保关键观测区域覆盖完整。<br>
+对设备运行状态进行了例行检查,无异常报告。</p>
+<p><strong>团队协调</strong><br>
+与各观测者保持通信,确认任务执行进度与问题反馈。<br>
+对新入职观测者进行了操作规范提醒与日常注意事项培训。</p>
+<p><strong>后续计划</strong><br>
+明日将重点关注α星系的长期观测数据,并安排数据复核。<br>
+继续保持对观测者团队的常规管理与指导,确保观测任务稳定有序运行。</p>
+<p>总体而言,观测工作正常推进,团队稳定高效。希望各位继续保持谨慎、专注与严谨。</p>
+<p class="signature">王天今<br>
+观测管理部<br>
+2026年5月8日</p>`
+    },
+  ];
+
+  /* ============================================================
+     ★ 备忘录数据
+     ============================================================ */
+  const MEMOS = [
+    {
+      id: 'n1',
+      title: '监控账号',
+      preview: '今天',
+      date: '今天',
+      fullDate: '2026年5月8日',
+      tags: ['监控', '每日清单'],
+      intro: `<p>今天的清单。</p>`,
+                     
+      accountGroups: [
+        {
+          platform: '西红柿',
+          items: [
+            { id: 'a1', name: '咱们又鸟(我)', detail: '自己的测试帐号 / 已完成限流',         checked: true  },
+            { id: 'a2', name: '鲨狗',detail: '徒步 已完成态度观测 已完成信息采集 已完成清除',     checked: true },
+            { id: 'a3', name: '哪里招人',detail: '下班路上 已完成态度观测 已完成信息采集 已完成清除',     checked: true },
+            { id: 'a4', name: '春水煎茶',detail: '乡下 已完成态度观测 已完成信息采集 已完成清除',     checked: true },
+            { id: 'a5', name: '左右不勤',detail: '水猴子 已完成态度观测 已完成信息采集 已完成清除',     checked: true },
+            ]
+        },
+        {
+          platform: '矢呼',
+          items: [
+            { id: 'a8', name: '景明', detail: '日志/草稿箱',       checked: false },
+           
+          ]
+        },
+        {
+          platform: 'Cmail',
+          items: [
+            { id: 'a9', name: '文麦特', detail: '矢呼社区邮件/草稿箱',       checked: false },
+            
+          ]
+        }
+      ]
+    },
+
+
+    /* ============ ★ 加密备忘录 · 专有名词 ============ */
+    /* ⚠️ 改密码     → 改 password 字段                  */
+    /* ⚠️ 换提示图   → 把 hintImage 设成你的图片地址      */
+    /*                  (留空则显示占位框)                */
+    /* ⚠️ 改提示文字 → 改 hint 字段                      */
+    /* ⚠️ 解锁后看到的文字 → 改 body 字段                */
+    {
+      id: 'n5',
+      title: '专有名词',
+      preview: '🔒 已加密 · 输入密码以查看内容',
+      date: '5月8日',
+      fullDate: '加密时间未知',
+      tags: ['加密'],
+      locked: true,
+      password: '2156',
+      hintImage: 'images/mingcimima.png',
+      hint: '昴星人如何行走',
+      body: `
+<blockquote>我自己。也是被观测的那个。</blockquote>
+
+<p><strong>鸡</strong></p>
+<blockquote>昴星输入法中打不出这个字<br>
+是鸡属动物红色原鸡（Gallus gallus）的亚种 ，鸡外形似鸟，分为头部、颈部、体躯与翅膀、尾部和腿5部分，头部有喙、鸡冠，躯干部有1双翅膀，靠双脚站立。</blockquote>
+
+<p><strong>观测者社区</strong></p>
+<blockquote>内部通讯。<br>
+对外伪装成兴趣论坛。</blockquote>
+
+<p><strong>昴星 / 昴星人</strong></p>
+<blockquote>高度类地行星，没有地球人类的存在。<br>
+地球鸡的有智慧版本。</blockquote>
+
+<p><strong>裸猿</strong></p>
+<blockquote>昴星(实际上是大多数非地球人类文明)对地球人类的称呼。</blockquote>
+
+
+<p><strong>人类</strong></p>
+<blockquote>一种灵长目物种</blockquote>
+
+`
+    }
+  ];
+
+  /* ============================================================
+     状态 & 渲染
+     ============================================================ */
+  const folders = document.querySelectorAll('.folder');
+  const listBody = document.getElementById('listBody');
+  const listTitle = document.getElementById('listTitle');
+  const listCount = document.getElementById('listCount');
+  const detailPane = document.getElementById('detailPane');
+  const detailEmpty = document.getElementById('detailEmpty');
+  const searchInput = document.getElementById('searchInput');
+  const composeBtn = document.getElementById('composeBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+
+  const lockBackdrop = document.getElementById('lockBackdrop');
+  const lockHint = document.getElementById('lockHint');
+  const lockInput = document.getElementById('lockInput');
+  const lockSubmit = document.getElementById('lockSubmit');
+  const lockCancel = document.getElementById('lockCancel');
+  const lockError = document.getElementById('lockError');
+
+  let currentFolder = 'inbox';
+  let selectedId = null;
+  let searchQuery = '';
+  let pendingUnlockId = null;
+  const unlockedMemos = new Set();
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getCurrentItems() {
+    if (currentFolder === 'memos') {
+      return MEMOS.filter(m => matchSearch(m.title + ' ' + m.preview));
+    }
+    let items = EMAILS;
+    if (currentFolder === 'inbox') items = items.filter(e => e.folder === 'inbox');
+    else if (currentFolder === 'starred') items = items.filter(e => e.starred);
+    else if (currentFolder === 'sent') items = [];
+    else if (currentFolder === 'drafts') items = [];
+    else if (currentFolder === 'spam') items = [];
+    return items.filter(e => matchSearch(e.from + ' ' + e.subject + ' ' + e.preview));
+  }
+  function matchSearch(text) {
+    if (!searchQuery) return true;
+    return text.toLowerCase().includes(searchQuery.toLowerCase());
+  }
+
+  function renderList() {
+    const items = getCurrentItems();
+    listCount.textContent = `${items.length} ITEM${items.length === 1 ? '' : 'S'}`;
+
+    if (items.length === 0) {
+      listBody.innerHTML = `<div class="list-empty">这个文件夹是空的</div>`;
+      return;
+    }
+
+    if (currentFolder === 'memos') {
+      listBody.innerHTML = items.map(m => `
+        <div class="item memo-item ${selectedId === m.id ? 'selected' : ''}" data-id="${m.id}">
+          <div class="item-line1">
+            <span class="item-from">${m.locked ? '🔒 加密笔记' : '📝 笔记'}</span>
+            <span class="item-date">${esc(m.date)}</span>
+          </div>
+          <div class="item-subject">${esc(m.title)}</div>
+          <div class="item-preview">${esc(m.preview)}</div>
+        </div>
+      `).join('');
+    } else {
+      listBody.innerHTML = items.map(e => `
+        <div class="item ${e.unread ? 'unread' : ''} ${selectedId === e.id ? 'selected' : ''}" data-id="${e.id}">
+          <div class="item-avatar tone-${e.avatarTone}">${esc(e.avatarChar)}</div>
+          <div class="item-line1">
+            <span class="item-from">${esc(e.from)}</span>
+            <span class="item-date">${esc(e.date)}</span>
+          </div>
+          <div class="item-line-bottom">
+            <button class="item-star ${e.starred ? 'starred' : ''}" data-star="${e.id}" title="标星">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </button>
+            <span class="item-subject">${esc(e.subject)}</span>
+            ${e.tag ? `<span class="item-tag ${e.tag}">${esc(e.tagText)}</span>` : ''}
+          </div>
+          <div class="item-preview" style="grid-column: 2 / 4;">${esc(e.preview)}</div>
+          ${e.unread ? '<div class="item-flag"></div>' : ''}
+        </div>
+      `).join('');
+    }
+
+    listBody.querySelectorAll('.item').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target.closest('[data-star]')) return;
+        const id = el.dataset.id;
+        selectItem(id);
+      });
+    });
+    listBody.querySelectorAll('[data-star]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = btn.dataset.star;
+        const email = EMAILS.find(x => x.id === id);
+        if (email) {
+          email.starred = !email.starred;
+          btn.classList.toggle('starred');
+          updateCounts();
+          showToast(email.starred ? '已加星标' : '已取消星标');
+        }
+      });
+    });
+  }
+
+  function selectItem(id) {
+    selectedId = id;
+
+    if (currentFolder === 'memos') {
+      const memo = MEMOS.find(m => m.id === id);
+      if (memo) renderMemoDetail(memo);
+    } else {
+      const email = EMAILS.find(e => e.id === id);
+      if (email) {
+        if (email.unread) {
+          email.unread = false;
+          updateCounts();
+        }
+        renderEmailDetail(email);
+      }
+    }
+    renderList();
+  }
+
+  function renderEmailDetail(email) {
+    detailPane.innerHTML = `
+      <div class="detail">
+        <div class="detail-toolbar">
+          <button class="tool-btn" data-action="reply"><svg viewBox="0 0 24 24"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>回复</button>
+          <button class="tool-btn" data-action="forward"><svg viewBox="0 0 24 24"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>转发</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" data-action="archive"><svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>归档</button>
+          <button class="tool-btn danger" data-action="delete"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>删除</button>
+        </div>
+        <div class="detail-content">
+          <h1 class="detail-subject">${esc(email.subject)}</h1>
+          <div class="detail-meta">
+            <div class="detail-meta-avatar tone-${email.avatarTone}" style="background: var(--panel-3);">${esc(email.avatarChar)}</div>
+            <div class="detail-meta-info">
+              <div class="detail-from">${esc(email.from)}<span class="detail-from-email">&lt;${esc(email.fromEmail)}&gt;</span></div>
+              <div class="detail-to">→ webareapes@cmail.com</div>
+            </div>
+            <div class="detail-date">${esc(email.fullDate)}</div>
+          </div>
+          <div class="detail-body">${email.body}</div>
+        </div>
+      </div>
+    `;
+    const avatarEl = detailPane.querySelector('.detail-meta-avatar');
+    if (avatarEl) {
+      const item = document.createElement('div');
+      item.className = 'item-avatar tone-' + email.avatarTone;
+      item.style.position = 'absolute';
+      item.style.visibility = 'hidden';
+      document.body.appendChild(item);
+      avatarEl.style.background = getComputedStyle(item).background;
+      avatarEl.style.color = getComputedStyle(item).color;
+      document.body.removeChild(item);
+    }
+    detailPane.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = btn.dataset.action;
+        const tips = { reply: '回复功能暂不可用', forward: '转发功能暂不可用', archive: '已归档(模拟)', delete: '已移到垃圾箱(模拟)' };
+        showToast(tips[a] || '');
+      });
+    });
+  }
+
+  function renderMemoDetail(memo) {
+    const isLocked = memo.locked && !unlockedMemos.has(memo.id);
+
+    let lockedHtml = '';
+    if (isLocked) {
+      lockedHtml = `
+        <div class="memo-locked-preview">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <div class="locked-text">这条笔记已加密</div>
+          <div class="locked-sub">PASSWORD REQUIRED</div>
+          <button data-action="unlock">输入密码</button>
+        </div>
+      `;
+    }
+
+    /* intro/body 文字 — 锁定笔记解锁后也显示 body */
+    const introHtml = (!memo.locked && memo.intro) ? `<div class="detail-body">${memo.intro}</div>` : '';
+    const showBody = memo.body && (!memo.locked || unlockedMemos.has(memo.id));
+    const bodyHtml = showBody ? `<div class="detail-body">${memo.body}</div>` : '';
+
+    /* 监控清单 — 每个 platform 一个独立的框 */
+    let checklistHtml = '';
+    if (memo.accountGroups && memo.accountGroups.length) {
+      checklistHtml = memo.accountGroups.map(group => {
+        const total = group.items.length;
+        const done = group.items.filter(a => a.checked).length;
+        const allDone = done === total;
+        return `
+          <div class="checklist">
+            <div class="checklist-header">
+              <span class="checklist-platform">${esc(group.platform)}</span>
+              <span class="checklist-progress ${allDone ? 'all-done' : ''}">${done} / ${total}${allDone ? ' · 完成' : ''}</span>
+            </div>
+            ${group.items.map(a => `
+              <div class="check-row ${a.checked ? 'checked' : ''}" data-account-id="${esc(a.id)}">
+                <div class="check-box">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="check-info">
+                  <div class="check-name">${esc(a.name)}</div>
+                  <div class="check-detail">${esc(a.detail)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    detailPane.innerHTML = `
+      <div class="detail memo-detail">
+        <div class="detail-toolbar">
+          <button class="tool-btn" data-action="edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑</button>
+          <button class="tool-btn" data-action="pin"><svg viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>置顶</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn danger" data-action="delete"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>删除</button>
+        </div>
+        <div class="detail-content">
+          <h1 class="detail-subject">${memo.locked ? '🔒 ' : ''}${esc(memo.title)}</h1>
+          <div class="detail-meta">
+            <div class="detail-meta-info">
+              <div class="detail-to">${esc(memo.fullDate)}</div>
+              <div class="memo-tags">
+                ${memo.tags.map(t => `<span class="memo-tag">#${esc(t)}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+          ${introHtml}
+          ${checklistHtml}
+          ${bodyHtml}
+          ${lockedHtml}
+        </div>
+      </div>
+    `;
+
+    /* checklist 点击 → 切换勾选(在所有 platform 里查找) */
+    detailPane.querySelectorAll('.check-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const accountId = row.dataset.accountId;
+        let account = null;
+        for (const group of (memo.accountGroups || [])) {
+          account = group.items.find(a => a.id === accountId);
+          if (account) break;
+        }
+        if (!account) return;
+        account.checked = !account.checked;
+        renderMemoDetail(memo);
+        renderList();
+      });
+    });
+
+    detailPane.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = btn.dataset.action;
+        if (a === 'unlock') { openLockModal(memo); return; }
+        const tips = { edit: '编辑模式暂不可用', pin: '已置顶(模拟)', delete: '备忘录无法被删除' };
+        showToast(tips[a] || '');
+      });
+    });
+
+    /* 点开锁定笔记后,自动弹出密码框 */
+    if (isLocked) {
+      setTimeout(() => openLockModal(memo), 120);
+    }
+  }
+
+  /* 锁定弹窗逻辑 */
+  function openLockModal(memo) {
+    pendingUnlockId = memo.id;
+    lockHint.textContent = memo.hint || '';
+
+    /* 渲染提示图(填了 → 显示图;没填 → 显示占位框) */
+    const hintImageEl = document.getElementById('lockHintImage');
+    if (memo.hintImage) {
+      hintImageEl.className = 'lock-hint-image';
+      hintImageEl.innerHTML = `<img src="${esc(memo.hintImage)}" alt="提示图">`;
+    } else {
+      hintImageEl.className = 'lock-hint-image placeholder';
+      hintImageEl.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <div class="ph-text">IMAGE HINT</div>
+        <div class="ph-sub">在这里放你的提示图</div>
+      `;
+    }
+
+    lockInput.value = '';
+    lockError.textContent = '';
+    lockInput.classList.remove('shake');
+    lockBackdrop.classList.add('show');
+    setTimeout(() => lockInput.focus(), 80);
+  }
+  function closeLockModal() {
+    lockBackdrop.classList.remove('show');
+    pendingUnlockId = null;
+  }
+  function tryUnlock() {
+    if (!pendingUnlockId) return;
+    const memo = MEMOS.find(m => m.id === pendingUnlockId);
+    if (!memo) return;
+    const val = lockInput.value.trim();
+    if (val === String(memo.password)) {
+      unlockedMemos.add(memo.id);
+      closeLockModal();
+      renderMemoDetail(memo);
+      showToast('已解锁');
+    } else {
+      lockInput.classList.remove('shake');
+      void lockInput.offsetWidth;
+      lockInput.classList.add('shake');
+      lockError.textContent = '密码不对。再想想。';
+      lockInput.select();
+    }
+  }
+  lockSubmit.addEventListener('click', tryUnlock);
+  lockCancel.addEventListener('click', closeLockModal);
+  lockInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryUnlock();
+    if (e.key === 'Escape') closeLockModal();
+  });
+  lockBackdrop.addEventListener('click', e => {
+    if (e.target === lockBackdrop) closeLockModal();
+  });
+
+  /* 文件夹切换 */
+  folders.forEach(f => {
+    f.addEventListener('click', () => {
+      folders.forEach(x => x.classList.remove('active'));
+      f.classList.add('active');
+      currentFolder = f.dataset.folder;
+      const titleMap = { inbox: '收件箱', starred: '星标邮件', sent: '已发送', drafts: '草稿箱', spam: '垃圾邮件', memos: '备忘录' };
+      listTitle.innerHTML = currentFolder === 'memos' ? '<em>备忘录</em>' : titleMap[currentFolder];
+      selectedId = null;
+      renderList();
+      detailPane.innerHTML = '';
+      detailPane.appendChild(detailEmpty);
+    });
+  });
+
+  /* 搜索 */
+  let searchTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = searchInput.value.trim();
+      renderList();
+    }, 120);
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+    if (e.key === 'Escape') {
+      if (blockBackdrop && blockBackdrop.classList.contains('show')) {
+        closeBlockModal();
+      } else if (document.activeElement === searchInput) {
+        searchInput.value = '';
+        searchQuery = '';
+        renderList();
+        searchInput.blur();
+      }
+    }
+  });
+
+  composeBtn.addEventListener('click', () => showToast('写邮件功能暂不可用'));
+
+  /* 还有几个账号没监控完(遍历所有备忘录的所有 platform) */
+  function getUncheckedAccounts() {
+    const result = [];
+    MEMOS.forEach(m => {
+      if (m.accountGroups && m.accountGroups.length) {
+        m.accountGroups.forEach(group => {
+          group.items.forEach(a => {
+            if (!a.checked) result.push({ memo: m, account: a });
+          });
+        });
+      }
+    });
+    return result;
+  }
+
+  /* 退出登录 — 先检查监控清单 */
+  const blockBackdrop = document.getElementById('blockBackdrop');
+  const blockCount = document.getElementById('blockCount');
+  const blockGoTo = document.getElementById('blockGoTo');
+
+  function openBlockModal(remaining) {
+    blockCount.textContent = remaining;
+    blockBackdrop.classList.add('show');
+  }
+  function closeBlockModal() {
+    blockBackdrop.classList.remove('show');
+  }
+  blockGoTo.addEventListener('click', () => {
+    closeBlockModal();
+    /* 跳到第一条还有未勾账号的备忘录 */
+    const unchecked = getUncheckedAccounts();
+    if (unchecked.length === 0) return;
+    const targetMemoId = unchecked[0].memo.id;
+    folders.forEach(x => x.classList.remove('active'));
+    const memosFolder = document.querySelector('.folder[data-folder="memos"]');
+    if (memosFolder) memosFolder.classList.add('active');
+    currentFolder = 'memos';
+    listTitle.innerHTML = '<em>备忘录</em>';
+    renderList();
+    setTimeout(() => selectItem(targetMemoId), 60);
+  });
+  blockBackdrop.addEventListener('click', e => {
+    if (e.target === blockBackdrop) closeBlockModal();
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    const unchecked = getUncheckedAccounts();
+    if (unchecked.length > 0) {
+      openBlockModal(unchecked.length);
+      return;
+    }
+    showToast('正在退出...');
+    setTimeout(() => window.location.href = 'emlogin.html', 500);
+  });
+
+  let toastTimer;
+  function showToast(text) {
+    toastText.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  function updateCounts() {
+    document.getElementById('inboxCount').textContent = EMAILS.filter(e => e.folder === 'inbox' && e.unread).length;
+    document.getElementById('starredCount').textContent = EMAILS.filter(e => e.starred).length;
+    document.getElementById('memosCount').textContent = MEMOS.length;
+  }
+
+  updateCounts();
+  renderList();
+</script>
+</body>
+</html>

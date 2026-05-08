@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silly Silly · 视频</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #fff7f9;
+      --surface:   #ffffff;
+      --pink:      #ec4899;
+      --pink-deep: #d63384;
+      --pink-soft: #fce7f1;
+      --pink-line: #f5d8e2;
+      --pink-bg:   #fde8f0;
+      --ink:       #2a1a25;
+      --ink-soft:  #876e7a;
+      --ink-faint: #b89eaa;
+      --shadow:    0 1px 3px rgba(236,72,153,0.04), 0 8px 24px -10px rgba(236,72,153,0.10);
+      --shadow-lift: 0 4px 12px rgba(236,72,153,0.12), 0 20px 40px -16px rgba(236,72,153,0.20);
+      --radius:    12px;
+      --font-display: 'Fredoka', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', 'Fredoka', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--pink-line);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      display: block;
+      flex-shrink: 0;
+      line-height: 0;
+      text-decoration: none;
+    }
+    .logo img {
+      height: 150px;
+      width: auto;
+      display: block;
+    }
+
+    .nav {
+      display: flex;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .nav a {
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      transition: all 0.18s;
+    }
+    .nav a:hover, .nav a.active {
+      color: var(--pink);
+      background: var(--pink-soft);
+    }
+
+    @media (max-width: 720px) {
+      header { padding: 12px 16px; gap: 12px; }
+      .logo img { height: 40px; }
+      .nav a { padding: 6px 10px; font-size: 13px; }
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 32px 80px;
+    }
+    @media (max-width: 720px) {
+      main { padding: 20px 16px 60px; }
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 1024px) {
+      .video-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .video-grid { grid-template-columns: 1fr; gap: 18px; }
+    }
+
+    .video-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.22s ease;
+      cursor: pointer;
+    }
+    .video-card:hover { transform: translateY(-4px); }
+
+    .thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: var(--pink-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.25s ease;
+      margin-bottom: 12px;
+    }
+    .video-card:hover .thumbnail { box-shadow: var(--shadow-lift); }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .video-card:hover .thumbnail img { transform: scale(1.05); }
+
+    .duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(42, 26, 37, 0.78);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ★ 动态卡片专用粉色徽章 */
+    .duration.moment {
+      background: rgba(236, 72, 153, 0.88);
+    }
+    .duration svg {
+      width: 11px; height: 11px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      background: rgba(236, 72, 153, 0.18);
+      transition: opacity 0.22s ease;
+    }
+    .video-card:hover .play-overlay { opacity: 1; }
+
+    .play-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transform: scale(0.8);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .video-card:hover .play-icon { transform: scale(1); }
+    .play-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--pink);
+      margin-left: 3px;
+    }
+
+    .meta { padding: 0 2px; }
+    .video-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .video-info {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+    .video-info .channel { font-weight: 500; }
+    .video-info .dot {
+      margin: 0 5px;
+      color: var(--ink-faint);
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translate(-50%, -150%);
+      background: var(--ink);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 100;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 40px rgba(42,26,37,0.3);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast.show { transform: translate(-50%, 0); }
+    .toast .pink-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: var(--pink);
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: 1px;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast">
+    <span class="pink-dot"></span>视频暂时无法播放,请稍后再试
+  </div>
+
+  <header>
+    <a class="logo" href="#">
+      <img src="images/sillylogo.png" alt="Silly Silly">
+    </a>
+    <nav class="nav">
+      <a href="#" class="active">推荐</a>
+      <a href="#">关注</a>
+      <a href="#">我的</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2 class="section-title">✨ 今日推荐</h2>
+
+    <div class="video-grid">
+
+      <a class="video-card broken" href="#">
+        <div class="thumbnail">
+          <img src="images/renqixuexi.png" alt="">
+          <span class="duration">4:13:45</span>
+          <div class="play-overlay">
+            <div class="play-icon">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <h3 class="video-title">人器学习 | 4小时突击｜期末不挂科，全程高效复习攻略！</h3>
+          <div class="video-info">
+            <span class="channel">@自动化学习小组</span>
+            <span class="dot">·</span>
+            <span>88.7 万播放</span>
+            <span class="dot">·</span>
+            <span>5 天前</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="video-card broken" href="#">
+        <div class="thumbnail">
+          <img src="images/renmingsi.png" alt="">
+          <span class="duration">12:08</span>
+          <div class="play-overlay">
+            <div class="play-icon">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <h3 class="video-title">探秘人鸣寺｜古刹风光与文化之旅</h3>
+          <div class="video-info">
+            <span class="channel">@荔枝气泡水</span>
+            <span class="dot">·</span>
+            <span>23.4 万播放</span>
+            <span class="dot">·</span>
+            <span>1 周前</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="video-card broken" href="#">
+        <div class="thumbnail">
+          <img src="images/yougo.png" alt="">
+          <span class="duration">60:12</span>
+          <div class="play-overlay">
+            <div class="play-icon">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <h3 class="video-title">开溜！Ave Murenca 歌曲全收录</h3>
+          <div class="video-info">
+            <span class="channel">@草草收场</span>
+            <span class="dot">·</span>
+            <span>4.1 万播放</span>
+            <span class="dot">·</span>
+            <span>4 天前</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ★ 第 4 个改成动态(图文),不是视频 -->
+      <a class="video-card" href="sillydongtai.html">
+        <div class="thumbnail">
+          <img src="https://picsum.photos/seed/silly-vid01/600/400" alt="">
+          <span class="duration moment">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            动态
+          </span>
+          <!-- 注:动态卡片没有播放按钮,直接走原图 hover 放大 -->
+        </div>
+        <div class="meta">
+          <h3 class="video-title">氨人酸密码</h3>
+          <div class="video-info">
+            <span class="channel">@景明</span>
+            <span class="dot">·</span>
+            <span>3,214 浏览</span>
+            <span class="dot">·</span>
+            <span>3 年前</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <script>
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    document.querySelectorAll('.video-card.broken').forEach(card => {
+      card.addEventListener('click', e => {
+        e.preventDefault();
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+      });
+    });
+  </script>
+  <script src="pages.js"></script>
+</body>
+</html>

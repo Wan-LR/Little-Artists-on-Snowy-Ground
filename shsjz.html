@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海边的清晨,蓝得很慢 · 矢呼景明</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a2540;
+    --ink-soft: #1a3a5c;
+    --ink-mute: #5a708a;
+    --paper: #f6f8fc;
+    --paper-warm: #ffffff;
+    --line: #d6e1ee;
+    --accent: #2563eb;
+    --accent-deep: #1e40af;
+    --wash: #e8f0fb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Manrope', -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 64, 175, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============ HEADER ============ */
+  header { padding: 40px 0 24px; border-bottom: 1px solid var(--line); }
+  .nav { display: flex; justify-content: space-between; align-items: center; }
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .logo em { font-style: italic; color: var(--accent); }
+
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-mute);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s, transform 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .back-link:hover { color: var(--accent); transform: translateX(-3px); }
+
+  /* ============ ARTICLE HEAD ============ */
+  .article-head {
+    padding: 80px 0 48px;
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex; justify-content: center; align-items: center; gap: 16px;
+  }
+  .eyebrow .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-mute); }
+  .article-title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+  .article-title em { font-style: italic; color: var(--accent); }
+  .article-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 0.6px;
+    display: flex; justify-content: center; align-items: center; gap: 14px;
+    flex-wrap: wrap;
+  }
+  .article-meta .dotsep { width: 3px; height: 3px; border-radius: 50%; background: var(--line); }
+
+  /* ============ HERO IMAGE ============ */
+  .article-hero {
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    border-radius: 6px;
+    background: var(--ink);
+    margin-bottom: 64px;
+    position: relative;
+    animation: rise 0.9s ease 0.2s backwards;
+  }
+  .article-hero img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: saturate(0.85) contrast(1.05);
+  }
+  .article-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(37,99,235,0.10) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ============ ARTICLE BODY ============ */
+  .article-body {
+    max-width: 660px;
+    margin: 0 auto;
+    padding-bottom: 48px;
+  }
+  .article-body p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+  }
+  .article-body p:last-child { margin-bottom: 0; }
+  .article-body p.lead::first-letter {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 64px;
+    color: var(--accent);
+    float: left;
+    line-height: 0.9;
+    padding: 8px 12px 0 0;
+  }
+  .article-body em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 1.08em;
+  }
+  .pull-quote {
+    margin: 48px 0;
+    padding: 0 0 0 28px;
+    border-left: 3px solid var(--accent);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.4;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .article-body figure { margin: 40px 0; }
+
+  /* ★★ 修改:图片按原始比例完整显示,不裁切 ★★ */
+  .article-body figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;          /* 自动按原始比例 */
+    margin: 0 auto;        /* 比容器窄时居中 */
+    border-radius: 4px;
+    filter: saturate(0.85);
+  }
+
+  .article-body figure figcaption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.5px;
+    text-align: center;
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+  .divider {
+    text-align: center;
+    margin: 48px 0;
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: 12px;
+  }
+
+  /* ============ TAGS / FOOT ============ */
+  .article-foot {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 32px 0 48px;
+    border-top: 1px solid var(--line);
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+  .post-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    background: var(--wash);
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+  .signature {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-mute);
+    text-align: right;
+  }
+
+  /* ============================================================
+     ★ COMMENTS SECTION
+     ============================================================ */
+  .comments-section {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 48px 0 64px;
+    border-top: 1px solid var(--line);
+  }
+  .comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+  }
+  .comments-header h2 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 32px;
+    letter-spacing: -0.5px;
+  }
+  .comments-header h2 em { font-style: italic; color: var(--accent); }
+  .comments-header .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 1px;
+  }
+
+  /* 输入框 */
+  .comment-input {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px;
+    margin-bottom: 36px;
+    transition: border-color 0.2s;
+  }
+  .comment-input:focus-within { border-color: var(--accent); }
+  .input-wrap { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .comment-input textarea {
+    width: 100%;
+    border: none; outline: none; resize: none;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: transparent;
+    min-height: 24px;
+    max-height: 160px;
+  }
+  .comment-input textarea::placeholder {
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+  .input-foot { display: flex; justify-content: flex-end; }
+  .submit-btn {
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .submit-btn:hover:not(:disabled) { background: var(--ink); color: white; }
+  .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* 评论列表 */
+  .comment-list { list-style: none; }
+  .comment {
+    display: flex;
+    gap: 14px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    animation: rise 0.4s ease-out;
+  }
+  .comment:last-child { border-bottom: none; }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    flex-shrink: 0;
+    color: white;
+  }
+  .av-1 { background: var(--ink); }
+  .av-2 { background: #2d6a4f; }
+  .av-3 { background: #7a5d3a; }
+  .av-4 { background: #6b4f7a; }
+  .av-5 { background: #c2785b; }
+
+  .comment-body { flex: 1; min-width: 0; }
+  .comment-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .comment-head .name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .comment-head .time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.5px;
+  }
+  .author-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    background: var(--accent);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .comment-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+    word-wrap: break-word;
+  }
+  .comment-text strong { color: var(--ink); }
+  .comment-text em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 1.05em;
+  }
+
+  .comment-actions { display: flex; gap: 16px; }
+  .comment-action {
+    background: none; border: none; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: color 0.15s;
+    padding: 2px 0;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .comment-action:hover { color: var(--accent); }
+  .comment-action.liked { color: var(--accent); }
+  .comment-action svg { width: 12px; height: 12px; stroke-width: 1.8; fill: none; stroke: currentColor; }
+  .comment-action.liked svg { fill: var(--accent); }
+
+  /* 嵌套回复 */
+  .comment-replies {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0 0 0 22px;
+    border-left: 2px solid var(--line);
+  }
+  .comment-replies .comment {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .comment-replies .comment:first-child { padding-top: 4px; }
+  .comment-replies .comment:last-child { padding-bottom: 0; border-bottom: none; }
+  .reply-to {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--accent);
+    margin-right: 4px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%, -150%);
+    background: var(--ink);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 10px 30px rgba(10, 37, 64, 0.3);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translate(-50%, 0); pointer-events: auto; }
+  .toast .toast-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: 2px;
+    animation: blink 1.6s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-3px); }
+    40%, 80% { transform: translateX(3px); }
+  }
+  .comment-input.shake {
+    animation: shake 0.4s ease;
+    border-color: var(--accent) !important;
+  }
+
+  /* ============ NEXT POST NAV ============ */
+  .post-nav {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 32px;
+  }
+  .post-nav a {
+    padding: 32px 24px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background 0.3s ease;
+    cursor: pointer;
+  }
+  .post-nav a:hover { background: var(--wash); }
+  .post-nav a:first-child { border-right: 1px solid var(--line); }
+  .post-nav .nav-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .post-nav a:last-child .nav-label { justify-content: flex-end; }
+  .post-nav a:last-child { text-align: right; }
+  .post-nav .nav-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+  .post-nav .nav-title em { font-style: italic; color: var(--accent); }
+  .post-nav a:hover .nav-title em { color: var(--accent-deep); }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 80px;
+    padding: 48px 0 64px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 24px;
+  }
+  .foot-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-soft);
+  }
+  .foot-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 1px;
+    text-align: right;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 820px) {
+    .container { padding: 0 24px; }
+    .article-head { padding: 48px 0 32px; }
+    .article-hero { height: 320px; margin-bottom: 40px; }
+    .article-body p { font-size: 16px; }
+    .article-body p.lead::first-letter { font-size: 48px; }
+    .pull-quote { font-size: 20px; padding-left: 20px; margin: 32px 0; }
+    .post-nav { grid-template-columns: 1fr; }
+    .post-nav a:first-child { border-right: none; border-bottom: 1px solid var(--line); }
+    .post-nav a:last-child { text-align: left; }
+    .post-nav a:last-child .nav-label { justify-content: flex-start; }
+    footer { grid-template-columns: 1fr; }
+    .foot-meta { text-align: left; }
+    .comments-header h2 { font-size: 26px; }
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .article-head, .article-body, .article-foot, .comments-section, .post-nav {
+    opacity: 0;
+    animation: rise 0.7s ease forwards;
+  }
+  .article-head     { animation-delay: 0.05s; }
+  .article-body     { animation-delay: 0.3s; }
+  .article-foot     { animation-delay: 0.4s; }
+  .comments-section { animation-delay: 0.45s; }
+  .post-nav         { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- 顶部 toast -->
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>暂不接受来信 · CLOSED FOR LETTERS
+</div>
+
+<div class="container">
+
+  <header>
+    <nav class="nav">
+      <a href="shjm.html" class="logo">
+        <img src="images/shihu.png" width="50" height="50" alt="logo">
+        <span>矢<em>呼</em></span>
+      </a>
+      <a href="shjm.html" class="back-link">← Back to Journal</a>
+    </nav>
+  </header>
+
+  <div class="article-head">
+    
+    <h1 class="article-title">为什么我们要用<em>8进制</em></h1>
+    <div class="article-meta">
+
+      <span>12年前</span>
+      <span class="dotsep"></span>
+
+    </div>
+  </div>
+
+  <div class="article-hero">
+    <img src="images/shijinzhi.png">
+  </div>
+
+  <div class="article-body">
+    <p class="lead">老师今天教了我们8进制,可是我连10进制都没熟练掌握呢,怎么就要学八进制了</p>
+    <p>我才是个小学生欸，为什么不能只用一种算数方法呢</p>
+    <p>不过后来我发现靠数自己的脚趾有奇效,嘿嘿</p>
+
+    <figure>
+      <img src="images/jiaozhi.png" alt="脚趾">
+    </figure>
+    <p>做完这个作业，我再也不想看跟8进制有关的东西了！</p>
+ 
+  </div>
+
+
+
+  <!-- ============================================================
+       ★ 评论区
+       ============================================================ -->
+  <section class="comments-section">
+    <div class="comments-header">
+      <h2>评论 <em></em></h2>
+
+    </div>
+
+    <!-- 输入框 -->
+    <div class="comment-input">
+      <div class="avatar av-1">你</div>
+      <div class="input-wrap">
+        <textarea id="commentInput" placeholder="留下你的评论..." rows="1"></textarea>
+        <div class="input-foot">
+          <button class="submit-btn" id="submitBtn" disabled>发布 · SEND</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 评论列表 -->
+    <ul class="comment-list" id="commentList"></ul>
+
+
+  <footer>
+    <div class="foot-text">「这个世界,不止人类」</div>
+
+  </footer>
+
+</div>
+
+<script>
+  /* ============================================================
+     行内格式化:***粗斜*** **粗** *斜*
+     ============================================================ */
+  function appendFormatted(parent, text) {
+    const regex = /\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+    let last = 0, m;
+    while ((m = regex.exec(text)) !== null) {
+      if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (m[1]) {
+        const s = document.createElement('strong');
+        const e = document.createElement('em');
+        e.textContent = m[1]; s.appendChild(e); parent.appendChild(s);
+      } else if (m[2]) {
+        const s = document.createElement('strong');
+        s.textContent = m[2]; parent.appendChild(s);
+      } else if (m[3]) {
+        const e = document.createElement('em');
+        e.textContent = m[3]; parent.appendChild(e);
+      }
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  /* ============================================================
+     种子评论
+     ============================================================ */
+  const HEART_SVG = `<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const seedComments = [
+    {
+      name: '@幼儿教育汪老师',
+      avatar: 'av-2', initial: 'W',
+      text: '我们学8进制是因为它和计算机的计算有关噢，以后你就知道了。当然你的观察很仔细，8进制和我们的脚趾数量也有关系！还有要记得检查一下作业噢，有个地方错啦',
+      likes: 12,
+      replies: [
+        {
+          name: '@景明', isAuthor: true,
+          avatar: 'av-1', initial: 'J',
+          replyTo: '@幼儿教育汪老师',
+ 
+          text: '我明白了，谢谢老师！',
+          likes: 4
+        }
+      ]
+    },
+
+    {
+      name: '@文麦特田凡高',
+      avatar: 'av-3', initial: 'W',
+      text: '我就觉得8进制很好 ***钢琴唱名***刚好用8进制就能表达！',
+      likes: 12,
+      replies: [
+        {
+          name: '@景明', isAuthor: true,
+          avatar: 'av-1', initial: 'J',
+          replyTo: '@文麦特田凡高',
+ 
+          text: '知道你练琴入魔了',
+          likes: 4
+        }
+      ]
+    },
+  ];
+
+  /* ============================================================
+     渲染函数
+     ============================================================ */
+  const commentList = document.getElementById('commentList');
+
+  function buildCommentLi(c) {
+    const li = document.createElement('li');
+    li.className = 'comment';
+    li.innerHTML = `
+      <div class="avatar ${c.avatar}">${c.initial}</div>
+      <div class="comment-body">
+        <div class="comment-head">
+          <span class="name"></span>
+          ${c.isAuthor ? '<span class="author-badge">作者</span>' : ''}
+          <span class="time">${c.time}</span>
+        </div>
+        <p class="comment-text"></p>
+        <div class="comment-actions">
+          <button class="comment-action like-comment" data-likes="${c.likes}" aria-pressed="false">
+            ${HEART_SVG}<span class="lc">${c.likes}</span>
+          </button>
+          <button class="comment-action">回复 · REPLY</button>
+        </div>
+      </div>
+    `;
+    li.querySelector('.name').textContent = c.name;
+
+    const textEl = li.querySelector('.comment-text');
+    if (c.replyTo) {
+      const r = document.createElement('span');
+      r.className = 'reply-to';
+      r.textContent = '回 ' + c.replyTo + ' :';
+      textEl.appendChild(r);
+      textEl.appendChild(document.createTextNode(' '));
+    }
+    appendFormatted(textEl, c.text);
+
+    if (Array.isArray(c.replies) && c.replies.length > 0) {
+      const ul = document.createElement('ul');
+      ul.className = 'comment-replies';
+      c.replies.forEach(r => ul.appendChild(buildCommentLi(r)));
+      li.querySelector('.comment-body').appendChild(ul);
+    }
+
+    return li;
+  }
+
+  seedComments.forEach(c => commentList.appendChild(buildCommentLi(c)));
+
+  /* ============================================================
+     评论点赞 (事件委托)
+     ============================================================ */
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.like-comment');
+    if (!btn) return;
+    const isLiked = btn.classList.toggle('liked');
+    let n = parseInt(btn.dataset.likes, 10);
+    n += isLiked ? 1 : -1;
+    btn.dataset.likes = n;
+    btn.querySelector('.lc').textContent = n;
+    btn.setAttribute('aria-pressed', isLiked);
+  });
+
+  /* ============================================================
+     输入框 + 发布拦截 + Toast
+     ============================================================ */
+  const input = document.getElementById('commentInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const toast = document.getElementById('toast');
+  const inputBox = document.querySelector('.comment-input');
+  let toastTimer;
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    submitBtn.disabled = input.value.trim().length === 0;
+  });
+
+  function submit() {
+    if (!input.value.trim()) return;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    inputBox.classList.remove('shake');
+    void inputBox.offsetWidth;
+    inputBox.classList.add('shake');
+  }
+
+  submitBtn.addEventListener('click', submit);
+  input.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submit();
+    }
+  });
+  toast.addEventListener('click', () => {
+    toast.classList.remove('show');
+    clearTimeout(toastTimer);
+  });
+</script>
+</body>
+</html>

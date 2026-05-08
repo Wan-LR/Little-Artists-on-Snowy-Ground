@@ -572,7 +572,7 @@
     
     <h1 class="article-title">雪山巨人<em>蓝白色羽毛究竟是不是染色？</em></h1>
     <div class="article-meta">
-        <span>04.25</span>
+        <span>8 年前</span>
       <span class="dotsep"></span>
 
     </div>
@@ -650,7 +650,30 @@
     if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
   }
 
+  /* ============================================================
+     种子评论
+     ============================================================ */
+  const HEART_SVG = `<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+  const seedComments = [
+    {
+      name: '@文麦特田凡高',
+      avatar: 'av-2', initial: 'W',
+      text: '你要不要去染个蓝白试试？我觉得能好看',
+      likes: 12,
+      replies: [
+        {
+          name: '@景明', isAuthor: true,
+          avatar: 'av-1', initial: 'J',
+          replyTo: '@文麦特田凡高',
+ 
+          text: '会被人笑话的吧！',
+          likes: 4
+        }
+      ]
+    },
+
+  ];
 
   /* ============================================================
      渲染函数

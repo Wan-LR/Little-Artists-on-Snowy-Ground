@@ -17,6 +17,7 @@
       --ink-soft:  #6b6b6b;
       --line:      #ece7df;
       --accent:    #e33932;
+      --warning:   #d97706;
       --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
       --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
       --radius:    14px;
@@ -137,6 +138,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       transition: all 0.2s;
+      cursor: pointer;
     }
 
     .profile-link:hover {
@@ -192,6 +194,7 @@
     .post-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-lift);
+      opacity: 1;
     }
 
     .post-card:active {
@@ -218,13 +221,13 @@
       transform: scale(1.05);
     }
 
-    /* 已查看状态 */
+    /* 已查看状态 - 视觉柔和但仍清晰可点 */
+    .post-card.viewed { opacity: 0.85; }
     .post-card.viewed .image img {
-      filter: grayscale(0.6) brightness(0.95);
+      filter: grayscale(0.35) brightness(0.97);
     }
-
-    .post-card.viewed {
-      opacity: 0.72;
+    .post-card.viewed:hover .image img {
+      filter: none;
     }
 
     /* 查看勾选标 */
@@ -293,6 +296,19 @@
       background: var(--accent);
     }
 
+    /* 已限流 — 用琥珀色,与已删除的红色区分 */
+    .case-tag.limited {
+      color: var(--warning);
+      background: rgba(217, 119, 6, 0.09);
+    }
+    .case-tag.limited::before {
+      background: var(--warning);
+    }
+    .post-card.limited .check-badge {
+      background: var(--warning);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    }
+
     @media (max-width: 480px) {
       .post-card .title { padding: 12px 12px 6px; font-size: 14px; }
       .case-tag { margin: 0 12px 12px; font-size: 10px; }
@@ -306,6 +322,21 @@
       color: var(--ink-soft);
       font-style: italic;
     }
+    .hint .reset {
+      margin-left: 14px;
+      font-style: normal;
+      color: #c4b9a8;
+      text-decoration: underline;
+      text-decoration-color: #e3d9c8;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+    }
+    .hint .reset:hover { color: var(--ink-soft); }
 
     /* ===== 弹窗 ===== */
     .modal-backdrop {
@@ -421,6 +452,40 @@
       background: #000;
     }
 
+    /* ===== 确认弹窗(reset 用) ===== */
+    .modal.modal-confirm {
+      padding: 32px 28px 24px;
+      max-width: 360px;
+    }
+    .modal.modal-confirm .modal-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .modal-btn.secondary {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+      padding: 10px 22px;
+    }
+    .modal-btn.secondary:hover {
+      background: var(--bg);
+      color: var(--ink);
+      border-color: var(--ink-soft);
+    }
+    .modal-btn.danger {
+      background: var(--accent);
+      padding: 10px 22px;
+    }
+    .modal-btn.danger:hover {
+      background: #c92e28;
+    }
+
     /* 五彩纸屑 */
     .confetti {
       position: fixed;
@@ -444,7 +509,6 @@
     <header>
       <a href="#" class="site-logo">
         <span class="logo-title">已处理 Case</span>
-        <span class="logo-sub">/ 西红柿运维</span>
       </a>
       <div class="header-right">
         <div class="progress-pill" id="progress">
@@ -457,146 +521,245 @@
             <span class="dot"></span>
           </span>
         </div>
-        <a href="#" class="profile-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-          <span>我的</span>
-        </a>
-        <a href="#" class="profile-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-          <span>设置</span>
-        </a>
+
       </div>
     </header>
 
-    <p class="hint">点击逐条复核 · 共 5 条</p>
+    <p class="hint">
+ 共 5 条
+      <button class="reset" id="reset-btn" type="button">重置进度</button>
+    </p>
 
+    <!--
+      ============================================
+      ↓↓↓ 改这里:每张卡片的 href 换成你想跳转的页面 ↓↓↓
+      ============================================
+      data-id 不要改 — 它用来记忆"这张看过没"
+    -->
     <div class="grid">
 
-      <a class="post-card" href="javascript:void(0)" data-id="1">
+      <a class="post-card limited" href="xhscasetubu.html" data-id="case-01">
         <div class="image">
-          <img src="https://picsum.photos/seed/case01/400/520" alt="" loading="lazy">
+          <img src="images/tubuluoyuan.png" alt="" loading="lazy">
           <div class="check-badge">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         </div>
-        <h2 class="title">这条评论怎么一直发不出去啊救命</h2>
+        <h2 class="title">在徒步时看到不属于人类的脚印</h2>
+        <span class="case-tag limited">已限流</span>
+      </a>
+
+      <a class="post-card" href="xhscasexiaban.html" data-id="case-02">
+        <div class="image">
+          <img src="images/xiabanluoyuan.png" alt="" loading="lazy">
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h2 class="title">晚上下班看到高大的裸猿的身影</h2>
         <span class="case-tag">已删除</span>
       </a>
 
-      <a class="post-card" href="javascript:void(0)" data-id="2">
+      <a class="post-card" href="xhscaseyouyong.html" data-id="case-03">
         <div class="image">
-          <img src="https://picsum.photos/seed/case02/400/360" alt="" loading="lazy">
+          <img src="images/youyongluoyuan.png" alt="" loading="lazy">
           <div class="check-badge">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         </div>
-        <h2 class="title">西红柿 bug 预警:评论区集体失忆了</h2>
+        <h2 class="title">湖里看到水猴子(? 了</h2>
         <span class="case-tag">已删除</span>
       </a>
 
-      <a class="post-card" href="javascript:void(0)" data-id="3">
+      <a class="post-card limited" href="" data-id="case-04">
         <div class="image">
-          <img src="https://picsum.photos/seed/case03/400/460" alt="" loading="lazy">
+          <img src="images/huajiaphoto.png" alt="" loading="lazy">
           <div class="check-badge">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         </div>
-        <h2 class="title">有人也刷不出别人的评论吗(急</h2>
-        <span class="case-tag">已删除</span>
+        <h2 class="title">语文书的配图是不是有问题啊</h2>
+        <span class="case-tag limited">已限流</span>
       </a>
 
-      <a class="post-card" href="javascript:void(0)" data-id="4">
+      <a class="post-card limited" href="xhscasexiangxia.html" data-id="case-05">
         <div class="image">
-          <img src="https://picsum.photos/seed/case04/400/320" alt="" loading="lazy">
+          <img src="images/xiangxialuoyuan.png" alt="" loading="lazy">
           <div class="check-badge">
             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         </div>
-        <h2 class="title">点了发送转了三圈 然后就没有然后了</h2>
-        <span class="case-tag">已删除</span>
-      </a>
-
-      <a class="post-card" href="javascript:void(0)" data-id="5">
-        <div class="image">
-          <img src="https://picsum.photos/seed/case05/400/480" alt="" loading="lazy">
-          <div class="check-badge">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-        </div>
-        <h2 class="title">我评论了三次都没显示,是不是被屏蔽了</h2>
-        <span class="case-tag">已删除</span>
+        <h2 class="title">这是什么啊？</h2>
+        <span class="case-tag limited">已限流</span>
       </a>
 
     </div>
 
   </div>
 
-  <!-- ===== 弹窗 ===== -->
+  <!-- ===== 庆祝弹窗 ===== -->
   <div class="modal-backdrop" id="modal">
     <div class="modal">
       <div class="modal-icon">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <div class="modal-label">RESOLVED</div>
-      <h3 class="modal-title">啊,西红柿首页的<br>评论好像修好了</h3>
-      <p class="modal-text">5 条 case 全部复核完毕,可以去前台喝杯水了 ☕</p>
+      <h3 class="modal-title">啊 西红柿首页的<br>评论好像修好了</h3>
+
       <button class="modal-btn" id="modal-close">收到</button>
     </div>
   </div>
 
+  <!-- ===== 重置确认弹窗(替代浏览器原生 confirm,在 sandboxed iframe 里也能用) ===== -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal modal-confirm">
+      <h3 class="modal-title">清空所有"已看过"的记录?</h3>
+      <p class="modal-text">进度会重置回 0 / 5</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="confirm-cancel" type="button">取消</button>
+        <button class="modal-btn danger" id="confirm-ok" type="button">重置</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ============================================================
+    //  持久化:用 localStorage 存"看过哪些帖子"
+    //  刷新 / 关闭浏览器 / 退回来 都能记住
+    // ============================================================
+    const STORAGE_KEY = 'xhs-cases-viewed';      // 看过的帖子 id 集合
+    const MODAL_KEY   = 'xhs-cases-modal-shown'; // 弹窗是否已经看过
+
+    function loadViewed() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return new Set(raw ? JSON.parse(raw) : []);
+      } catch (e) {
+        return new Set();
+      }
+    }
+    function saveViewed(set) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+      } catch (e) {}
+    }
+    function modalShown() {
+      return localStorage.getItem(MODAL_KEY) === '1';
+    }
+    function markModalShown() {
+      try { localStorage.setItem(MODAL_KEY, '1'); } catch (e) {}
+    }
+
+    // —— DOM ——
     const cards = document.querySelectorAll('.post-card');
     const dots = document.querySelectorAll('.progress-pill .dot');
     const progressNum = document.getElementById('progress-num');
     const progressPill = document.getElementById('progress');
     const modal = document.getElementById('modal');
     const modalClose = document.getElementById('modal-close');
+    const resetBtn = document.getElementById('reset-btn');
 
-    const viewed = new Set();
+    const confirmModal  = document.getElementById('confirm-modal');
+    const confirmOkBtn  = document.getElementById('confirm-ok');
+    const confirmCancelBtn = document.getElementById('confirm-cancel');
+
     const total = cards.length;
+    let viewed = loadViewed();
 
     function updateProgress() {
       const n = viewed.size;
       progressNum.textContent = `${n} / ${total}`;
-      dots.forEach((d, i) => {
-        d.classList.toggle('on', i < n);
-      });
-      if (n === total) {
-        progressPill.classList.add('done');
-      }
+      dots.forEach((d, i) => d.classList.toggle('on', i < n));
+      progressPill.classList.toggle('done', n === total);
     }
 
+    function applyViewedState() {
+      cards.forEach(card => {
+        if (viewed.has(card.dataset.id)) {
+          card.classList.add('viewed');
+        } else {
+          card.classList.remove('viewed');
+        }
+      });
+      updateProgress();
+    }
+
+    // —— 点击帖子:记录 + 跳转 ——
     cards.forEach(card => {
-      card.addEventListener('click', (e) => {
-        e.preventDefault();
+      card.addEventListener('click', () => {
         const id = card.dataset.id;
-        if (viewed.has(id)) return;
-        viewed.add(id);
-        card.classList.add('viewed');
-        updateProgress();
-        if (viewed.size === total) {
-          setTimeout(() => {
-            modal.classList.add('show');
-            confetti();
-          }, 700);
+        if (!viewed.has(id)) {
+          viewed.add(id);
+          saveViewed(viewed);
+          card.classList.add('viewed');
+          updateProgress();
         }
       });
     });
 
-    modalClose.addEventListener('click', () => {
+    // —— 庆祝弹窗 ——
+    function maybeShowModal() {
+      if (viewed.size === total && !modalShown()) {
+        setTimeout(() => {
+          modal.classList.add('show');
+          confetti();
+        }, 500);
+      }
+    }
+
+    function closeModal() {
       modal.classList.remove('show');
-    });
+      markModalShown();
+    }
+    modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('show');
+      if (e.target === modal) closeModal();
     });
 
-    // 五彩纸屑
+    // —— 自定义 confirm 弹窗(替代浏览器原生 confirm) ——
+    // 原本用 window.confirm(),但在 sandboxed iframe(预览/嵌入环境)里
+    // 浏览器会忽略它并直接返回 false,导致 reset 走不下去。
+    // 这个版本用页面自己的 modal,任何环境都能弹出来。
+    function askConfirm() {
+      return new Promise(resolve => {
+        confirmModal.classList.add('show');
+
+        const cleanup = (result) => {
+          confirmModal.classList.remove('show');
+          confirmOkBtn.removeEventListener('click', onOk);
+          confirmCancelBtn.removeEventListener('click', onCancel);
+          confirmModal.removeEventListener('click', onBackdrop);
+          document.removeEventListener('keydown', onKey);
+          resolve(result);
+        };
+        const onOk      = () => cleanup(true);
+        const onCancel  = () => cleanup(false);
+        const onBackdrop = (e) => { if (e.target === confirmModal) cleanup(false); };
+        const onKey     = (e) => {
+          if (e.key === 'Escape') cleanup(false);
+          else if (e.key === 'Enter') cleanup(true);
+        };
+
+        confirmOkBtn.addEventListener('click', onOk);
+        confirmCancelBtn.addEventListener('click', onCancel);
+        confirmModal.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKey);
+      });
+    }
+
+    // —— 重置进度 ——
+    resetBtn.addEventListener('click', async () => {
+      const ok = await askConfirm();
+      if (!ok) return;
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(MODAL_KEY);
+      } catch (e) {}
+      viewed = new Set();
+      applyViewedState();
+    });
+
+    // —— 五彩纸屑 ——
     function confetti() {
       const colors = ['#e33932', '#ff8a65', '#ffb74d', '#1a1a1a', '#6b6b6b'];
       for (let i = 0; i < 40; i++) {
@@ -610,6 +773,10 @@
         setTimeout(() => c.remove(), 4000);
       }
     }
+
+    // —— 启动 ——
+    applyViewedState();
+    maybeShowModal();
   </script>
 </body>
 </html>

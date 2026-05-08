@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>周末观影团 · @景明 · Silly Silly</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #fff7f9;
+      --surface:   #ffffff;
+      --pink:      #ec4899;
+      --pink-deep: #d63384;
+      --pink-soft: #fce7f1;
+      --pink-line: #f5d8e2;
+      --pink-bg:   #fde8f0;
+      --ink:       #2a1a25;
+      --ink-soft:  #876e7a;
+      --ink-faint: #b89eaa;
+      --shadow:    0 1px 3px rgba(236,72,153,0.04), 0 8px 24px -10px rgba(236,72,153,0.10);
+      --shadow-lift: 0 4px 12px rgba(236,72,153,0.12), 0 20px 40px -16px rgba(236,72,153,0.20);
+      --radius:    12px;
+      --font-display: 'Fredoka', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', 'Fredoka', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ===== Header ===== */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--pink-line);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo {
+      display: block; flex-shrink: 0;
+      line-height: 0; text-decoration: none;
+    }
+    .logo img { height: 150px; width: auto; display: block; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      background: var(--pink-soft);
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.18s;
+    }
+    .back-link:hover {
+      color: var(--pink);
+      transform: translateX(-2px);
+    }
+
+    @media (max-width: 720px) {
+      header { padding: 12px 16px; gap: 12px; }
+      .logo img { height: 40px; }
+      .back-link { padding: 7px 12px; font-size: 13px; }
+    }
+
+    /* ===== Main ===== */
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    /* ===== Author Card ===== */
+    .author-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--pink-line);
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+    .author-card.locked {
+      background: linear-gradient(135deg, var(--pink-soft) 0%, #fff7f9 100%);
+      border-color: var(--pink);
+    }
+
+    .avatar-btn {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--pink-line);
+      padding: 0;
+      background: var(--pink-bg);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.25s;
+    }
+    .avatar-btn:hover {
+      transform: scale(1.05);
+      border-color: var(--pink);
+    }
+    .avatar-btn img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .author-card.locked .avatar-btn {
+      cursor: default;
+      pointer-events: none;
+      border-color: var(--pink);
+    }
+
+    .lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(236, 72, 153, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .lock-overlay svg {
+      width: 22px; height: 22px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .author-card.locked .lock-overlay { opacity: 1; }
+
+    .author-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .name-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.18s;
+    }
+    .name-btn:hover { color: var(--pink); }
+    .author-card.locked .name-btn {
+      color: var(--ink-faint);
+      cursor: default;
+      pointer-events: none;
+      text-decoration: line-through;
+      text-decoration-color: var(--pink);
+      text-decoration-thickness: 1.5px;
+    }
+
+    .lock-tag {
+      display: none;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--pink);
+      background: white;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--pink);
+      margin-left: 4px;
+      text-decoration: none;
+    }
+    .author-card.locked .lock-tag { display: inline-block; }
+
+    .meta-line {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+    .meta-line .dot { margin: 0 5px; color: var(--ink-faint); }
+
+    /* 解锁按钮 */
+    .unlock-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      background: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateX(20px) scale(0.85);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+    }
+    .author-card.locked .unlock-btn {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+    .unlock-btn:hover {
+      background: var(--pink-deep);
+      transform: translateY(-1px);
+    }
+    .unlock-btn svg {
+      width: 14px; height: 14px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .unlock-btn.done {
+      background: #16a34a;
+      pointer-events: none;
+    }
+
+    /* ===== Caption ===== */
+    .caption {
+      font-size: 16.5px;
+      line-height: 1.75;
+      color: var(--ink);
+      margin-bottom: 22px;
+      padding: 0 4px;
+    }
+
+    /* ===== Image Grid (两张图) ===== */
+    .image-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) {
+      .image-grid { grid-template-columns: 1fr; gap: 12px; }
+    }
+
+    .img-wrap {
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--pink-bg);
+      box-shadow: var(--shadow);
+      cursor: zoom-in;
+      transition: all 0.25s;
+    }
+    .img-wrap:hover {
+      box-shadow: var(--shadow-lift);
+      transform: translateY(-2px);
+    }
+    .img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .img-wrap:hover img { transform: scale(1.04); }
+
+    /* ===== Action Bar ===== */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 4px;
+      border-top: 1px solid var(--pink-line);
+      border-bottom: 1px solid var(--pink-line);
+      margin-bottom: 28px;
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transition: all 0.18s;
+    }
+    .action-btn:hover {
+      background: var(--pink-soft);
+      color: var(--pink);
+    }
+    .action-btn.liked {
+      background: var(--pink-soft);
+      color: var(--pink);
+    }
+    .action-btn.liked svg { fill: var(--pink); stroke: var(--pink); }
+    .action-btn svg {
+      width: 18px; height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .action-btn.liked svg {
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+    .action-btn .share-only { margin-left: auto; }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translate(-50%, -150%);
+      background: var(--ink);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 500;
+      z-index: 100;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 40px rgba(42,26,37,0.3);
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show { transform: translate(-50%, 0); }
+    .toast .pink-dot {
+      width: 7px; height: 7px;
+      background: var(--pink);
+      border-radius: 50%;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.45; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 锁定提示 toast -->
+  <div class="toast" id="toast">
+    <span class="pink-dot"></span>
+    <span>该用户主页已锁定</span>
+  </div>
+
+  <header>
+    <a class="logo" href="sillysilly.html">
+      <img src="images/sillylogo.png" alt="Silly Silly">
+    </a>
+    <a class="back-link" href="sillysilly.html">← 返回推荐</a>
+  </header>
+
+  <main>
+
+    <!-- ============ 作者卡片(可锁定) ============ -->
+    <div class="author-card" id="authorCard">
+
+      <button class="avatar-btn" id="avatarBtn" type="button" aria-label="景明的头像">
+        <img src="https://picsum.photos/seed/jingming-avatar/120/120" alt="">
+        <div class="lock-overlay">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+      </button>
+
+      <div class="author-info">
+        <button class="name-btn" id="nameBtn" type="button">
+          @景明
+          <span class="lock-tag">LOCKED</span>
+        </button>
+        <div class="meta-line">
+          3 年前 
+        </div>
+      </div>
+
+      <button class="unlock-btn" id="unlockBtn" type="button">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+        </svg>
+        <span class="unlock-text">解锁查看主页</span>
+      </button>
+
+    </div>
+
+    <!-- ============ 文字内容 ============ -->
+    <p class="caption">
+      氨基酸密码子 对应记录
+    </p>
+
+    <!-- ============ 两张图 ============ -->
+    <div class="image-grid">
+      <div class="img-wrap">
+        <img src="images/ajs.png" >
+      </div>
+      <div class="img-wrap">
+        <img src="images/ajstable.png" >
+      </div>
+    </div>
+
+    <!-- ============ 操作栏 ============ -->
+    <div class="actions">
+      <button class="action-btn" id="likeBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/></svg>
+        <span class="count" id="likeCount">124</span>
+      </button>
+      <button class="action-btn">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span>18</span>
+      </button>
+      <button class="action-btn share-only">
+        <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        分享
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    /* ============================================================
+       锁定 / 解锁 流程
+       ────────────────────────────────────────────────────────────
+       1. 点 头像 或 名字     → 卡片进入"已锁定"状态
+       2. 弹出"解锁查看主页"按钮 + 顶部 toast 提示一次
+       3. 点 解锁按钮         → 600ms 动画 → 跳转到主页
+       ============================================================ */
+    const card       = document.getElementById('authorCard');
+    const avatarBtn  = document.getElementById('avatarBtn');
+    const nameBtn    = document.getElementById('nameBtn');
+    const unlockBtn  = document.getElementById('unlockBtn');
+    const unlockText = unlockBtn.querySelector('.unlock-text');
+    const toast      = document.getElementById('toast');
+
+    let toastTimer;
+    function flashToast() {
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function lock() {
+      if (card.classList.contains('locked')) return;
+      card.classList.add('locked');
+      flashToast();
+    }
+
+    avatarBtn.addEventListener('click', lock);
+    nameBtn.addEventListener('click', lock);
+
+    /* ★ 解锁按钮被点 → 跳转 ↓
+       这里指向了矢呼景明的日志(shjm.html)。
+       想换成别的主页页面,改下面这一行即可。 */
+    unlockBtn.addEventListener('click', () => {
+      unlockBtn.classList.add('done');
+      unlockText.textContent = '已解锁 ✓';
+      setTimeout(() => {
+        window.location.href = 'shjm.html';
+      }, 700);
+    });
+
+    /* ===== 点赞按钮(顺手做的) ===== */
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    let liked = false;
+    let likes = 124;
+    likeBtn.addEventListener('click', () => {
+      liked = !liked;
+      likes += liked ? 1 : -1;
+      likeCount.textContent = likes;
+      likeBtn.classList.toggle('liked', liked);
+    });
+  </script>
+  <script src="pages.js"></script>
+</body>
+</html>

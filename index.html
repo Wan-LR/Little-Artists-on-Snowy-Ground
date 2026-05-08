@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>引导界面</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+                 "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    color: #2c2c2a;
+    background: #f5f3ee;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 32px 16px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e6f1fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    color: #185fa5;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #5f5e5a;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  .form {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .label {
+    font-size: 14px;
+    color: #5f5e5a;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 15px;
+    border: 1px solid #d3d1c7;
+    border-radius: 8px;
+    background: #fff;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    font-family: inherit;
+    color: inherit;
+  }
+
+  input[type="text"]:focus {
+    border-color: #378add;
+    box-shadow: 0 0 0 3px rgba(55, 138, 221, 0.15);
+  }
+
+  input.error {
+    border-color: #e24b4a;
+    box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.18);
+  }
+
+  button {
+    height: 42px;
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background: #2c2c2a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .08s, opacity .2s;
+    font-family: inherit;
+  }
+
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.98); }
+
+  .footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .footer p {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+  <main class="main">
+    <div class="avatar">👀</div>
+
+    <div>
+      <h1 class="title">欢迎来到这个世界</h1>
+
+    </div>
+
+    <div class="form">
+      <label class="label" for="nickname">您好您是？</label>
+      <input id="nickname" type="text" placeholder="在这里输入..." maxlength="16" autocomplete="off" />
+      <button id="confirm">确定 →</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>
+      所有内容均为虚构 没有一点真实 逻辑问题有 不科学有<br>
+      觉得不好可以骂游戏两句 不要骂我 也不要骂第三句
+    </p>
+  </footer>
+
+<script>
+  // ============================================
+  //  ↓↓↓ 在这里填写要跳转的链接 ↓↓↓
+  // ============================================
+  const NEXT_PAGE = "xhs1.html";   
+  // ============================================
+
+  const input = document.getElementById('nickname');
+  const btn = document.getElementById('confirm');
+
+  function confirmName() {
+    const name = input.value.trim();
+    if (!name) {
+      input.classList.add('error');
+      input.focus();
+      setTimeout(() => input.classList.remove('error'), 1200);
+      return;
+    }
+    // 把昵称存起来,跳转后的页面可以用 localStorage.getItem('nickname') 读取
+    localStorage.setItem('nickname', name);
+    // 跳转(同时把昵称作为 URL 参数传过去,可选)
+    window.location.href = NEXT_PAGE + "?name=" + encodeURIComponent(name);
+  }
+
+  btn.addEventListener('click', confirmName);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmName();
+  });
+</script>
+
+</body>
+</html>

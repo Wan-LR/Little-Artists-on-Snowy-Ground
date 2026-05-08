@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ChickenOS Terminal</title>
+
+<!--
+============================================================
+  你需要准备的图片(放在和这个 HTML 同目录下,比如 images/ 文件夹)
+
+  1. images/cracks.png        裂纹/破碎效果图(透明背景 PNG)
+                              建议尺寸:800 × 600,主要裂纹在中间
+
+  2. images/chicken-left.png  左边那只鸡(透明背景 PNG)
+                              建议尺寸:300 × 300 左右
+
+  3. images/chicken-right.png 右边那只鸡(透明背景 PNG)
+                              (也可以用同一张)
+
+  改下面 <img> 标签的 src 路径就行。
+============================================================
+-->
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .terminal-wrapper {
+    position: relative;
+    width: 800px;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 90vh;
+  }
+
+  .terminal {
+    width: 100%;
+    height: 100%;
+    background: #0d0d0d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 屏幕震动 */
+  .terminal-wrapper.shake .terminal {
+    animation: shake 0.35s linear infinite;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 2px); }
+    50% { transform: translate(2px, -3px); }
+    75% { transform: translate(-2px, -2px); }
+  }
+
+  .titlebar {
+    background: #2a2a2a;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    user-select: none;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.red    { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green  { background: #27c93f; }
+
+  .title {
+    flex: 1;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+  }
+
+  .screen {
+    flex: 1;
+    padding: 14px 16px 4px;
+    overflow-y: auto;
+    color: #00ff41;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .screen::-webkit-scrollbar { width: 6px; }
+  .screen::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  .line { margin: 0; word-wrap: break-word; white-space: pre-wrap; }
+  .line.system { color: #888; }
+  .line.error  { color: #ff5555; }
+  .line.warn   { color: #ffaa00; }
+
+  .input-line {
+    padding: 4px 16px 14px;
+    display: flex;
+    align-items: center;
+    color: #00ff41;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .prompt { margin-right: 8px; color: #00ccff; }
+  .input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #00ff41;
+    font-family: inherit;
+    font-size: inherit;
+    caret-color: #00ff41;
+  }
+  .input:disabled { opacity: 0.4; }
+
+  /* ======================================================
+   *  破洞图片层 —— 默认隐藏,触发时显现
+   * ====================================================== */
+  .breach {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;            /* 鸡从底部进入时,超出部分裁掉 */
+  }
+
+  /* —— 裂纹图 —— */
+  .cracks {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;          /* 想填满整个区域改成 cover */
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.4s ease-out,
+                transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .breach.active .cracks {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* —— 鸡图片 —— */
+  .chicken {
+    position: absolute;
+    width: 28%;                   /* ★ 鸡的宽度(占终端宽度的比例) */
+    bottom: 22%;                  /* ★ 鸡最终位置距终端底部的高度 */
+    transform: translateY(150%);  /* 初始位置:藏在终端下方 */
+    opacity: 0;
+    transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.25s linear;
+    transition-delay: 0.5s;       /* 等裂纹画完再出来 */
+  }
+  /* 左鸡和右鸡的水平位置 */
+  .chicken.left  { left:  10%; }
+  .chicken.right { right: 10%; }
+
+  .breach.active .chicken {
+    transform: translateY(0);
+    opacity: 1;
+    /* 冒出来后的轻微晃头 */
+    animation: bob 2.5s 1.4s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0)    rotate(-2deg); }
+    50%      { transform: translateY(-4px) rotate(2deg);  }
+  }
+</style>
+</head>
+<body>
+
+<div class="terminal-wrapper" id="wrapper">
+  <div class="terminal" id="terminal">
+    <div class="titlebar">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+      <div class="title">terminal — bash — 80x24</div>
+    </div>
+    <div class="screen" id="screen"></div>
+    <div class="input-line">
+      <span class="prompt">user@farm:~$</span>
+      <input class="input" id="input" autofocus autocomplete="off" spellcheck="false" />
+    </div>
+  </div>
+
+  <!-- ============ 破洞效果层(图片在这里) ============ -->
+  <div class="breach" id="breach">
+    <!-- 裂纹图(整张图覆盖在终端上) -->
+    <img class="cracks" src="images/zhi.png" alt="" />
+
+    <!-- 左鸡 -->
+    <img class="chicken left"  src="images/mojingji.png"  alt="" />
+
+    <!-- 右鸡 -->
+    <img class="chicken right" src="images/mojingji.png" alt="" />
+  </div>
+</div>
+
+<script>
+/* ============================================
+ *  伪命令行 —— 输入指令、显示输出
+ *  关键命令:hatch  ← 触发鸡破壳
+ * ============================================ */
+const screen   = document.getElementById('screen');
+const input    = document.getElementById('input');
+const wrapper  = document.getElementById('wrapper');
+const breach   = document.getElementById('breach');
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function print(text, cls = '') {
+  const line = document.createElement('div');
+  line.className = 'line ' + cls;
+  line.textContent = text;
+  screen.appendChild(line);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+async function typePrint(text, cls = '', delay = 22) {
+  const line = document.createElement('div');
+  line.className = 'line ' + cls;
+  screen.appendChild(line);
+  for (const ch of text) {
+    line.textContent += ch;
+    screen.scrollTop = screen.scrollHeight;
+    await sleep(delay);
+  }
+}
+
+// 欢迎信息
+print('Last login: Fri May  8 09:42 on ttys000', 'system');
+print('Welcome to ChickenOS v2.0.4', 'system');
+print('Type "help" for available commands.', 'system');
+print('');
+
+/* ============ 命令表 ============ */
+const commands = {
+  help: () => {
+    print('Available commands:');
+    print('  help       显示帮助');
+    print('  ls         列出文件');
+    print('  whoami     当前用户');
+    print('  date       当前时间');
+    print('  hatch      孵化(?)');
+    print('  reset      把鸡塞回去');
+    print('  clear      清屏');
+    print('');
+  },
+  ls:     () => print('chicken_farm/  eggs.txt  README.md  secret.lock'),
+  whoami: () => print('chicken_keeper'),
+  date:   () => print(new Date().toString()),
+  clear:  () => { screen.innerHTML = ''; },
+  reset:  () => {
+    breach.classList.remove('active');
+    print('屏幕已修复。鸡们回去了。', 'system');
+  },
+
+  // 触发鸡破壳!
+  hatch: async () => {
+    input.disabled = true;
+    await typePrint('Initializing hatch sequence...', 'system'); await sleep(300);
+    await typePrint('Reading egg.dat... [OK]', 'system');         await sleep(400);
+    await typePrint('Incubation in progress.....', 'system');     await sleep(500);
+    await typePrint('WARNING: unknown lifeform detected.', 'warn'); await sleep(500);
+    await typePrint('ERROR: containment breach!', 'error');       await sleep(300);
+    await typePrint('!! SYSTEM INTEGRITY COMPROMISED !!', 'error');
+
+    wrapper.classList.add('shake');                     // 屏幕震动
+    await sleep(450);
+    breach.classList.add('active');                     // 显示裂纹 + 鸡
+    await sleep(1800);
+    wrapper.classList.remove('shake');                  // 停止震动
+    await sleep(500);
+
+    print('');
+    await typePrint('两只鸡正盯着你看。', 'warn');
+    print('');
+
+    input.disabled = false;
+    input.focus();
+  },
+};
+
+/* ============ 输入处理 ============ */
+input.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const cmd = input.value.trim();
+  const echo = document.createElement('div');
+  echo.className = 'line';
+  echo.innerHTML = '<span style="color:#00ccff">user@farm:~$</span> ' + escapeHtml(cmd);
+  screen.appendChild(echo);
+  input.value = '';
+  if (!cmd) return;
+
+  if (commands[cmd]) commands[cmd]();
+  else print('command not found: ' + cmd, 'error');
+  screen.scrollTop = screen.scrollHeight;
+});
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+</script>
+
+</body>
+</html>

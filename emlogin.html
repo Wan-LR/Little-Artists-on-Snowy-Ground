@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cmail · 登录</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e10;
+    --card: #16181d;
+    --card-2: #1c1e25;
+    --line: #2a2c34;
+    --line-soft: #23252c;
+    --text: #e8eaed;
+    --text-mute: #8b8f99;
+    --text-dim: #5c606b;
+    --accent: #e8a44c;
+    --accent-soft: rgba(232, 164, 76, 0.12);
+    --danger: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(232, 164, 76, 0.04) 0%, transparent 45%),
+      radial-gradient(circle at 75% 80%, rgba(100, 120, 200, 0.03) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+  }
+
+  .top-brand {
+    position: fixed;
+    top: 28px; left: 32px;
+    display: flex; align-items: center; gap: 10px;
+    z-index: 5;
+  }
+  .top-brand .mark {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #1a1206;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 19px; font-weight: 600;
+    line-height: 1; padding-bottom: 2px;
+  }
+  .top-brand .name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+  .top-brand .name em { font-style: italic; color: var(--accent); }
+
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 44px 40px 36px;
+    position: relative;
+    z-index: 1;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.03) inset,
+      0 24px 60px rgba(0,0,0,0.45);
+    animation: card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .big-logo {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent) 0%, #c97f2a 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px;
+    color: #1a1206;
+    font-weight: 600;
+    margin-bottom: 22px;
+    line-height: 1;
+    padding-bottom: 4px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.3) inset,
+      0 8px 20px rgba(232, 164, 76, 0.18);
+  }
+
+  .card h1 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .card .subtitle {
+    font-size: 13.5px;
+    color: var(--text-mute);
+    margin-bottom: 28px;
+    letter-spacing: 0.2px;
+  }
+  .card .subtitle code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 2px;
+  }
+
+  /* ============ 输入框 ============ */
+  .field {
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+    padding-left: 2px;
+  }
+  .field-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .field-wrap > svg {
+    position: absolute;
+    left: 14px;
+    width: 15px; height: 15px;
+    stroke: var(--text-dim);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+    transition: stroke 0.2s;
+    z-index: 1;
+  }
+  .field input {
+    width: 100%;
+    padding: 13px 14px 13px 40px;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    outline: none;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .field input::placeholder { color: var(--text-dim); letter-spacing: 0.2px; }
+  .field input:focus {
+    border-color: var(--accent);
+    background: #1f2129;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .field-wrap:focus-within > svg { stroke: var(--accent); }
+  .field input.shake {
+    animation: shake 0.45s;
+    border-color: var(--danger);
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+
+  /* ============================================================
+     ★ 自动填充浮窗 — 浏览器密码管理器风格
+     ============================================================ */
+  .autofill {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: #1a1c22;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    z-index: 10;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .autofill.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  /* 浮窗顶部小尖角,指向输入框 */
+  .autofill::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 22px;
+    width: 9px; height: 9px;
+    background: #1a1c22;
+    border-left: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+    transform: rotate(45deg);
+  }
+
+  .autofill-row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font-family: inherit;
+    transition: background 0.15s;
+    min-width: 0;
+  }
+  .autofill-row:hover { background: rgba(255,255,255,0.04); }
+  .autofill-row:active { background: rgba(255,255,255,0.06); }
+
+  .autofill-key {
+    width: 16px; height: 16px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .autofill-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .autofill-email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    letter-spacing: 0.2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .autofill-pass {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2.5px;
+  }
+  .autofill-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .autofill-dismiss {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--line);
+    padding: 0 14px;
+    cursor: pointer;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    transition: all 0.15s;
+  }
+  .autofill-dismiss:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+  }
+  .autofill-dismiss svg {
+    width: 13px; height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+  }
+
+  /* ============ 密码提示 ============ */
+  .hint {
+    margin-top: 4px;
+    padding: 12px 14px;
+    background: var(--accent-soft);
+    border: 1px dashed rgba(232, 164, 76, 0.4);
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    margin-bottom: 0;
+    transition:
+      max-height 0.35s ease,
+      opacity 0.3s ease,
+      padding 0.35s ease,
+      margin 0.35s ease,
+      border-width 0.2s ease;
+  }
+  .hint.show {
+    max-height: 160px;
+    opacity: 1;
+    padding: 12px 14px;
+    border-width: 1px;
+    margin-bottom: 18px;
+  }
+  .hint-icon {
+    width: 16px; height: 16px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .hint-body {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .hint-body .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .hint-body .melody {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+  .hint-body .digits {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-left: 6px;
+  }
+
+  /* ============ 消息提示 ============ */
+  .msg {
+    padding: 11px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--text-mute);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    line-height: 1.45;
+    opacity: 0;
+    transform: translateY(-4px);
+    max-height: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    margin-bottom: 0;
+    transition: all 0.3s ease;
+  }
+  .msg.show {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 80px;
+    padding: 11px 14px;
+    border-width: 1px;
+    border-left-width: 3px;
+    margin-bottom: 16px;
+  }
+  .msg.info { border-left-color: var(--accent); }
+  .msg.error { border-left-color: var(--danger); color: #fca5a5; }
+  .msg.success { border-left-color: #22c55e; color: #86efac; }
+  .msg-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 15px;
+    letter-spacing: 0.2px;
+  }
+  .msg.error .msg-text,
+  .msg.success .msg-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ============ 登录按钮 ============ */
+  .btn-login {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--text);
+    color: #0d0e10;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 6px;
+  }
+  .btn-login:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(232, 164, 76, 0.25);
+  }
+  .btn-login:active { transform: translateY(0); }
+  .btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .card-foot {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+  .card-foot a {
+    color: var(--text-mute);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .card-foot a:hover { color: var(--accent); }
+
+  .page-foot {
+    position: fixed;
+    bottom: 22px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 480px) {
+    .top-brand { left: 20px; top: 20px; }
+    .card {
+      padding: 36px 26px 28px;
+      border-radius: 14px;
+    }
+    .card h1 { font-size: 24px; }
+    .big-logo { width: 50px; height: 50px; font-size: 32px; }
+    .autofill-tag { display: none; }
+    .autofill-email { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-brand">
+  <div class="mark">C</div>
+  <div class="name">C<em>mail</em></div>
+</div>
+
+<div class="card">
+  <div class="big-logo">C</div>
+  <h1>登录</h1>
+  <p class="subtitle">使用你的 <code>Cmail</code> 账号继续</p>
+
+  <!-- 邮箱字段 -->
+  <div class="field">
+    <label>邮箱地址</label>
+    <div class="field-wrap">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 6h16c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"/>
+        <polyline points="2,8 12,14 22,8"/>
+      </svg>
+      <input type="email" id="emailInput" autocomplete="off" spellcheck="false" placeholder="输入你的邮箱地址">
+
+      <!-- ★ 自动填充建议浮窗(挂在邮箱字段下) -->
+      <div class="autofill" id="autofillBox" role="dialog" aria-label="使用已保存的账号">
+        <button class="autofill-row" type="button" id="autofillUse">
+          <svg class="autofill-key" viewBox="0 0 24 24">
+            <circle cx="8" cy="15" r="4"/>
+            <line x1="10.85" y1="12.15" x2="20" y2="3"/>
+            <line x1="18" y1="5" x2="20" y2="7"/>
+            <line x1="15" y1="8" x2="17" y2="10"/>
+          </svg>
+          <div class="autofill-info">
+            <span class="autofill-email" id="autofillEmail"></span>
+            <span class="autofill-pass">••••••••</span>
+          </div>
+          <span class="autofill-tag">已保存</span>
+        </button>
+        <button class="autofill-dismiss" type="button" id="autofillDismiss" aria-label="不使用此账号" title="不使用">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 密码字段 -->
+  <div class="field">
+    <label>密码</label>
+    <div class="field-wrap">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <input type="password" id="passwordInput" autocomplete="off" placeholder="输入密码">
+    </div>
+  </div>
+
+  <!-- 密码提示 -->
+  <div class="hint" id="hintBox">
+    <svg class="hint-icon" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+    <div class="hint-body">
+      <span class="label">密码提示</span>
+      <span class="melody">so mi so do</span>
+      <span class="digits">(5位数字)</span>
+    </div>
+  </div>
+
+  <!-- 状态消息 -->
+  <div class="msg" id="msgBox">
+    <span class="msg-text" id="msgText"></span>
+  </div>
+
+  <button class="btn-login" id="btnLogin">登 录</button>
+
+  <div class="card-foot">
+    <a href="#">忘记密码?</a>
+    <span>v 2.4.1</span>
+  </div>
+</div>
+
+<div class="page-foot">© Cmail Corp · Encrypted Channel</div>
+
+<script>
+  /* ============================================================
+     ★ 配置区
+     ============================================================ */
+  const SAVED_EMAIL     = 'webareapes@cmail.com';        // 已保存的邮箱
+  const SAVED_PASSWORD  = 'webareapes';                   // 已保存的密码
+  const TARGET_EMAIL    = 'VinmatTivert@Cmail.com';    // 触发密码提示的特定邮箱
+  const TARGET_PASSWORD = '53510';                     // ← 改这里:so mi so do 对应的5位数字
+  const SUCCESS_URL     = 'emfg.html';                // ← 改这里:登录成功后跳转的页面
+
+  /* 元素 */
+  const emailInput      = document.getElementById('emailInput');
+  const passwordInput   = document.getElementById('passwordInput');
+  const autofillBox     = document.getElementById('autofillBox');
+  const autofillUse     = document.getElementById('autofillUse');
+  const autofillDismiss = document.getElementById('autofillDismiss');
+  const autofillEmail   = document.getElementById('autofillEmail');
+  const hintBox         = document.getElementById('hintBox');
+  const msgBox          = document.getElementById('msgBox');
+  const msgText         = document.getElementById('msgText');
+  const btnLogin        = document.getElementById('btnLogin');
+
+  /* 把已保存的邮箱填进自动填充浮窗(只显示,不填进输入框) */
+  autofillEmail.textContent = SAVED_EMAIL;
+
+  /* ============================================================
+     ★ 自动填充浮窗逻辑
+     ───────────────────────────────────────────────────────────
+     • 输入框获得焦点 → 浮窗淡入(若未被叉掉)
+     • 点击浮窗主体 → 把邮箱+密码都填进去
+     • 点击 × → 本次会话内不再出现
+     • 用户开始打字且内容不是已保存的 → 浮窗自动隐藏
+     ============================================================ */
+  let autofillDismissed = false;
+
+  function shouldShow() {
+    if (autofillDismissed) return false;
+    const v = emailInput.value.trim();
+    if (v.length > 0 && v !== SAVED_EMAIL) return false;
+    return true;
+  }
+  function showAutofill() { if (shouldShow()) autofillBox.classList.add('show'); }
+  function hideAutofill() { autofillBox.classList.remove('show'); }
+
+  /* 焦点进入任一字段 → 尝试展示 */
+  emailInput.addEventListener('focus', showAutofill);
+  passwordInput.addEventListener('focus', showAutofill);
+
+  /* 失焦 → 延迟隐藏(留时间响应浮窗里的点击) */
+  function delayedHide() { setTimeout(hideAutofill, 180); }
+  emailInput.addEventListener('blur', delayedHide);
+  passwordInput.addEventListener('blur', delayedHide);
+
+  /* 防止点浮窗瞬间输入框失焦把浮窗杀掉 */
+  autofillBox.addEventListener('mousedown', e => e.preventDefault());
+
+  /* ★ 点击浮窗主体 → 填入账号密码 */
+  autofillUse.addEventListener('click', () => {
+    emailInput.value = SAVED_EMAIL;
+    passwordInput.value = SAVED_PASSWORD;
+    autofillDismissed = true;
+    hideAutofill();
+    hideMsg();
+    if (emailInput.value.toLowerCase() !== TARGET_EMAIL.toLowerCase()) {
+      hintBox.classList.remove('show');
+    }
+    passwordInput.focus();
+  });
+
+  /* ★ 点击 × → 永久关掉浮窗 */
+  autofillDismiss.addEventListener('click', () => {
+    autofillDismissed = true;
+    hideAutofill();
+    emailInput.focus();
+  });
+
+  /* ============================================================
+     邮箱输入监听
+     ============================================================ */
+  emailInput.addEventListener('input', () => {
+    const val = emailInput.value.trim();
+
+    /* 输入了不一样的内容,立刻隐藏自动填充 */
+    if (val.length > 0 && val !== SAVED_EMAIL) {
+      hideAutofill();
+    } else if (!autofillDismissed && document.activeElement === emailInput) {
+      showAutofill();
+    }
+
+    /* 是否输入了那个特定邮箱 → 显示密码提示 */
+    if (val.toLowerCase() === TARGET_EMAIL.toLowerCase()) {
+      hintBox.classList.add('show');
+    } else {
+      hintBox.classList.remove('show');
+    }
+
+    hideMsg();
+  });
+
+  passwordInput.addEventListener('input', () => hideMsg());
+
+  /* 工具函数 */
+  function showMsg(text, type) {
+    msgText.textContent = text;
+    msgBox.className = 'msg show ' + type;
+  }
+  function hideMsg() { msgBox.className = 'msg'; }
+  function shake(el) {
+    el.classList.add('shake');
+    setTimeout(() => el.classList.remove('shake'), 500);
+  }
+
+  /* ============================================================
+     登录逻辑
+     ============================================================ */
+  btnLogin.addEventListener('click', () => {
+    const email = emailInput.value.trim();
+    const pwd   = passwordInput.value;
+
+    /* 情况 1:用已保存的账号(自己的邮箱) */
+    if (email === SAVED_EMAIL && pwd === SAVED_PASSWORD) {
+      showMsg('你暂时不想登录自己的邮箱', 'info');
+      return;
+    }
+
+    /* 情况 2:那个特定邮箱 */
+    if (email.toLowerCase() === TARGET_EMAIL.toLowerCase()) {
+      if (pwd === TARGET_PASSWORD) {
+        showMsg('验证通过 · 正在进入收件箱...', 'success');
+        btnLogin.disabled = true;
+        btnLogin.textContent = '登录中...';
+        setTimeout(() => window.location.href = SUCCESS_URL, 1100);
+      } else if (pwd.length === 0) {
+        showMsg('请输入密码', 'error');
+        shake(passwordInput);
+      } else {
+        showMsg('密码错误,请参考上方提示', 'error');
+        shake(passwordInput);
+        passwordInput.select();
+      }
+      return;
+    }
+
+    /* 情况 3:其他乱输的邮箱 */
+    if (email.length === 0) {
+      showMsg('请输入邮箱地址', 'error');
+      shake(emailInput);
+    } else {
+      showMsg('该账户不存在或密码错误', 'error');
+      shake(emailInput);
+    }
+  });
+
+  /* 回车提交 */
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') btnLogin.click();
+    });
+  });
+</script>
+</body>
+</html>

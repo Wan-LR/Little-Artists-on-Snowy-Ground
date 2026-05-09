@@ -738,17 +738,19 @@
     }
 
     function checkPassword() {
-      const val = caseInput.value.trim();
-      if (val.toLowerCase() === CASE_PASSWORD.toLowerCase()) {
+    const val = caseInput.value.trim().toLowerCase();
+    // 把候选答案都转小写,看用户输入是否在里面
+    const valid = CASE_PASSWORD.map(p => p.toLowerCase()).includes(val);
+    if (valid) {
         // 密码正确 → 跳转
         window.location.href = CASE_REDIRECT;
-      } else {
+    } else {
         // 密码错误 → 抖动 + 红色提示
         caseError.classList.add('show');
         caseInput.classList.remove('shake');
-        void caseInput.offsetWidth;          // 强制重排,让动画能重播
+        void caseInput.offsetWidth;
         caseInput.classList.add('shake');
-      }
+    }
     }
 
     // 点 Case 卡 → 弹窗

@@ -56,11 +56,11 @@
 
     .site-logo {
       display: inline-block;
-      line-height: 0;       /* 去掉图片下方空隙 */
+      line-height: 0;
     }
 
     .site-logo img {
-      height: 90px;         /* 想多大改这里就行 */
+      height: 90px;
       width: auto;
       display: block;
     }
@@ -69,21 +69,19 @@
       .site-logo img { height: 32px; }
     }
 
-    
-    /* ===== 关键改动:瀑布流布局 ===== */
+    /* ===== 瀑布流 ===== */
     .grid {
-      column-count: 3;       /* 桌面端 3 列 */
+      column-count: 3;
       column-gap: 24px;
     }
 
     @media (max-width: 900px) {
-      .grid { column-count: 2; }       /* 平板 2 列 */
+      .grid { column-count: 2; }
     }
 
     @media (max-width: 480px) {
-      .grid { column-count: 2; column-gap: 14px; }  /* 手机 2 列(也可改成 1) */
+      .grid { column-count: 2; column-gap: 14px; }
     }
-    /* ============================== */
 
     .post-card {
       display: block;
@@ -96,11 +94,10 @@
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
                   box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid var(--line);
-
-      /* 关键:防止卡片被分到两列中间 + 用 margin 替代 gap */
       break-inside: avoid;
       margin-bottom: 24px;
       width: 100%;
+      position: relative;       /* 给广告标志做定位锚点 */
     }
 
     .post-card:hover {
@@ -118,7 +115,6 @@
       outline-offset: 3px;
     }
 
-    /* 关键:不再强制 4:3,让图片显示原始比例 */
     .post-card .image {
       width: 100%;
       overflow: hidden;
@@ -127,7 +123,7 @@
 
     .post-card .image img {
       width: 100%;
-      height: auto;            /* 跟着图片原始比例走 */
+      height: auto;
       display: block;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -145,14 +141,46 @@
       letter-spacing: -0.01em;
       color: var(--ink);
     }
+
     .mine-tag {
       padding: 0 16px 14px;
-      margin-top: -10px;        /* 拉近一点,贴在标题下方 */
+      margin-top: -10px;
       font-size: 12px;
-      color: var(--ink-soft);   /* 灰色 #6b6b6b */
+      color: var(--ink-soft);
     }
+
     @media (max-width: 480px) {
       .post-card .title { padding: 12px 12px 14px; font-size: 14px; }
+    }
+
+    /* ===== 隐秘的广告标志 ===== */
+    /* 浅灰小字,贴在卡片右下角,缩进一点点,很容易被忽略 */
+    .ad-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 9px;
+      color: #c8c2b6;            /* 比正文还浅的灰 */
+      letter-spacing: 0.05em;
+      padding: 1px 5px;
+      border: 1px solid #e8e3da;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.6);
+      font-weight: 400;
+      font-family: var(--font-body);
+      pointer-events: none;       /* 不影响整张卡片的点击 */
+      user-select: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    /* 鼠标悬停时变得稍微清晰点(可选,想完全隐秘就删掉这条) */
+    .post-card:hover .ad-badge {
+      color: #a39a8a;
+      border-color: #d8d2c5;
+    }
+
+    @media (max-width: 480px) {
+      .ad-badge { font-size: 8px; bottom: 4px; right: 6px; }
     }
   </style>
 </head>
@@ -165,17 +193,8 @@
       </a>
       <div class="header-right">
         <div class="site-meta">最近更新</div>
-
       </div>
     </header>
-
-    <!--
-      错落效果由图片本身的尺寸决定:
-        竖图(高 > 宽) → 卡片更高
-        横图(宽 > 高) → 卡片更矮
-        方图          → 卡片中等
-      想要明显的错落感,就给不同帖子配不同比例的图.
-    -->
 
     <div class="grid">
 
@@ -183,7 +202,7 @@
         <div class="image">
           <img src="images/yingwu.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">问问大家国内能养金刚鹦鹉吗？</h2>
+        <h2 class="title">问问大家国内能养金刚鹦鹉吗?</h2>
       </a>
 
       <a class="post-card" href="xhstroisbodypl.html">
@@ -199,20 +218,29 @@
         </div>
         <h2 class="title">一人接一句不腐歌词</h2>
       </a>
-      
+
       <a class="post-card" href="xhsyiqingpl.html">
         <div class="image">
           <img src="images/yiqing.png" alt="" loading="lazy">
         </div>
         <h2 class="title">yq居然已经是六年以前了 当年的小学生今年要上大学了</h2>
       </a>
-  
 
       <a class="post-card" href="xhsyubianpl.html">
         <div class="image">
           <img src="images/yubian.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">这周和我们一起回顾：宇宙探索编撰部！</h2>
+        <h2 class="title">这周和我们一起回顾:宇宙探索编撰部!</h2>
+      </a>
+
+      <!-- ★ 新增:千百度广告 ★ -->
+      <!-- href 改成你的目标页面 -->
+      <a class="post-card" href="qianbaidu.html">
+        <div class="image">
+          <img src="images/qianbaidu.png" alt="" loading="lazy">
+        </div>
+        <h2 class="title">浏览器 就用千百度!</h2>
+        <span class="ad-badge">广告</span>
       </a>
 
     </div>

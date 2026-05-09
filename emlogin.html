@@ -144,11 +144,7 @@
     margin-left: 2px;
   }
 
-  /* ============ 输入框 ============ */
-  .field {
-    margin-bottom: 14px;
-    position: relative;
-  }
+  .field { margin-bottom: 14px; position: relative; }
   .field label {
     display: block;
     font-family: 'JetBrains Mono', monospace;
@@ -159,11 +155,7 @@
     margin-bottom: 7px;
     padding-left: 2px;
   }
-  .field-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+  .field-wrap { position: relative; display: flex; align-items: center; }
   .field-wrap > svg {
     position: absolute;
     left: 14px;
@@ -207,9 +199,6 @@
     40%, 80% { transform: translateX(5px); }
   }
 
-  /* ============================================================
-     ★ 自动填充浮窗 — 浏览器密码管理器风格
-     ============================================================ */
   .autofill {
     position: absolute;
     top: calc(100% + 6px);
@@ -232,7 +221,6 @@
     transform: translateY(0);
     pointer-events: auto;
   }
-  /* 浮窗顶部小尖角,指向输入框 */
   .autofill::before {
     content: '';
     position: absolute;
@@ -328,7 +316,6 @@
     stroke-linecap: round;
   }
 
-  /* ============ 密码提示 ============ */
   .hint {
     margin-top: 4px;
     padding: 12px 14px;
@@ -397,7 +384,6 @@
     margin-left: 6px;
   }
 
-  /* ============ 消息提示 ============ */
   .msg {
     padding: 11px 14px;
     background: rgba(255, 255, 255, 0.03);
@@ -446,7 +432,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* ============ 登录按钮 ============ */
   .btn-login {
     width: 100%;
     padding: 13px 16px;
@@ -507,10 +492,7 @@
 
   @media (max-width: 480px) {
     .top-brand { left: 20px; top: 20px; }
-    .card {
-      padding: 36px 26px 28px;
-      border-radius: 14px;
-    }
+    .card { padding: 36px 26px 28px; border-radius: 14px; }
     .card h1 { font-size: 24px; }
     .big-logo { width: 50px; height: 50px; font-size: 32px; }
     .autofill-tag { display: none; }
@@ -530,7 +512,6 @@
   <h1>登录</h1>
   <p class="subtitle">使用你的 <code>Cmail</code> 账号继续</p>
 
-  <!-- 邮箱字段 -->
   <div class="field">
     <label>邮箱地址</label>
     <div class="field-wrap">
@@ -540,7 +521,6 @@
       </svg>
       <input type="email" id="emailInput" autocomplete="off" spellcheck="false" placeholder="输入你的邮箱地址">
 
-      <!-- ★ 自动填充建议浮窗(挂在邮箱字段下) -->
       <div class="autofill" id="autofillBox" role="dialog" aria-label="使用已保存的账号">
         <button class="autofill-row" type="button" id="autofillUse">
           <svg class="autofill-key" viewBox="0 0 24 24">
@@ -565,7 +545,6 @@
     </div>
   </div>
 
-  <!-- 密码字段 -->
   <div class="field">
     <label>密码</label>
     <div class="field-wrap">
@@ -577,7 +556,6 @@
     </div>
   </div>
 
-  <!-- 密码提示 -->
   <div class="hint" id="hintBox">
     <svg class="hint-icon" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="10"/>
@@ -591,7 +569,6 @@
     </div>
   </div>
 
-  <!-- 状态消息 -->
   <div class="msg" id="msgBox">
     <span class="msg-text" id="msgText"></span>
   </div>
@@ -610,11 +587,22 @@
   /* ============================================================
      ★ 配置区
      ============================================================ */
-  const SAVED_EMAIL     = 'webareapes@cmail.com';        // 已保存的邮箱
-  const SAVED_PASSWORD  = 'webareapes';                   // 已保存的密码
-  const TARGET_EMAIL    = 'VinmatTivert@Cmail.com';    // 触发密码提示的特定邮箱
-  const TARGET_PASSWORD = '53510';                     // ← 改这里:so mi so do 对应的5位数字
-  const SUCCESS_URL     = 'emfg.html';                // ← 改这里:登录成功后跳转的页面
+  const SAVED_EMAIL     = 'webareapes@cmail.com';
+  const SAVED_PASSWORD  = 'webareapes';
+  const TARGET_EMAIL    = 'VinmatTivert@Cmail.com';
+  const TARGET_PASSWORD = '53510';
+  const SUCCESS_URL     = 'emfg.html';            // ← 输入 VinmatTivert 账号成功后跳转
+  const OWN_SUCCESS_URL = 'emme.html';        // ← ★ 清理完成后,自己邮箱登录成功跳转的页面
+
+  /* ============================================================
+     ★ 联动标志:邮箱页清理完两封"必删邮件"后会写这个 key
+     ★ 在这之前,自己的邮箱不让登录
+     ============================================================ */
+  const CLEANUP_KEY = 'cmail-cleanup-done';
+  function isCleanupDone() {
+    try { return localStorage.getItem(CLEANUP_KEY) === '1'; }
+    catch (e) { return false; }
+  }
 
   /* 元素 */
   const emailInput      = document.getElementById('emailInput');
@@ -628,16 +616,10 @@
   const msgText         = document.getElementById('msgText');
   const btnLogin        = document.getElementById('btnLogin');
 
-  /* 把已保存的邮箱填进自动填充浮窗(只显示,不填进输入框) */
   autofillEmail.textContent = SAVED_EMAIL;
 
   /* ============================================================
-     ★ 自动填充浮窗逻辑
-     ───────────────────────────────────────────────────────────
-     • 输入框获得焦点 → 浮窗淡入(若未被叉掉)
-     • 点击浮窗主体 → 把邮箱+密码都填进去
-     • 点击 × → 本次会话内不再出现
-     • 用户开始打字且内容不是已保存的 → 浮窗自动隐藏
+     自动填充浮窗
      ============================================================ */
   let autofillDismissed = false;
 
@@ -650,19 +632,15 @@
   function showAutofill() { if (shouldShow()) autofillBox.classList.add('show'); }
   function hideAutofill() { autofillBox.classList.remove('show'); }
 
-  /* 焦点进入任一字段 → 尝试展示 */
   emailInput.addEventListener('focus', showAutofill);
   passwordInput.addEventListener('focus', showAutofill);
 
-  /* 失焦 → 延迟隐藏(留时间响应浮窗里的点击) */
   function delayedHide() { setTimeout(hideAutofill, 180); }
   emailInput.addEventListener('blur', delayedHide);
   passwordInput.addEventListener('blur', delayedHide);
 
-  /* 防止点浮窗瞬间输入框失焦把浮窗杀掉 */
   autofillBox.addEventListener('mousedown', e => e.preventDefault());
 
-  /* ★ 点击浮窗主体 → 填入账号密码 */
   autofillUse.addEventListener('click', () => {
     emailInput.value = SAVED_EMAIL;
     passwordInput.value = SAVED_PASSWORD;
@@ -675,7 +653,6 @@
     passwordInput.focus();
   });
 
-  /* ★ 点击 × → 永久关掉浮窗 */
   autofillDismiss.addEventListener('click', () => {
     autofillDismissed = true;
     hideAutofill();
@@ -688,14 +665,12 @@
   emailInput.addEventListener('input', () => {
     const val = emailInput.value.trim();
 
-    /* 输入了不一样的内容,立刻隐藏自动填充 */
     if (val.length > 0 && val !== SAVED_EMAIL) {
       hideAutofill();
     } else if (!autofillDismissed && document.activeElement === emailInput) {
       showAutofill();
     }
 
-    /* 是否输入了那个特定邮箱 → 显示密码提示 */
     if (val.toLowerCase() === TARGET_EMAIL.toLowerCase()) {
       hintBox.classList.add('show');
     } else {
@@ -707,7 +682,6 @@
 
   passwordInput.addEventListener('input', () => hideMsg());
 
-  /* 工具函数 */
   function showMsg(text, type) {
     msgText.textContent = text;
     msgBox.className = 'msg show ' + type;
@@ -727,7 +701,15 @@
 
     /* 情况 1:用已保存的账号(自己的邮箱) */
     if (email === SAVED_EMAIL && pwd === SAVED_PASSWORD) {
-      showMsg('你暂时不想登录自己的邮箱', 'info');
+      // ★ 联动判断:必须先清理完邮箱里的两封必删邮件 ★
+      if (isCleanupDone()) {
+        showMsg('验证通过 · 正在登录...', 'success');
+        btnLogin.disabled = true;
+        btnLogin.textContent = '登录中...';
+        setTimeout(() => window.location.href = OWN_SUCCESS_URL, 1100);
+      } else {
+        showMsg('你暂时不想登录自己的邮箱', 'info');
+      }
       return;
     }
 
@@ -759,7 +741,6 @@
     }
   });
 
-  /* 回车提交 */
   [emailInput, passwordInput].forEach(input => {
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') btnLogin.click();

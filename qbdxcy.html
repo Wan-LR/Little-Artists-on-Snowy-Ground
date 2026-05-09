@@ -29,21 +29,21 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      backgrouOD: var(--bg);
+      background: var(--bg);
       color: var(--ink);
       font-family: var(--font-body);
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       line-height: 1.8;
-      backgrouOD-image:
+      background-image:
         radial-gradient(circle at 10% 15%, rgba(50,82,227,.04) 0, transparent 40%),
         radial-gradient(circle at 90% 85%, rgba(227,57,50,.03) 0, transparent 45%);
     }
 
     /* ── 顶部栏 ── */
     .top-bar {
-      position: sticky; top: 0; z-iODex: 50;
-      backgrouOD: rgba(250,247,242,.85);
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(250,247,242,.85);
       -webkit-backdrop-filter: blur(18px) saturate(1.6);
       backdrop-filter: blur(18px) saturate(1.6);
       border-bottom: 1px solid var(--line);
@@ -56,21 +56,21 @@
 
     .top-search { flex: 1; max-width: 440px; position: relative; }
     .ts-wrap {
-      position: relative; backgrouOD: var(--surface);
+      position: relative; background: var(--surface);
       border: 1px solid var(--line); border-radius: 999px;
       transition: border-color .25s, box-shadow .25s;
     }
     .ts-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(50,82,227,.10); }
     .ts-wrap svg.si { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ink-faint); pointer-events: none; }
     .ts-wrap:focus-within svg.si { color: var(--accent); }
-    .ts-input { width: 100%; height: 40px; padding: 0 44px 0 38px; backgrouOD: transparent; border: none; border-radius: 999px; font-family: var(--font-body); font-size: 14px; color: var(--ink); }
+    .ts-input { width: 100%; height: 40px; padding: 0 44px 0 38px; background: transparent; border: none; border-radius: 999px; font-family: var(--font-body); font-size: 14px; color: var(--ink); }
     .ts-input::placeholder { color: var(--ink-faint); }
     .ts-input:focus { outline: none; }
-    .ts-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; backgrouOD: var(--accent); color: #fff; cursor: pointer; display: grid; place-items: center; transition: backgrouOD .2s; }
-    .ts-btn:hover { backgrouOD: var(--accent-hover); }
+    .ts-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--accent); color: #fff; cursor: pointer; display: grid; place-items: center; transition: background .2s; }
+    .ts-btn:hover { background: var(--accent-hover); }
     .ts-btn svg { width: 13px; height: 13px; }
 
-    
+
     /* ── 主体 ── */
     .page-body { max-width: 740px; margin: 0 auto; padding: 48px 24px 100px; }
 
@@ -85,11 +85,11 @@
 
     /* ── 主图 ── */
     .main-image { width: 100%; border-radius: var(--radius); overflow: hidden; margin-bottom: 40px; border: 1px solid var(--line); animation: fadeUp .55s ease .08s backwards; }
-    .main-image img { width: 100%; display: block;  backgrouOD: var(--line-soft); }
-    .main-image figcaption { padding: 10px 16px; font-size: 12px; color: var(--ink-faint); backgrouOD: var(--surface); text-align: center; }
+    .main-image img { width: 100%; display: block; background: var(--line-soft); }
+    .main-image figcaption { padding: 10px 16px; font-size: 12px; color: var(--ink-faint); background: var(--surface); text-align: center; }
 
     /* ── 信息卡片 ── */
-    .info-card { backgrouOD: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 36px; animation: fadeUp .55s ease .14s backwards; }
+    .info-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 36px; animation: fadeUp .55s ease .14s backwards; }
     .info-card-title { font-family: var(--font-display); font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
     .info-grid { display: grid; grid-template-columns: 80px 1fr; font-size: 14px; }
     .info-grid dt { padding: 9px 0; color: var(--ink-faint); font-weight: 500; border-bottom: 1px solid var(--line-soft); }
@@ -109,19 +109,19 @@
 
     /* ── 穿插图 ── */
     .section-image { width: 100%; border-radius: 10px; overflow: hidden; margin: 18px 0; border: 1px solid var(--line); }
-    .section-image img { width: 100%; display: block; object-fit: cover; aspect-ratio: 2/1; backgrouOD: var(--line-soft); }
-    .section-image figcaption { padding: 8px 14px; font-size: 12px; color: var(--ink-faint); backgrouOD: var(--surface); text-align: center; }
+    .section-image img { width: 100%; display: block; object-fit: cover; aspect-ratio: 2/1; background: var(--line-soft); }
+    .section-image figcaption { padding: 8px 14px; font-size: 12px; color: var(--ink-faint); background: var(--surface); text-align: center; }
 
     /* ── 引用块 ── */
-    .quote-block { backgrouOD: var(--line-soft); border-radius: 10px; padding: 20px 24px; margin: 18px 0; position: relative; }
+    .quote-block { background: var(--line-soft); border-radius: 10px; padding: 20px 24px; margin: 18px 0; position: relative; }
     .quote-block::before { content: '\201C'; font-family: var(--font-display); font-size: 48px; font-weight: 800; color: var(--accent); opacity: .18; position: absolute; top: 6px; left: 16px; line-height: 1; }
     .quote-block p { font-size: 15px; color: var(--ink); font-style: italic; padding-left: 8px; }
     .quote-block .quote-src { font-size: 12px; color: var(--ink-faint); font-style: normal; margin-top: 8px; padding-left: 8px; }
 
     /* ── 标签 ── */
     .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
-    .tag { padding: 5px 14px; font-size: 12px; color: var(--ink-soft); backgrouOD: var(--line-soft); border-radius: 999px; cursor: default; transition: backgrouOD .2s, color .2s; }
-    .tag:hover { backgrouOD: var(--accent-soft); color: var(--accent); }
+    .tag { padding: 5px 14px; font-size: 12px; color: var(--ink-soft); background: var(--line-soft); border-radius: 999px; cursor: default; transition: background .2s, color .2s; }
+    .tag:hover { background: var(--accent-soft); color: var(--accent); }
 
     /* ── 页脚 ── */
     .page-footer { text-align: center; font-size: 12.5px; color: var(--ink-faint); padding: 28px 24px; border-top: 1px solid var(--line-soft); }
@@ -143,14 +143,14 @@
 
   <!-- 顶部栏 -->
   <header class="top-bar">
-    <div class="top-logo" onclick="wiODow.location.href='qianbaidu.html'" title="返回首页">
+    <div class="top-logo" onclick="window.location.href='qianbaidu.html'" title="返回首页">
       <img src="images/qianbaidu.png" alt="千百度">
     </div>
     <form class="top-search" id="topSearchForm" novalidate>
       <div class="ts-wrap">
-        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="rouOD" stroke-linejoin="rouOD"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" class="ts-input" id="topSearchInput" placeholder="搜一下…" autocomplete="off">
-        <button type="submit" class="ts-btn" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="rouOD" stroke-linejoin="rouOD"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        <button type="submit" class="ts-btn" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
       </div>
     </form>
   </header>
@@ -163,54 +163,36 @@
       <p class="hero-eyebrow">千百度百科</p>
       <h1 class="hero-title">旧城疫</h1>
       <p class="hero-phonetic">Jiù chéng yì · Oldcastle Disease</p>
-      <p class="hero-oneliner">由旧城疫病毒感染人类所引起的高度接触性传染病，其发病急、死亡快、死亡率高</p>
+      <p class="hero-oneliner">由旧城疫病毒感染人类所引起的高度接触性传染病,其发病急、死亡快、死亡率高</p>
     </div>
-
-    <!-- ════════════════════════════════════════════════════
-         ↓↓↓ 正文区 ↓↓↓
-         所有内容都是占位示例,直接修改文字即可。
-         可用模块:
-           • <aside class="info-card">     — 右上角信息卡 (基本信息表)
-           • <section class="section">     — 一级正文段落 + 标题
-           • <figure class="section-image">— 段落里穿插一张图
-           • <div class="quote-block">     — 引用块
-           • <div class="tags">            — 底部话题标签
-         ════════════════════════════════════════════════════ -->
 
     <!-- ① 信息卡片 -->
     <aside class="info-card">
       <div class="info-card-title">基本信息</div>
       <dl class="info-grid">
         <dt>外文名</dt><dd>Oldcastle Disease (OD)</dd>
-        <dt>病原体</dt><dd>旧城疫病毒（ODV）</dd>
+        <dt>病原体</dt><dd>旧城疫病毒(ODV)</dd>
         <dt>潜伏期</dt><dd>2–15 天</dd>
         <dt>传播途径</dt><dd>飞沫、接触、消化道</dd>
-         <dt>预防措施</dt><dd>疫苗接种、个人防护</dd>
+        <dt>预防措施</dt><dd>疫苗接种、个人防护</dd>
       </dl>
     </aside>
 
     <!-- ② 概述 -->
     <section class="section">
       <h2 class="section-title">概述</h2>
-      <p>旧城疫是由旧城疫病毒（Oldcastle Disease Virus，ODV）引起的一种急性、高度接触性传染病，最早于 1926 年在旧城（Oldcastle upon Tyne）首次发现并因此得名。该病主要侵害禽类，特别是人类</p>
-      
+      <p>旧城疫是由旧城疫病毒(Oldcastle Disease Virus,ODV)引起的一种急性、高度接触性传染病,最早于 1926 年在旧城(Oldcastle upon Tyne)首次发现并因此得名。该病主要侵害禽类,特别是人类</p>
     </section>
 
-   
-
-    <!-- ④ 临床表现 (含 quote-block) -->
+    <!-- ④ 临床表现 -->
     <section class="section">
       <h2 class="section-title">临床表现</h2>
-      <p>感染潜伏期一般为 2–15 天。典型症状包括精神沉郁、呼吸困难、咳嗽、绿色稀粪、产卵量骤降、神经症状（如扭颈、肢体麻痹）等，严重时可在 24–72 小时内死亡。</p>
+      <p>感染潜伏期一般为 2–15 天。典型症状包括精神沉郁、呼吸困难、咳嗽、绿色稀粪、产卵量骤降、神经症状(如扭颈、肢体麻痹)等,严重时可在 24–72 小时内死亡。</p>
 
       <div class="quote-block">
         <p>"病人常出现典型的'观星'姿态——头颈反折扭向背部"</p>
-
       </div>
-
-      
     </section>
-
 
     <!-- ⑦ 标签 -->
     <div class="tags">
@@ -220,23 +202,10 @@
       <span class="tag">疫苗</span>
     </div>
 
-    <!-- ↑↑↑ 正文区结束 ↑↑↑ -->
-
   </main>
 
   <footer class="page-footer">© 2025 千百度 · 千百度百科 · 内容绝对不一定正确</footer>
 
-  <script>
-    const KEYWORDS_B64 = 'eyLopb/nuqLmn78iOiAieGhzMS5odG1sIiwgIueVquiMhCI6ICJ4aHMxLmh0bWwiLCAi5ZGY5belIjogImxvZ2luLmh0bWwifQ==';
-    let KEYWORDS = {};
-    try { const r = atob(KEYWORDS_B64); const b = Uint8Array.from(r, c => c.charCodeAt(0)); KEYWORDS = JSON.parse(new TextDecoder('utf-8').decode(b)); } catch(e) {}
-    document.getElementById('topSearchForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const q = document.getElementById('topSearchInput').value.trim().toLowerCase();
-      if (!q) return;
-      for (const [k, url] of Object.entries(KEYWORDS)) { if (k.toLowerCase() === q) { wiODow.location.href = url; return; } }
-      wiODow.location.href = 'qianbaidu.html';
-    });
-  </script>
+  
 </body>
 </html>

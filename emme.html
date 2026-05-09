@@ -724,8 +724,8 @@
         <line x1="12" y1="17" x2="12.01" y2="17"/>
       </svg>
     </div>
-    <h3 class="block-title">还在<em>监控</em>中</h3>
-    <p class="block-text">
+    <h3 class="block-title" id="blockTitle">还在<em>监控</em>中</h3>
+    <p class="block-text" id="blockText">
       还有 <code id="blockCount">0</code> 个账号。<br>
       今天务必完成。
     </p>
@@ -1323,13 +1323,28 @@
     return result;
   }
 
+  /* ★ 新增:还没解锁的加密笔记 */
+  function getLockedMemos() {
+    return MEMOS.filter(m => m.locked && !unlockedMemos.has(m.id));
+  }
+
   /* 退出登录 — 先检查监控清单 */
   const blockBackdrop = document.getElementById('blockBackdrop');
-  const blockCount = document.getElementById('blockCount');
+  const blockTitle = document.getElementById('blockTitle');
+  const blockText = document.getElementById('blockText');
   const blockGoTo = document.getElementById('blockGoTo');
 
-  function openBlockModal(remaining) {
-    blockCount.textContent = remaining;
+  /* ★ 改造:openBlockModal 现在按"是哪种阻断"切换文案 */
+  function openBlockModal(uncheckedCount, lockedCount) {
+    if (uncheckedCount > 0) {
+      /* 优先提示账号清单还没勾完 */
+      blockTitle.innerHTML = '还在<em>监控</em>中';
+      blockText.innerHTML = `还有 <code>${uncheckedCount}</code> 个账号。<br>今天务必完成。`;
+    } else if (lockedCount > 0) {
+      /* 账号都勾完了,但还有加密笔记没解锁 */
+      blockTitle.innerHTML = '还有<em>笔记</em>没看';
+      blockText.innerHTML = `要检查一下加密的"专有名词"。`;
+    }
     blockBackdrop.classList.add('show');
   }
   function closeBlockModal() {
@@ -1337,10 +1352,18 @@
   }
   blockGoTo.addEventListener('click', () => {
     closeBlockModal();
-    /* 跳到第一条还有未勾账号的备忘录 */
+    /* ★ 改造:根据当前阻断原因决定跳到哪条备忘录 */
     const unchecked = getUncheckedAccounts();
-    if (unchecked.length === 0) return;
-    const targetMemoId = unchecked[0].memo.id;
+    const locked = getLockedMemos();
+
+    let targetMemoId = null;
+    if (unchecked.length > 0) {
+      targetMemoId = unchecked[0].memo.id;
+    } else if (locked.length > 0) {
+      targetMemoId = locked[0].id;   // 跳到第一条没解锁的加密笔记(进去会自动弹出密码框)
+    }
+    if (!targetMemoId) return;
+
     folders.forEach(x => x.classList.remove('active'));
     const memosFolder = document.querySelector('.folder[data-folder="memos"]');
     if (memosFolder) memosFolder.classList.add('active');
@@ -1354,13 +1377,15 @@
   });
 
   logoutBtn.addEventListener('click', () => {
+    /* ★ 改造:同时检查账号清单 + 加密笔记 */
     const unchecked = getUncheckedAccounts();
-    if (unchecked.length > 0) {
-      openBlockModal(unchecked.length);
+    const locked = getLockedMemos();
+    if (unchecked.length > 0 || locked.length > 0) {
+      openBlockModal(unchecked.length, locked.length);
       return;
     }
     showToast('正在退出...');
-    setTimeout(() => window.location.href = 'emlogin.html', 500);
+    setTimeout(() => window.location.href = 'minglinghang.html', 500);
   });
 
   let toastTimer;

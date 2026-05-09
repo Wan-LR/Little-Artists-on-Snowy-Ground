@@ -21,7 +21,6 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -53,18 +52,8 @@
     z-index: 1;
   }
 
-  /* ============ HEADER ============ */
-  header {
-    padding: 40px 0 24px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
+  header { padding: 40px 0 24px; border-bottom: 1px solid var(--line); }
+  .nav { display: flex; justify-content: space-between; align-items: center; }
   .logo {
     font-family: 'Instrument Serif', serif;
     font-size: 28px;
@@ -73,13 +62,8 @@
     align-items: center;
     gap: 10px;
   }
+  .logo em { font-style: italic; color: var(--accent); }
 
-  .logo em {
-    font-style: italic;
-    color: var(--accent);
-  }
-
-  /* ★★ 新增:重点关注 印章 ★★ */
   .watch-tag {
     display: inline-flex;
     align-items: center;
@@ -111,16 +95,12 @@
   }
   .watch-tag svg {
     width: 12px; height: 12px;
-    stroke: white;
-    fill: none;
+    stroke: white; fill: none;
     stroke-width: 2.2;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .watch-tag .eye-dot {
-    fill: white;
-    stroke: none;
-  }
+  .watch-tag .eye-dot { fill: white; stroke: none; }
 
   .nav-links {
     display: flex;
@@ -147,7 +127,6 @@
     background: var(--accent);
   }
 
-  /* ============ POSTS SECTION ============ */
   .section-head {
     display: flex;
     justify-content: space-between;
@@ -162,10 +141,7 @@
     font-size: 36px;
     letter-spacing: -0.5px;
   }
-  .section-head h2 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  .section-head h2 em { font-style: italic; color: var(--accent); }
   .section-head .count {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -177,7 +153,6 @@
     flex-wrap: wrap;
   }
 
-  /* ============ POST CARDS (HORIZONTAL) ============ */
   .posts {
     display: flex;
     flex-direction: column;
@@ -198,12 +173,7 @@
     text-decoration: none;
     color: inherit;
   }
-
-  .post:hover {
-    background: var(--wash);
-    padding-left: 24px;
-  }
-
+  .post:hover { background: var(--wash); padding-left: 24px; }
   .post::before {
     content: '';
     position: absolute;
@@ -230,10 +200,7 @@
     font-weight: 500;
   }
 
-  .post-body {
-    min-width: 0;
-  }
-
+  .post-body { min-width: 0; }
   .post-tag {
     display: inline-block;
     font-family: 'JetBrains Mono', monospace;
@@ -246,7 +213,6 @@
     text-transform: uppercase;
     margin-bottom: 12px;
   }
-
   .post h3 {
     font-family: 'Instrument Serif', serif;
     font-weight: 400;
@@ -256,17 +222,8 @@
     margin-bottom: 10px;
     color: var(--ink);
   }
-  .post h3 em {
-    font-style: italic;
-    color: var(--accent-deep);
-  }
-
-  .post p {
-    color: var(--ink-mute);
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 56ch;
-  }
+  .post h3 em { font-style: italic; color: var(--accent-deep); }
+  .post p { color: var(--ink-mute); font-size: 15px; line-height: 1.6; max-width: 56ch; }
 
   .post-foot {
     display: flex;
@@ -299,9 +256,7 @@
     transition: transform 0.6s ease;
     filter: saturate(0.85) contrast(1.05);
   }
-  .post:hover .post-img img {
-    transform: scale(1.06);
-  }
+  .post:hover .post-img img { transform: scale(1.06); }
   .post-img::after {
     content: '';
     position: absolute;
@@ -310,7 +265,6 @@
     pointer-events: none;
   }
 
-  /* ============ FOOTER ============ */
   footer {
     margin-top: 80px;
     padding: 48px 0 64px;
@@ -334,7 +288,6 @@
     text-align: right;
   }
 
-  /* ============ DELETE MODAL ============ */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -349,10 +302,7 @@
     pointer-events: none;
     transition: opacity 0.25s ease;
   }
-  .modal-overlay.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
 
   .modal {
     background: var(--paper-warm);
@@ -368,9 +318,7 @@
     position: relative;
     overflow: hidden;
   }
-  .modal-overlay.show .modal {
-    transform: translateY(0) scale(1);
-  }
+  .modal-overlay.show .modal { transform: translateY(0) scale(1); }
   .modal::before {
     content: '';
     position: absolute;
@@ -424,14 +372,9 @@
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
   }
-  .modal-btn:hover {
-    background: var(--accent-deep);
-  }
-  .modal-btn:active {
-    transform: translateY(1px);
-  }
+  .modal-btn:hover { background: var(--accent-deep); }
+  .modal-btn:active { transform: translateY(1px); }
 
-  /* post fade-out animation */
   .post.removing {
     opacity: 0 !important;
     transform: translateX(-30px) !important;
@@ -446,19 +389,14 @@
     border: 0 !important;
   }
 
-  /* ============ RESPONSIVE ============ */
   @media (max-width: 820px) {
     .container { padding: 0 24px; }
     .nav-links { gap: 20px; font-size: 12px; }
-    .post {
-      grid-template-columns: 1fr;
-      gap: 16px;
-      padding: 28px 0;
-    }
+    .post { grid-template-columns: 1fr; gap: 16px; padding: 28px 0; }
     .post-num { display: flex; gap: 12px; align-items: baseline; }
     .post-num span { display: inline; }
     .post-img { width: 100%; height: 220px; }
-    .post:hover { padding-left: 0; padding-left: 12px; }
+    .post:hover { padding-left: 12px; }
     footer { grid-template-columns: 1fr; }
     .foot-meta { text-align: left; }
     .watch-tag { font-size: 9.5px; padding: 3px 7px; }
@@ -466,7 +404,6 @@
     .modal h4 { font-size: 22px; }
   }
 
-  /* fade-in on load */
   .post {
     opacity: 0;
     transform: translateY(20px);
@@ -478,17 +415,13 @@
   .post:nth-child(4) { animation-delay: 0.4s; }
   .post:nth-child(5) { animation-delay: 0.5s; }
   .post:nth-child(6) { animation-delay: 0.6s; }
-
-  @keyframes rise {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- ============ HEADER ============ -->
   <header>
     <nav class="nav">
       <div class="logo">
@@ -509,7 +442,6 @@
     </nav>
   </header>
 
-  <!-- ============ POSTS ============ -->
   <div class="section-head">
     <h2>日志</h2>
     <span class="count">景明 · 05 ENTRIES · UPDATED TODAY</span>
@@ -517,8 +449,8 @@
 
   <article class="posts">
 
-    <!-- POST 1 -->
-    <a class="post" href="#" onclick="askDelete(event, this)">
+    <!-- POST 1 — 可删除,data-deletable 是它的唯一身份证 -->
+    <a class="post" href="#" data-deletable="naked-ape-investigation" onclick="askDelete(event, this)">
       <div class="post-num">NO.<span>05</span></div>
       <div class="post-body">
         <span class="post-tag">调查</span>
@@ -530,12 +462,9 @@
           <span>4 min read</span>
         </div>
       </div>
-      <div class="post-img">
-        <img>
-      </div>
+      <div class="post-img"><img></div>
     </a>
 
-    <!-- POST 3 -->
     <a class="post" href="shheianmaitian.html">
       <div class="post-num">NO.<span>04</span></div>
       <div class="post-body">
@@ -548,12 +477,9 @@
           <span>3 min read</span>
         </div>
       </div>
-      <div class="post-img">
-        <img src="images/maitianqunya.png" alt="工作台">
-      </div>
+      <div class="post-img"><img src="images/maitianqunya.png" alt="工作台"></div>
     </a>
 
-    <!-- POST 4 -->
     <a class="post" href="shwosihu.html">
       <div class="post-num">NO.<span>03</span></div>
       <div class="post-body">
@@ -566,12 +492,9 @@
           <span>2 min read</span>
         </div>
       </div>
-      <div class="post-img">
-        <img src="images/wosihu.png" alt="咖啡">
-      </div>
+      <div class="post-img"><img src="images/wosihu.png" alt="咖啡"></div>
     </a>
 
-    <!-- POST 5 -->
     <a class="post" href="shxueshan.html">
       <div class="post-num">NO.<span>02</span></div>
       <div class="post-body">
@@ -584,12 +507,9 @@
           <span>5 min read</span>
         </div>
       </div>
-      <div class="post-img">
-        <img src="images/xueshan.png" alt="设计">
-      </div>
+      <div class="post-img"><img src="images/xueshan.png" alt="设计"></div>
     </a>
 
-    <!-- POST 6 -->
     <a class="post" href="shsjz.html">
       <div class="post-num">NO.<span>01</span></div>
       <div class="post-body">
@@ -602,14 +522,11 @@
           <span>3 min read</span>
         </div>
       </div>
-      <div class="post-img">
-        <img src="images/shijinzhi.png" alt="开始">
-      </div>
+      <div class="post-img"><img src="images/shijinzhi.png" alt="开始"></div>
     </a>
 
   </article>
 
-  <!-- ============ FOOTER ============ -->
   <footer>
     <div class="foot-text">「这个世界,不止人类」</div>
     <div class="foot-meta"></div>
@@ -617,7 +534,6 @@
 
 </div>
 
-<!-- ============ DELETE MODAL ============ -->
 <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="modal-icon">!</div>
@@ -628,6 +544,32 @@
 </div>
 
 <script>
+  /* ============================================================
+     ★ 删除持久化:用 localStorage 记住哪些帖子被删了 ★
+     - 两个页面(日志/草稿箱)共用同一个 key,删除全局生效
+     - 想清空所有删除记录,在控制台运行:
+         localStorage.removeItem('shihu-deleted-posts')
+     ============================================================ */
+  const DELETED_KEY = 'shihu-deleted-posts';
+
+  function getDeletedSet() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(DELETED_KEY) || '[]'));
+    } catch (e) { return new Set(); }
+  }
+  function saveDeletedSet(set) {
+    try { localStorage.setItem(DELETED_KEY, JSON.stringify([...set])); } catch (e) {}
+  }
+
+  // 进页面时:把已经删过的帖子从 DOM 里移除
+  (function applyExistingDeletions() {
+    const deleted = getDeletedSet();
+    document.querySelectorAll('[data-deletable]').forEach(el => {
+      if (deleted.has(el.dataset.deletable)) el.remove();
+    });
+  })();
+
+  /* ===== 删除流程 ===== */
   let postToDelete = null;
 
   function askDelete(e, postEl) {
@@ -642,11 +584,17 @@
 
     if (postToDelete) {
       const post = postToDelete;
-      // step 1: fade + slide out
+
+      // ★ 把 ID 写进 localStorage,刷新后还能记住 ★
+      if (post.dataset.deletable) {
+        const deleted = getDeletedSet();
+        deleted.add(post.dataset.deletable);
+        saveDeletedSet(deleted);
+      }
+
+      // 动画移除
       post.classList.add('removing');
-      // step 2: collapse height
       setTimeout(() => post.classList.add('removing-done'), 250);
-      // step 3: fully remove from layout after animation
       setTimeout(() => post.remove(), 800);
       postToDelete = null;
     }

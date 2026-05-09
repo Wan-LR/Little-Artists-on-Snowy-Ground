@@ -45,9 +45,7 @@
         radial-gradient(circle at 88% 82%, rgba(227, 57, 50, 0.05) 0, transparent 42%);
     }
 
-    /* ============================================================
-       页面布局 — 内容垂直居中
-       ============================================================ */
+    /* 页面布局 */
     .page {
       min-height: 100vh;
       display: flex;
@@ -57,9 +55,7 @@
       padding: 48px 24px 96px;
     }
 
-    /* ============================================================
-       LOGO
-       ============================================================ */
+    /* LOGO */
     .logo-wrap { margin-bottom: 0px; line-height: 0; }
     .logo-wrap img { height: 200px; width: auto; display: block; }
     @media (max-width: 480px) {
@@ -67,13 +63,8 @@
       .logo-wrap img { height: 110px; }
     }
 
-    /* ============================================================
-       搜索框
-       ============================================================ */
-    .search-form {
-      width: 100%;
-      max-width: 560px;
-    }
+    /* 搜索框 */
+    .search-form { width: 100%; max-width: 560px; }
 
     .search-wrap {
       position: relative;
@@ -145,9 +136,7 @@
       .search-btn { width: 40px; height: 40px; right: 7px; }
     }
 
-    /* ============================================================
-       页脚
-       ============================================================ */
+    /* 页脚 */
     .page-footer {
       position: fixed;
       bottom: 24px;
@@ -157,9 +146,7 @@
       color: var(--ink-faint);
     }
 
-    /* ============================================================
-       弹窗
-       ============================================================ */
+    /* 弹窗 */
     .modal-mask {
       position: fixed;
       inset: 0;
@@ -186,9 +173,7 @@
       transform: scale(0.94) translateY(8px);
       animation: popIn 0.28s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
     }
-    @keyframes popIn {
-      to { transform: scale(1) translateY(0); }
-    }
+    @keyframes popIn { to { transform: scale(1) translateY(0); } }
 
     .modal-emoji { font-size: 44px; line-height: 1; margin-bottom: 16px; }
 
@@ -228,12 +213,10 @@
 
   <div class="page">
 
-    <!-- LOGO 位置:换图就改 src,目录结构和登录页一致 -->
     <div class="logo-wrap">
       <img src="images/qianbaidu.png" alt="LOGO">
     </div>
 
-    <!-- 搜索框 -->
     <form class="search-form" id="searchForm" novalidate>
       <div class="search-wrap">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -244,7 +227,7 @@
           type="text"
           id="searchInput"
           class="search-input"
-          placeholder="寻你一下 你就知道！"
+          placeholder="寻你一下 你就知道!"
           autocomplete="off"
         >
         <button type="submit" class="search-btn" aria-label="搜索">
@@ -263,34 +246,26 @@
   <!-- 找不到关键词时的弹窗 -->
   <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <h2 class="modal-title" id="modalTitle">你为什么要搜索这个？</h2>
+      <h2 class="modal-title" id="modalTitle">你为什么要搜索这个?</h2>
       <button type="button" class="modal-btn" id="modalCloseBtn">我 知 道 了</button>
     </div>
   </div>
 
   <script>
-    /* ============================================================
-       关键词 → 跳转页面 配置(base64 编码)
-
-       ============================================================ */
-    const KEYWORDS_B64 =
-      'eyLopb/nuqLmn78iOiAieGhzMS5odG1sIiwgIueVquiMhCI6ICJ4aHMxLmh0bWwiLCAi5ZGY5belIjogImxvZ2luLmh0bWwifQ==';
-
-    let KEYWORDS = {};
-    try {
-      // 中文用 atob 解出来是 UTF-8 字节,需要再 decode 一次
-      const raw = atob(KEYWORDS_B64);
-      const bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
-      const text = new TextDecoder('utf-8').decode(bytes);
-      KEYWORDS = JSON.parse(text);
-    } catch (e) {
-      console.error('关键词数据解码失败', e);
-    }
 
 
-    /* ============================================================
-       搜索逻辑
-       ============================================================ */
+    const KEYWORDS = {
+      "雪地里的小画家":  "qbdxdldxhj.html",
+      "昴星":    "qbdmaoxing.html",
+      "人":    "qbdrenlei.html",
+      "旧城疫":    "qbdxcy.html",
+      // 想加更多就在这里继续加,例如:
+      // "新关键词": "目标页面.html",
+    };
+
+    /* ══════════════ 配置结束,下面是搜索逻辑,一般不需要改 ══════════════ */
+
+
     const form = document.getElementById('searchForm');
     const input = document.getElementById('searchInput');
     const modalMask = document.getElementById('modalMask');
@@ -314,10 +289,6 @@
       }
     });
 
-
-    /* ============================================================
-       弹窗控制
-       ============================================================ */
     function showModal() { modalMask.classList.add('show'); }
     function hideModal() {
       modalMask.classList.remove('show');

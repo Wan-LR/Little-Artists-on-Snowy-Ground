@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>万左右巨献</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
+    background: #0a0014;
+    color: #fff;
+    user-select: none;
+  }
+
+  /* ============ 背景 ============ */
+  body {
+    background:
+      radial-gradient(circle at 20% 30%, #4a0080 0%, transparent 45%),
+      radial-gradient(circle at 80% 70%, #800040 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, #1a0033 0%, #000010 80%);
+    position: relative;
+  }
+
+  /* 旋转的射线背景 */
+  body::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 200vmax; height: 200vmax;
+    transform: translate(-50%, -50%);
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 215, 0, 0.04) 0deg 6deg,
+      transparent 6deg 12deg
+    );
+    animation: spin 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* 噪点纹理 */
+  body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ============ 飞舞的星星 ============ */
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .star {
+    position: absolute;
+    color: #ffd700;
+    font-size: 24px;
+    animation: twinkle 1.5s ease-in-out infinite, float 8s ease-in-out infinite;
+    text-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.2); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-30px); }
+  }
+
+  /* ============ 顶部跑马灯 ============ */
+  .marquee {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, #ff0080, #ffd700, #ff0080);
+    background-size: 200% 100%;
+    color: #000;
+    font-weight: 900;
+    font-size: 16px;
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 5;
+    border-bottom: 3px solid #ffd700;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+    animation: marquee-bg 3s linear infinite;
+  }
+
+  @keyframes marquee-bg {
+    to { background-position: -200% 0; }
+  }
+
+  .marquee-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee-scroll 18s linear infinite;
+  }
+
+  @keyframes marquee-scroll {
+    to { transform: translateX(-100%); }
+  }
+
+  .marquee-track span {
+    margin: 0 40px;
+    text-shadow: 1px 1px 0 #fff;
+  }
+
+  /* ============ 底部跑马灯 ============ */
+  .marquee.bottom {
+    top: auto;
+    bottom: 0;
+    border-top: 3px solid #ffd700;
+    border-bottom: none;
+    background: linear-gradient(90deg, #00ffff, #ffd700, #ff00ff, #ffd700, #00ffff);
+    background-size: 200% 100%;
+  }
+
+  .marquee.bottom .marquee-track {
+    animation: marquee-scroll 22s linear infinite reverse;
+  }
+
+  /* ============ 主舞台 ============ */
+  .stage {
+    position: relative;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 60px 20px;
+  }
+
+  /* 副标题 - 隆重推出 */
+  .eyebrow {
+    font-size: 22px;
+    letter-spacing: 12px;
+    padding-left: 12px;
+    color: #ffd700;
+    font-weight: 700;
+    text-shadow: 0 0 8px #ffd700, 0 0 16px #ff8c00;
+    animation: eyebrow-in 0.6s ease 0.2s backwards, glow 2s ease-in-out infinite;
+    opacity: 0.95;
+  }
+
+  @keyframes eyebrow-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 0.95; transform: translateY(0); }
+  }
+
+  @keyframes glow {
+    0%, 100% { text-shadow: 0 0 8px #ffd700, 0 0 16px #ff8c00; }
+    50%      { text-shadow: 0 0 16px #ffd700, 0 0 32px #ff8c00, 0 0 48px #ff8c00; }
+  }
+
+  /* 主标题 - 万左右巨献 */
+  .title {
+    font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+    font-weight: 900;
+    font-size: clamp(64px, 14vw, 180px);
+    letter-spacing: 10px;
+    line-height: 1;
+    text-align: center;
+    background: linear-gradient(180deg,
+      #fffacd 0%,
+      #ffd700 30%,
+      #ff8c00 55%,
+      #ff4500 80%,
+      #c00000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 2px #800020;
+    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.8))
+            drop-shadow(0 8px 0 rgba(0, 0, 0, 0.5));
+    animation: title-in 1s cubic-bezier(0.34, 1.56, 0.64, 1),
+               title-bounce 2.5s ease-in-out 1s infinite;
+  }
+
+  @keyframes title-in {
+    0%   { opacity: 0; transform: scale(0.3) rotate(-8deg); }
+    60%  { opacity: 1; transform: scale(1.15) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  @keyframes title-bounce {
+    0%, 100% { transform: scale(1) rotate(0); }
+    50%      { transform: scale(1.04) rotate(-1deg); }
+  }
+
+  /* 单字 wobble — 让每个字微微错开 */
+  .title span {
+    display: inline-block;
+    animation: char-wobble 1.4s ease-in-out infinite;
+  }
+  .title span:nth-child(1) { animation-delay: 0s;    }
+  .title span:nth-child(2) { animation-delay: 0.15s; }
+  .title span:nth-child(3) { animation-delay: 0.3s;  }
+  .title span:nth-child(4) { animation-delay: 0.45s; }
+  .title span:nth-child(5) { animation-delay: 0.6s;  }
+
+  @keyframes char-wobble {
+    0%, 100% { transform: translateY(0)    rotate(0); }
+    50%      { transform: translateY(-10px) rotate(-2deg); }
+  }
+
+  /* 三句小广告语 */
+  .taglines {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+    animation: tags-in 0.6s ease 0.9s backwards;
+  }
+
+  @keyframes tags-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .tag {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(255, 0, 128, 0.85);
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 16px rgba(255, 0, 128, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: rotate(-3deg);
+    animation: tag-shake 1.8s ease-in-out infinite;
+    letter-spacing: 1px;
+  }
+  .tag:nth-child(2) { transform: rotate(2deg);  background: rgba(0, 200, 255, 0.85); animation-delay: 0.3s; }
+  .tag:nth-child(3) { transform: rotate(-2deg); background: rgba(255, 140, 0, 0.85); animation-delay: 0.6s; }
+
+  @keyframes tag-shake {
+    0%, 100% { filter: brightness(1); }
+    50%      { filter: brightness(1.3); }
+  }
+
+  /* 倒计时 + 跳转提示 */
+  .countdown {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    animation: countdown-in 0.5s ease 1.4s backwards;
+  }
+
+  @keyframes countdown-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .countdown #timer {
+    display: inline-block;
+    min-width: 1.6em;
+    color: #fff;
+    font-weight: 900;
+    font-size: 18px;
+    text-shadow: 0 0 12px #ff0080;
+  }
+
+  .skip {
+    margin-top: 8px;
+    background: transparent;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    color: rgba(255, 215, 0, 0.7);
+    padding: 6px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    font-family: inherit;
+    transition: all 0.2s;
+    animation: countdown-in 0.5s ease 1.6s backwards;
+  }
+  .skip:hover {
+    background: #ffd700;
+    color: #000;
+    border-color: #ffd700;
+  }
+
+  /* ============ 闪光特效层 ============ */
+  .flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    z-index: 100;
+    pointer-events: none;
+    animation: title-flash 0.4s ease-out;
+  }
+
+  @keyframes title-flash {
+    0%   { opacity: 0; }
+    20%  { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  /* ============ 角落装饰 ============ */
+  .corner {
+    position: absolute;
+    width: 80px; height: 80px;
+    border: 4px solid #ffd700;
+    z-index: 4;
+    pointer-events: none;
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+  }
+  .corner.tl { top: 50px;    left: 20px;  border-right: 0; border-bottom: 0; }
+  .corner.tr { top: 50px;    right: 20px; border-left: 0;  border-bottom: 0; }
+  .corner.bl { bottom: 50px; left: 20px;  border-right: 0; border-top: 0;    }
+  .corner.br { bottom: 50px; right: 20px; border-left: 0;  border-top: 0;    }
+
+  @media (max-width: 600px) {
+    .eyebrow { font-size: 14px; letter-spacing: 6px; padding-left: 6px; }
+    .tag { font-size: 13px; padding: 4px 12px; }
+    .corner { width: 50px; height: 50px; border-width: 3px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 闪光 -->
+  <div class="flash"></div>
+
+  <!-- 顶部跑马灯 -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>★ 重磅来袭 ★</span>
+      <span>万人空巷 · 全球首映</span>
+      <span>★ 错过等十年 ★</span>
+      <span>不看你会后悔的</span>
+      <span>★ 隆重推荐 ★</span>
+      <span>奇迹之作</span>
+      <span>★ 巅峰巨制 ★</span>
+      <span>家人们 谁懂啊</span>
+    </div>
+  </div>
+
+  <!-- 角落装饰 -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- 飞舞的星星(JS 生成) -->
+  <div class="stars" id="stars"></div>
+
+  <!-- 主舞台 -->
+  <div class="stage">
+
+    <div class="eyebrow">★ 隆 重 推 出 ★</div>
+
+    <h1 class="title">
+      <span>万</span><span>左</span><span>右</span><span>巨</span><span>献</span>
+    </h1>
+
+    <div class="taglines">
+      <span class="tag">★ 史 诗 巨 制 ★</span>
+      <span class="tag">★ 万 众 期 待 ★</span>
+      <span class="tag">★ 倾 力 打 造 ★</span>
+    </div>
+
+    <div class="countdown">
+      ⏳ <span id="timer">5</span> 秒后自动开始
+    </div>
+    <button class="skip" id="skipBtn">跳过 →</button>
+
+  </div>
+
+  <!-- 底部跑马灯 -->
+  <div class="marquee bottom">
+    <div class="marquee-track">
+      <span>◆ 全 网 首 发 ◆</span>
+      <span>票 房 不 设 上 限</span>
+      <span>◆ 五 星 好 评 ◆</span>
+      <span>看 完 想 二 刷</span>
+      <span>◆ 史 上 最 强 ◆</span>
+      <span>谁 看 谁 上 头</span>
+      <span>◆ 神 仙 打 架 ◆</span>
+      <span>建 议 直 接 封 神</span>
+    </div>
+  </div>
+
+<script>
+  /* ============================================
+     ★ 在这里改跳转目标 ★
+     ============================================ */
+  const NEXT_PAGE = 'xhs1.html';
+  const COUNTDOWN_SECONDS = 9;
+
+  /* ============ 生成飞舞的星星 ============ */
+  const starsContainer = document.getElementById('stars');
+  const starChars = ['★', '☆', '✦', '✧', '✨', '⭐'];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.textContent = starChars[Math.floor(Math.random() * starChars.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top  = Math.random() * 100 + 'vh';
+    s.style.fontSize = (16 + Math.random() * 28) + 'px';
+    s.style.animationDelay = Math.random() * 2 + 's';
+    s.style.animationDuration = (1 + Math.random() * 2) + 's, ' +
+                                (5 + Math.random() * 6) + 's';
+    s.style.color = ['#ffd700', '#ff8c00', '#ff0080', '#00ffff'][Math.floor(Math.random() * 4)];
+    starsContainer.appendChild(s);
+  }
+
+  /* ============ 倒计时 → 跳转 ============ */
+  const timerEl = document.getElementById('timer');
+  let remaining = COUNTDOWN_SECONDS;
+
+  function goNext() {
+    /* 跳转前再来个闪白 */
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+      position: fixed; inset: 0; background: white;
+      z-index: 999; opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    `;
+    document.body.appendChild(flash);
+    requestAnimationFrame(() => flash.style.opacity = '1');
+    setTimeout(() => window.location.href = NEXT_PAGE, 260);
+  }
+
+  const tick = setInterval(() => {
+    remaining--;
+    timerEl.textContent = remaining;
+    if (remaining <= 0) {
+      clearInterval(tick);
+      goNext();
+    }
+  }, 1000);
+
+  /* 跳过按钮 */
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    clearInterval(tick);
+    goNext();
+  });
+</script>
+
+</body>
+</html>

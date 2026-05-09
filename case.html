@@ -624,6 +624,11 @@
 
   <script>
     // ============================================================
+    //  ★ 配置:庆祝弹窗关闭后跳转到哪个页面 ★
+    // ============================================================
+    const NEXT_PAGE = 'xhspl.html';   // ← 改成你想跳转的页面文件名
+
+    // ============================================================
     //  持久化:用 localStorage 存"看过哪些帖子"
     //  刷新 / 关闭浏览器 / 退回来 都能记住
     // ============================================================
@@ -710,6 +715,11 @@
     function closeModal() {
       modal.classList.remove('show');
       markModalShown();
+      // ★ 关闭后跳转到下一页 ★
+      // 留一点时间让淡出动画播完,再跳
+      setTimeout(() => {
+        window.location.href = NEXT_PAGE;
+      }, 400);
     }
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {

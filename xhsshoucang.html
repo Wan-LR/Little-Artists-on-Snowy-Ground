@@ -10,9 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ============================================================
-       设计令牌 (沿用站点配色)
-       ============================================================ */
     :root {
       --bg:        #faf7f2;
       --surface:   #ffffff;
@@ -51,10 +48,6 @@
       .container { padding: 24px 18px 64px; }
     }
 
-
-    /* ============================================================
-       1. 顶部导航
-       ============================================================ */
     header {
       display: flex;
       justify-content: space-between;
@@ -114,10 +107,6 @@
       transform: translateX(-2px);
     }
 
-
-    /* ============================================================
-       2. 页面标题区
-       ============================================================ */
     .page-head {
       margin-bottom: 24px;
     }
@@ -158,10 +147,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-
-    /* ============================================================
-       3. 收藏列表
-       ============================================================ */
     .fav-list {
       display: flex;
       flex-direction: column;
@@ -316,15 +301,16 @@
         </span>
         我的收藏
       </h1>
-      <div class="page-sub">已收藏 <span class="count">2</span> 项 · 点击进入</div>
+      <div class="page-sub">已收藏 <span class="count">6</span> 项 · 点击进入</div>
     </div>
 
     <!-- ═══════════ 3. 收藏列表 ═══════════ -->
     <div class="fav-list">
 
-      <!-- ↓↓↓ 第 1 条:改 href 改跳转链接,改 .fav-name 改名字 ↓↓↓ -->
+      <!-- 1. 雪地里的小画家 · 词条 -->
       <a class="fav-item" href="qbdxdldxhj.html">
         <div class="fav-icon">
+          <!-- 文档图标 -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
@@ -346,20 +332,109 @@
         </div>
       </a>
 
-      <!-- ↓↓↓ 第 2 条 ↓↓↓ -->
+      <!-- 2. 十二生肖 · 词条 -->
       <a class="fav-item" href="shiershengxiao.html">
         <div class="fav-icon">
+          <!-- 文档图标 (统一) -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="9" y1="13" x2="15" y2="13"/>
+            <line x1="9" y1="17" x2="15" y2="17"/>
           </svg>
         </div>
         <div class="fav-body">
           <div class="fav-name">
             十二生肖
             <span class="fav-tag">词条</span>
+          </div>
+        </div>
+        <div class="fav-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 3. 帖子 1 -->
+      <a class="fav-item" href="jisuanji1.html">
+        <div class="fav-icon">
+          <!-- 帖子图标 (消息气泡) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="fav-body">
+          <div class="fav-name">
+            一点都没用的计算机小知识 Day1
+            <span class="fav-tag">帖子</span>
+          </div>
+        </div>
+        <div class="fav-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 4. 帖子 2 -->
+      <a class="fav-item" href="jisuanji2.html">
+        <div class="fav-icon">
+          <!-- 帖子图标 (消息气泡) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="fav-body">
+          <div class="fav-name">
+            一点都有用的计算机小知识 Day2
+            <span class="fav-tag">帖子</span>
+          </div>
+        </div>
+        <div class="fav-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 5. 帖子 3 -->
+      <a class="fav-item" href="jisuanji3.html">
+        <div class="fav-icon">
+          <!-- 帖子图标 (消息气泡) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="fav-body">
+          <div class="fav-name">
+           一点都没用的计算机小知识 Day3
+            <span class="fav-tag">帖子</span>
+          </div>
+        </div>
+        <div class="fav-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+
+      <!-- 6. 词条 3 -->
+      <a class="fav-item" href="xhshuifupinglun.html">
+        <div class="fav-icon">
+          <!-- 帖子图标 (消息气泡) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="fav-body">
+          <div class="fav-name">
+           西红柿评论无法加载恢复操作
+            <span class="fav-tag">帖子</span>
           </div>
         </div>
         <div class="fav-arrow">

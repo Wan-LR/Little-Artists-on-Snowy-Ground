@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>已处理Case · 工单中心</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --warning:   #d97706;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+
+      --st-deleted:    #8a1d18;
+      --st-deleted-bg: rgba(227, 57, 50, 0.08);
+      --st-restricted:    #92400e;
+      --st-restricted-bg: #fef3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 18px 64px; }
+    }
+
+    /* ═══════ 顶部导航 ═══════ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .site-logo {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .site-logo .logo-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 480px) {
+      .site-logo .logo-title { font-size: 22px; }
+    }
+
+    .intranet-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: #fef7e0;
+      border: 1px solid #f4d893;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #7c5a17;
+      letter-spacing: 0.05em;
+    }
+
+    .intranet-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #c8941e;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* 进度胶囊 */
+    .progress-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--ink-soft);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: all 0.3s;
+    }
+
+    .progress-pill .dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .progress-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: background 0.3s;
+    }
+
+    .progress-pill .dot.on { background: var(--accent); }
+
+    .progress-pill.done {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ═══════ 页面标题 ═══════ */
+    .page-head {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 32px;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .page-title { font-size: 26px; }
+    }
+
+    .page-sub {
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+
+    .page-sub .reset {
+      margin-left: 14px;
+      font-style: normal;
+      color: #c4b9a8;
+      text-decoration: underline;
+      text-decoration-color: #e3d9c8;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+    }
+    .page-sub .reset:hover { color: var(--ink-soft); }
+
+    /* ═══════ 板块标题 ═══════ */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .section-title .count {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .section-title .count.urgent { color: var(--accent); }
+    .section-title .count.normal { color: var(--ink-faint); }
+
+    /* ═══════ 工单卡片 ═══════ */
+    .ticket-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ticket-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 18px 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      transition: all 0.25s ease;
+      position: relative;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .ticket-card:hover {
+      border-color: var(--ink-soft);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    .ticket-card:active {
+      transform: translateY(0);
+      transition-duration: 0.1s;
+    }
+
+    /* 左侧优先级色条 */
+    .ticket-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: var(--line);
+    }
+
+    .ticket-card.priority-high::before { background: var(--accent); }
+    .ticket-card.priority-medium::before { background: #d4a226; }
+    .ticket-card.priority-low::before { background: var(--line); }
+
+    /* 第一行 */
+    .ticket-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .ticket-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ticket-time {
+      font-size: 12px;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* 第二行 */
+    .ticket-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ticket-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .ticket-id {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ticket-meta-left .sep {
+      color: var(--ink-faint);
+      opacity: 0.6;
+    }
+
+    /* 状态胶囊 */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    .status-tag::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .status-deleted {
+      background: var(--st-deleted-bg);
+      color: var(--st-deleted);
+    }
+    .status-deleted::before { background: var(--st-deleted); }
+
+    .status-restricted {
+      background: var(--st-restricted-bg);
+      color: var(--st-restricted);
+    }
+    .status-restricted::before { background: #b45309; }
+
+    /* ═══════ 已查看状态 ═══════ */
+    .ticket-card.viewed {
+      opacity: 0.6;
+      background: var(--bg);
+    }
+
+    .ticket-card.viewed:hover {
+      opacity: 0.85;
+      background: var(--surface);
+    }
+
+    /* 右侧已查看勾选标 */
+    .check-badge {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%) scale(0.5);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(227, 57, 50, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .ticket-card.viewed .check-badge {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+
+    /* 已限流的卡片用琥珀色勾 */
+    .ticket-card.case-limited.viewed .check-badge {
+      background: var(--warning);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    }
+
+    .check-badge svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ═══════ 庆祝弹窗 ═══════ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 26, 26, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 40px 36px 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.3);
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .modal-backdrop.show .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b5e 0%, #e33932 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(227, 57, 50, 0.35);
+      animation: bounce 0.6s ease 0.2s both;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .modal-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .modal-label {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .modal-text {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .modal-btn {
+      display: inline-block;
+      padding: 11px 28px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      background: var(--ink);
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-1px);
+      background: #000;
+    }
+
+    /* 确认弹窗 */
+    .modal.modal-confirm {
+      padding: 32px 28px 24px;
+      max-width: 360px;
+    }
+    .modal.modal-confirm .modal-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .modal-btn.secondary {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+      padding: 10px 22px;
+    }
+    .modal-btn.secondary:hover {
+      background: var(--bg);
+      color: var(--ink);
+      border-color: var(--ink-soft);
+    }
+    .modal-btn.danger {
+      background: var(--accent);
+      padding: 10px 22px;
+    }
+    .modal-btn.danger:hover {
+      background: #c92e28;
+    }
+
+    /* 五彩纸屑 */
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 8px;
+      height: 14px;
+      pointer-events: none;
+      z-index: 99;
+      opacity: 0;
+    }
+
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ═══════ 顶部导航 ═══════ -->
+    <header>
+      <div class="header-left">
+        <a href="#" class="site-logo">
+          <span class="logo-title">已处理 Case</span>
+        </a>
+        <span class="intranet-badge">内网工作台</span>
+      </div>
+      <div class="header-right">
+        <div class="progress-pill" id="progress">
+          <span id="progress-num">0 / 5</span>
+          <span class="dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══════ 页面标题 ═══════ -->
+    <div class="page-head">
+      <h1 class="page-title">工单中心</h1>
+      <p class="page-sub">
+        共 5 条待查看
+        <button class="reset" id="reset-btn" type="button">重置进度</button>
+      </p>
+    </div>
+
+    <!-- ═══════ 已处理工单列表(可点击、带追踪逻辑) ═══════ -->
+    <section class="section">
+      <div class="section-title">
+        <h2>我已处理</h2>
+        <span class="count normal">5</span>
+      </div>
+
+      <div class="ticket-list">
+
+        <!-- Case 1 - 已限流 -->
+        <a class="ticket-card priority-low case-limited" href="xhscasetubu.html" data-id="case-01">
+          <div class="ticket-head">
+            <div class="ticket-title">在徒步时看到不属于人类的脚印</div>
+            <div class="ticket-time">3 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-031247</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </a>
+
+        <!-- Case 2 - 已删除 -->
+        <a class="ticket-card priority-low" href="xhscasexiaban.html" data-id="case-02">
+          <div class="ticket-head">
+            <div class="ticket-title">晚上下班看到高大的裸猿的身影</div>
+            <div class="ticket-time">2 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-058923</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-deleted">已删除</span>
+          </div>
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </a>
+
+        <!-- Case 3 - 已删除 -->
+        <a class="ticket-card priority-low" href="xhscaseyouyong.html" data-id="case-03">
+          <div class="ticket-head">
+            <div class="ticket-title">湖里看到水猴子(? 了</div>
+            <div class="ticket-time">1 天前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-074156</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-deleted">已删除</span>
+          </div>
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </a>
+
+        <!-- Case 4 - 已限流 -->
+        <a class="ticket-card priority-low case-limited" href="" data-id="case-04">
+          <div class="ticket-head">
+            <div class="ticket-title">语文书的配图是不是有问题啊</div>
+            <div class="ticket-time">6 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-082039</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </a>
+
+        <!-- Case 5 - 已限流 -->
+        <a class="ticket-card priority-low case-limited" href="xhscasexiangxia.html" data-id="case-05">
+          <div class="ticket-head">
+            <div class="ticket-title">这是什么啊？</div>
+            <div class="ticket-time">3 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#TZ-098765</span>
+              <span class="sep">·</span>
+              <span>分类 不实信息</span>
+            </div>
+            <span class="status-tag status-restricted">已限流</span>
+          </div>
+          <div class="check-badge">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════ 庆祝弹窗 ═══════ -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="modal-label">RESOLVED</div>
+      <h3 class="modal-title">啊 西红柿首页的<br>评论好像修好了</h3>
+      <button class="modal-btn" id="modal-close">收到</button>
+    </div>
+  </div>
+
+  <!-- ═══════ 重置确认弹窗 ═══════ -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal modal-confirm">
+      <h3 class="modal-title">清空所有"已看过"的记录?</h3>
+      <p class="modal-text">进度会重置回 0 / 5</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="confirm-cancel" type="button">取消</button>
+        <button class="modal-btn danger" id="confirm-ok" type="button">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ★ 庆祝弹窗关闭后跳转页面
+    const NEXT_PAGE = 'xhspl.html';
+
+    // 持久化
+    const STORAGE_KEY = 'xhs-cases-viewed';
+    const MODAL_KEY   = 'xhs-cases-modal-shown';
+
+    function loadViewed() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return new Set(raw ? JSON.parse(raw) : []);
+      } catch (e) { return new Set(); }
+    }
+    function saveViewed(set) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...set])); } catch (e) {}
+    }
+    function modalShown() {
+      return localStorage.getItem(MODAL_KEY) === '1';
+    }
+    function markModalShown() {
+      try { localStorage.setItem(MODAL_KEY, '1'); } catch (e) {}
+    }
+
+    // DOM
+    const cards       = document.querySelectorAll('.ticket-card[data-id]');
+    const dots        = document.querySelectorAll('.progress-pill .dot');
+    const progressNum = document.getElementById('progress-num');
+    const progressPill= document.getElementById('progress');
+    const modal       = document.getElementById('modal');
+    const modalClose  = document.getElementById('modal-close');
+    const resetBtn    = document.getElementById('reset-btn');
+
+    const confirmModal     = document.getElementById('confirm-modal');
+    const confirmOkBtn     = document.getElementById('confirm-ok');
+    const confirmCancelBtn = document.getElementById('confirm-cancel');
+
+    const total = cards.length;
+    let viewed  = loadViewed();
+
+    function updateProgress() {
+      const n = viewed.size;
+      progressNum.textContent = `${n} / ${total}`;
+      dots.forEach((d, i) => d.classList.toggle('on', i < n));
+      progressPill.classList.toggle('done', n === total);
+    }
+
+    function applyViewedState() {
+      cards.forEach(card => {
+        card.classList.toggle('viewed', viewed.has(card.dataset.id));
+      });
+      updateProgress();
+    }
+
+    // 点击工单:记录 + 跳转
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        if (!viewed.has(id)) {
+          viewed.add(id);
+          saveViewed(viewed);
+          card.classList.add('viewed');
+          updateProgress();
+        }
+      });
+    });
+
+    // 庆祝弹窗
+    function maybeShowModal() {
+      if (viewed.size === total && !modalShown()) {
+        setTimeout(() => {
+          modal.classList.add('show');
+          confetti();
+        }, 500);
+      }
+    }
+
+    function closeModal() {
+      modal.classList.remove('show');
+      markModalShown();
+      setTimeout(() => { window.location.href = NEXT_PAGE; }, 400);
+    }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // 自定义 confirm 弹窗
+    function askConfirm() {
+      return new Promise(resolve => {
+        confirmModal.classList.add('show');
+        const cleanup = (result) => {
+          confirmModal.classList.remove('show');
+          confirmOkBtn.removeEventListener('click', onOk);
+          confirmCancelBtn.removeEventListener('click', onCancel);
+          confirmModal.removeEventListener('click', onBackdrop);
+          document.removeEventListener('keydown', onKey);
+          resolve(result);
+        };
+        const onOk       = () => cleanup(true);
+        const onCancel   = () => cleanup(false);
+        const onBackdrop = (e) => { if (e.target === confirmModal) cleanup(false); };
+        const onKey      = (e) => {
+          if (e.key === 'Escape') cleanup(false);
+          else if (e.key === 'Enter') cleanup(true);
+        };
+        confirmOkBtn.addEventListener('click', onOk);
+        confirmCancelBtn.addEventListener('click', onCancel);
+        confirmModal.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKey);
+      });
+    }
+
+    // 重置进度
+    resetBtn.addEventListener('click', async () => {
+      const ok = await askConfirm();
+      if (!ok) return;
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(MODAL_KEY);
+      } catch (e) {}
+      viewed = new Set();
+      applyViewedState();
+    });
+
+    // 五彩纸屑
+    function confetti() {
+      const colors = ['#e33932', '#ff8a65', '#ffb74d', '#1a1a1a', '#6b6b6b'];
+      for (let i = 0; i < 40; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animation = `fall ${1.8 + Math.random() * 1.5}s cubic-bezier(0.4, 0, 0.6, 1) ${Math.random() * 0.4}s forwards`;
+        c.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+      }
+    }
+
+    // 启动
+    applyViewedState();
+    maybeShowModal();
+  </script>
+</body>
+</html>

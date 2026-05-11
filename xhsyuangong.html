@@ -10,9 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ============================================================
-       设计令牌 (与主站保持一致)
-       ============================================================ */
     :root {
       --bg:        #faf7f2;
       --surface:   #ffffff;
@@ -45,9 +42,6 @@
         radial-gradient(circle at 88% 82%, rgba(227, 57, 50, 0.05) 0, transparent 42%);
     }
 
-    /* ============================================================
-       1. 页面布局
-       ============================================================ */
     .page {
       min-height: 100vh;
       display: flex;
@@ -63,10 +57,6 @@
       .top-logo img { height: 56px; }
     }
 
-
-    /* ============================================================
-       2. 登录卡片
-       ============================================================ */
     .login-card {
       width: 100%;
       max-width: 420px;
@@ -113,13 +103,8 @@
       font-size: 14px;
     }
 
-
-    /* ============================================================
-       3. 表单
-       ============================================================ */
     .form-field {
       margin-bottom: 18px;
-      position: relative;        /* ★ 给 autofill 弹层定位用 */
     }
 
     .form-label {
@@ -186,81 +171,6 @@
     .toggle-pw:hover { color: var(--ink-soft); background: var(--line-soft); }
     .toggle-pw svg { width: 18px; height: 18px; }
 
-
-    /* ============================================================
-       3.5 自动填充弹层 (仅第二个账号触发)
-       ============================================================ */
-    .autofill-popover {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      box-shadow: var(--shadow-lift);
-      padding: 5px;
-      z-index: 50;
-      opacity: 0;
-      transform: translateY(-4px);
-      pointer-events: none;
-      transition: opacity 0.18s ease, transform 0.18s ease;
-    }
-    .autofill-popover.show {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    .autofill-option {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: transparent;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      text-align: left;
-      transition: background 0.15s;
-      font-family: var(--font-body);
-    }
-    .autofill-option:hover { background: var(--line-soft); }
-
-    .autofill-icon {
-      width: 32px;
-      height: 32px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 8px;
-    }
-    .autofill-icon svg { width: 16px; height: 16px; stroke-width: 2; }
-
-    .autofill-text {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      min-width: 0;
-    }
-    .autofill-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink);
-    }
-    .autofill-mask {
-      font-size: 12px;
-      color: var(--ink-soft);
-      letter-spacing: 0.05em;
-    }
-
-
-    /* ============================================================
-       4. 错误提示 + 登录按钮
-       ============================================================ */
     .error-msg {
       display: none;
       background: var(--accent-soft);
@@ -344,24 +254,6 @@
               required
             >
           </div>
-
-          <!-- 自动填充弹层(默认隐藏,仅第二账号触发) -->
-          <div class="autofill-popover" id="autofillPopover" role="listbox">
-            <button type="button" class="autofill-option" id="autofillOption">
-              <span class="autofill-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="8" cy="15" r="4"/>
-                  <line x1="10.85" y1="12.15" x2="19" y2="4"/>
-                  <line x1="18" y1="5" x2="20" y2="7"/>
-                  <line x1="15" y1="8" x2="17" y2="10"/>
-                </svg>
-              </span>
-              <span class="autofill-text">
-                <span class="autofill-label">使用保存的密码</span>
-                <span class="autofill-mask" id="autofillMask">••••••••</span>
-              </span>
-            </button>
-          </div>
         </div>
 
         <!-- 密码 -->
@@ -404,14 +296,117 @@
        账号数据 — base64 编码
        ============================================================ */
     const ACCOUNTS_B64 =
-      'eyJUT01BVE82NDIiOiB7InAiOiAiVGhlIFNpbXMiLCAiciI6ICJ5dWFuZ29uZ3hpYW9sYW4uaHRtbCJ9LCAiVE9NQVRPODQ1IjogeyJwIjogInN1aWJpYW4iLCAiciI6ICJ4aHNpdC5odG1sIn19';
+      'eyJUT01BVE82NDIiOiB7InAiOiAiVGhlIFNpbXMiLCAiciI6ICJ5dWFuZ29uZ3hpYW9sYW4uaHRtbCJ9LCAiVE9NQVRPODQ1IjogeyJwIjogImhlbGxvd29ybGQiLCAiciI6ICJ4aHNpdC5odG1sIn19';
 
-    // 解码成对象 — { 账号: { p: 密码, r: 跳转链接 } }
     let ACCOUNTS = {};
     try { ACCOUNTS = JSON.parse(atob(ACCOUNTS_B64)); } catch (e) { console.error('账号数据解码失败', e); }
 
-    // 第二个账号的 key(用于触发自动填充弹层)
-    const SECOND_ACCOUNT_KEY = Object.keys(ACCOUNTS)[1] || '';
+
+    /* ============================================================
+       ★ 控制台"破解"彩蛋 — password("工号")
+       ============================================================ */
+    const _PW_VAULT_B64 = 'eyJUT01BVE84NDUiOiAiYUdWc2JHOTNiM0pzWkE9PSJ9';
+
+    window.password = function(id) {
+      const _delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+      const _run = async () => {
+        const S = {
+          title: 'font-size:14px;font-weight:bold;color:#e33932;',
+          info:  'font-size:12px;color:#6b6b6b;',
+          step:  'font-size:12px;color:#00b894;font-weight:bold;',
+          warn:  'font-size:12px;color:#fdcb6e;',
+          hash:  'font-size:11px;color:#636e72;font-family:monospace;',
+          ok:    'font-size:13px;color:#00b894;font-weight:bold;',
+          pw:    'font-size:16px;color:#e33932;font-weight:bold;background:#fde8e7;padding:4px 12px;border-radius:4px;',
+          fail:  'font-size:13px;color:#d63031;font-weight:bold;',
+        };
+
+        console.clear();
+        console.log('%c🍅 TOMATO INTERNAL — PASSWORD RECOVERY TOOL v2.4', S.title);
+        console.log('%c─────────────────────────────────────────────────', S.info);
+        await _delay(400);
+
+        if (!id || typeof id !== 'string') {
+          console.log('%c✖ 用法: password("工号")  例如 password("TOMATO845")', S.fail);
+          return;
+        }
+
+        console.log('%c▸ 目标工号: ' + id, S.info);
+        await _delay(600);
+
+        console.log('%c[1/6] 连接内部认证服务器...', S.step);
+        await _delay(800);
+        console.log('%c  ✓ 已连接 auth.tomato-internal.cn:8443', S.info);
+        await _delay(400);
+
+        console.log('%c[2/6] 查询员工档案数据库...', S.step);
+        await _delay(1000);
+
+        let vault = {};
+        try { vault = JSON.parse(atob(_PW_VAULT_B64)); } catch(e) {}
+        const encoded = vault[id.toUpperCase()];
+
+        if (!encoded) {
+          console.log('%c  ✖ 未找到工号 "' + id + '" 的记录', S.fail);
+          console.log('%c  提示: 仅支持查询部分测试账号', S.info);
+          return;
+        }
+
+        console.log('%c  ✓ 匹配到 1 条员工记录', S.info);
+        await _delay(500);
+
+        console.log('%c[3/6] 提取加密密码哈希...', S.step);
+        await _delay(700);
+        const fakeHash = Array.from({length: 3}, () =>
+          Array.from({length: 32}, () => '0123456789abcdef'[Math.random()*16|0]).join('')
+        );
+        for (const h of fakeHash) {
+          console.log('%c  ' + h, S.hash);
+          await _delay(200);
+        }
+        await _delay(300);
+
+        console.log('%c[4/6] 尝试解密 (AES-256-GCM → Base64 → plaintext)...', S.step);
+        await _delay(600);
+
+        const realPw = atob(encoded);
+        const pwLen = realPw.length;
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+        let display = Array(pwLen).fill('_');
+
+        console.log('%c[5/6] 获取中...', S.step);
+        await _delay(300);
+
+        for (let i = 0; i < pwLen; i++) {
+          const flickers = 2 + Math.floor(Math.random() * 3);
+          for (let f = 0; f < flickers; f++) {
+            display[i] = chars[Math.random() * chars.length | 0];
+            console.log('%c  ⟫ ' + display.join(''), S.hash);
+            await _delay(120);
+          }
+          display[i] = realPw[i];
+          console.log('%c  ⟫ ' + display.join('') + '  ← 位置 ' + (i+1) + ' 已破解', S.warn);
+          await _delay(200);
+        }
+
+        await _delay(400);
+        console.log('%c[6/6] 验证完整性校验...', S.step);
+        await _delay(600);
+        console.log('%c  ✓ SHA-256 校验通过', S.info);
+        await _delay(300);
+
+        console.log('%c─────────────────────────────────────────────────', S.info);
+        console.log('%c✅ 破解完成!', S.ok);
+        console.log('%c  工号: ' + id.toUpperCase(), S.info);
+        console.log('%c密码: ' + realPw, S.pw);
+        console.log('%c─────────────────────────────────────────────────', S.info);
+        console.log('%c⚠ 本工具仅限内部调试使用,请勿外传', S.warn);
+      };
+
+      _run();
+      return '⏳ 正在破解,请查看控制台输出...';
+    };
 
 
     /* ============================================================
@@ -436,59 +431,9 @@
 
 
     /* ============================================================
-       自动填充弹层
-       ────────────────────────────────────────────────────────────
-       触发条件:账号输入框的值是第二个账号的前缀(>=2 字符)
-                或完全等于第二个账号
-       点击弹层 → 自动填上账号 + 对应密码,焦点移到登录按钮
+       表单提交
        ============================================================ */
     const accountInput = document.getElementById('account');
-    const popover = document.getElementById('autofillPopover');
-    const autofillOption = document.getElementById('autofillOption');
-    const autofillMask = document.getElementById('autofillMask');
-
-    function updateAutofillVisibility() {
-      const v = accountInput.value.trim();
-      const k = SECOND_ACCOUNT_KEY;
-      if (!k) return;
-
-      // 至少敲了 2 个字符,且这些字符是第二账号 key 的前缀
-      const matches = v.length >= 9 && k.toLowerCase().startsWith(v.toLowerCase());
-      if (matches) {
-        // 让遮罩长度跟真实密码一致(只显示圆点,不暴露密码)
-        const realPw = ACCOUNTS[k]?.p || '';
-        autofillMask.textContent = '•'.repeat(Math.min(realPw.length, 12));
-        popover.classList.add('show');
-      } else {
-        popover.classList.remove('show');
-      }
-    }
-
-    accountInput.addEventListener('input', updateAutofillVisibility);
-    accountInput.addEventListener('focus', updateAutofillVisibility);
-
-    // 点输入框外面 → 关掉弹层
-    document.addEventListener('click', (e) => {
-      if (!popover.contains(e.target) && e.target !== accountInput) {
-        popover.classList.remove('show');
-      }
-    });
-
-    // 点弹层 → 自动填上账号 + 密码
-    autofillOption.addEventListener('click', () => {
-      const k = SECOND_ACCOUNT_KEY;
-      if (!k || !ACCOUNTS[k]) return;
-      accountInput.value = k;
-      pwInput.value = ACCOUNTS[k].p;
-      popover.classList.remove('show');
-      // 焦点放到登录按钮,方便回车提交
-      document.getElementById('submitBtn').focus();
-    });
-
-
-    /* ============================================================
-       表单提交 — 不同账号跳转不同页面
-       ============================================================ */
     const form = document.getElementById('loginForm');
     const errorMsg = document.getElementById('errorMsg');
     const submitBtn = document.getElementById('submitBtn');
@@ -515,7 +460,6 @@
 
         const entry = ACCOUNTS[account];
         if (entry && entry.p === password) {
-          // ★ 用账号自带的 r 跳转,两个账号去不同页面
           window.location.href = entry.r;
         } else {
           errorMsg.textContent = '账号或密码不正确,请重新输入';

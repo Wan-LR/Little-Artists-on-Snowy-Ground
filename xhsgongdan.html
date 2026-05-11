@@ -350,14 +350,37 @@
     .status-restricted::before { background: #b45309; }
 
     .ticket-card.highlight {
-    background: var(--accent-soft);                     /* #fde8e7 浅红 */
-    border-color: rgba(227, 57, 50, 0.28);
+      background: linear-gradient(135deg, #fef0f0 0%, #fde8e7 50%, #fef0f0 100%);
+      border-color: rgba(227, 57, 50, 0.45);
+      box-shadow: 0 0 18px rgba(227, 57, 50, 0.15),
+                  0 0 40px rgba(227, 57, 50, 0.08),
+                  0 2px 4px rgba(0,0,0,0.04);
+      animation: glowPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 18px rgba(227, 57, 50, 0.15),
+                    0 0 40px rgba(227, 57, 50, 0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+        border-color: rgba(227, 57, 50, 0.45);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(227, 57, 50, 0.28),
+                    0 0 60px rgba(227, 57, 50, 0.15),
+                    0 0 90px rgba(227, 57, 50, 0.06),
+                    0 2px 4px rgba(0,0,0,0.04);
+        border-color: rgba(227, 57, 50, 0.7);
+      }
     }
 
     .ticket-card.highlight:hover {
-    border-color: var(--accent);                         /* hover 时变实红 */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04),
-                0 12px 30px -10px rgba(227, 57, 50, 0.22);  /* 红色调阴影 */
+      border-color: var(--accent);
+      box-shadow: 0 0 35px rgba(227, 57, 50, 0.35),
+                  0 0 70px rgba(227, 57, 50, 0.18),
+                  0 0 110px rgba(227, 57, 50, 0.08),
+                  0 4px 8px rgba(0,0,0,0.06);
+      animation: none;
     }
   </style>
 </head>

@@ -10,9 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ============================================================
-       设计令牌 (沿用站点配色)
-       ============================================================ */
     :root {
       --bg:        #faf7f2;
       --surface:   #ffffff;
@@ -27,7 +24,7 @@
       --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
       --radius:    14px;
       --online:    #22c55e;
-      --warn:      #b45309;          /* ★ 警告色 — 用于锁定/低安全性 */
+      --warn:      #b45309;
       --warn-soft: #fef3c7;
       --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
       --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
@@ -54,10 +51,6 @@
       .container { padding: 24px 18px 64px; }
     }
 
-
-    /* ============================================================
-       1. 顶部导航
-       ============================================================ */
     header {
       display: flex;
       justify-content: space-between;
@@ -67,442 +60,168 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
 
     .site-logo { display: inline-block; line-height: 0; }
     .site-logo img { height: 90px; width: auto; display: block; }
     @media (max-width: 640px) { .site-logo img { height: 60px; } }
 
     .intranet-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      background: #fef7e0;
-      border: 1px solid #f4d893;
-      border-radius: 999px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 11.5px;
-      color: #7c5a17;
-      letter-spacing: 0.05em;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; background: #fef7e0; border: 1px solid #f4d893;
+      border-radius: 999px; font-family: var(--font-display);
+      font-weight: 600; font-size: 11.5px; color: #7c5a17; letter-spacing: 0.05em;
     }
-
     .intranet-badge::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #c8941e;
+      content: ''; width: 5px; height: 5px; border-radius: 50%; background: #c8941e;
     }
 
     .back-link {
-      font-size: 14px;
-      color: var(--ink-soft);
-      text-decoration: none;
-      padding: 8px 14px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--surface);
-      transition: all 0.2s;
+      font-size: 14px; color: var(--ink-soft); text-decoration: none;
+      padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+      background: var(--surface); transition: all 0.2s;
     }
+    .back-link:hover { color: var(--ink); border-color: var(--ink); transform: translateX(-2px); }
 
-    .back-link:hover {
-      color: var(--ink);
-      border-color: var(--ink);
-      transform: translateX(-2px);
-    }
-
-
-    /* ============================================================
-       2. 个人信息横幅
-       ============================================================ */
     .profile-banner {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      padding: 24px 28px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 24px; padding: 24px 28px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 28px;
     }
-
     @media (max-width: 600px) {
-      .profile-banner {
-        flex-direction: column;
-        text-align: center;
-        gap: 18px;
-        padding: 24px 20px;
-      }
+      .profile-banner { flex-direction: column; text-align: center; gap: 18px; padding: 24px 20px; }
     }
 
     .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: linear-gradient(135deg, #fef7e0, #fef7e0);
-      flex-shrink: 0;
+      width: 80px; height: 80px; border-radius: 50%; overflow: hidden;
+      background: linear-gradient(135deg, #fef7e0, #fef7e0); flex-shrink: 0;
       box-shadow: var(--shadow);
     }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .profile-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .profile-info { flex: 1; min-width: 0; }
 
     .profile-name {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-family: var(--font-display); font-weight: 800; font-size: 22px;
+      letter-spacing: -0.02em; color: var(--ink); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 10px;
     }
-
-    @media (max-width: 600px) {
-      .profile-name { justify-content: center; }
-    }
+    @media (max-width: 600px) { .profile-name { justify-content: center; } }
 
     .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 9px;
-      background: rgba(34, 197, 94, 0.12);
-      border-radius: 999px;
-      font-family: var(--font-body);
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--online);
-      letter-spacing: 0.02em;
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px;
+      background: rgba(34, 197, 94, 0.12); border-radius: 999px;
+      font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
+      color: var(--online); letter-spacing: 0.02em;
     }
-
     .status-pill::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--online);
+      content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--online);
     }
 
-    .profile-role {
-      font-size: 14px;
-      color: var(--ink-soft);
-      margin-bottom: 12px;
-    }
+    .profile-role { font-size: 14px; color: var(--ink-soft); margin-bottom: 12px; }
 
     .profile-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      font-size: 12.5px;
-      color: var(--ink-faint);
+      display: flex; flex-wrap: wrap; gap: 22px; font-size: 12.5px; color: var(--ink-faint);
     }
-
-    @media (max-width: 600px) {
-      .profile-meta { justify-content: center; gap: 16px; }
-    }
-
-    .profile-meta .label {
-      color: var(--ink-faint);
-      margin-right: 5px;
-    }
-
+    @media (max-width: 600px) { .profile-meta { justify-content: center; gap: 16px; } }
+    .profile-meta .label { color: var(--ink-faint); margin-right: 5px; }
     .profile-meta .value {
-      color: var(--ink-soft);
-      font-weight: 600;
-      font-family: var(--font-display);
-      font-variant-numeric: tabular-nums;
+      color: var(--ink-soft); font-weight: 600;
+      font-family: var(--font-display); font-variant-numeric: tabular-nums;
     }
 
-
-    /* ============================================================
-       ★ 2.5 安全性进度条 (新增)
-       ============================================================ */
-    .security-bar {
-      margin-top: 16px;
-      max-width: 380px;
-    }
-
-    @media (max-width: 600px) {
-      .security-bar { margin: 16px auto 0; }
-    }
-
-    .security-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 6px;
-    }
-
-    .security-label {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 12.5px;
-      color: var(--ink-soft);
-      letter-spacing: 0.01em;
-    }
-
-    .security-status {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 12px;
-      color: var(--online);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .security-track {
-      width: 100%;
-      height: 6px;
-      background: var(--line-soft);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .security-fill {
-      height: 100%;
-      width: 80%;                             /* ← 改这里改进度百分比 */
-      background: linear-gradient(90deg, #f0f0f0, #55e332);
-      border-radius: 999px;
-      transition: width 0.6s ease;
-    }
-
-
-    /* ============================================================
-       3. 快捷功能区标题
-       ============================================================ */
     .section-title {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: -0.01em;
-      margin-bottom: 14px;
-      color: var(--ink);
+      font-family: var(--font-display); font-weight: 700; font-size: 18px;
+      letter-spacing: -0.01em; margin-bottom: 14px; color: var(--ink);
     }
 
-
-    /* ============================================================
-       4. 功能按钮网格 (2 列)
-       ============================================================ */
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+    .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 700px) { .action-grid { grid-template-columns: repeat(2, 1fr); } }
 
     .action-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      padding: 32px 16px 26px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      text-align: center;
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;                       /* 现在两张都可点 */
-      transition: all 0.25s ease;
-      font: inherit;
+      position: relative; display: flex; flex-direction: column; align-items: center;
+      gap: 12px; padding: 26px 14px 22px; background: var(--surface);
+      border: 1px solid var(--line); border-radius: var(--radius);
+      text-align: center; text-decoration: none; color: inherit;
+      cursor: not-allowed; opacity: 0.55; transition: all 0.25s ease;
     }
-
     .action-card.active {
-      border-color: rgba(227, 57, 50, 0.25);
-      box-shadow: var(--shadow);
+      cursor: pointer; opacity: 1;
+      border-color: rgba(227, 57, 50, 0.25); box-shadow: var(--shadow);
     }
-
     .action-card.active:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lift);
-      border-color: var(--accent);
+      transform: translateY(-3px); box-shadow: var(--shadow-lift); border-color: var(--accent);
     }
+    .action-card.active:active { transform: translateY(-1px); }
 
-    .action-card.active:active {
-      transform: translateY(-1px);
-    }
-
-    /* 图标方块 */
     .action-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      background: var(--line-soft);
-      color: var(--ink-soft);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--line-soft); color: var(--ink-soft);
+      display: grid; place-items: center; flex-shrink: 0;
     }
+    .action-icon svg { width: 24px; height: 24px; stroke-width: 1.7; }
+    .action-card.active .action-icon { background: var(--accent-soft); color: var(--accent); }
 
-    .action-icon svg {
-      width: 26px;
-      height: 26px;
-      stroke-width: 1.7;
-    }
-
-    /* active 卡的图标:红色调 */
-    .action-card.active .action-icon {
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    /* ★ locked 卡(Case)的图标:换成琥珀色,暗示"锁定但可解锁" */
-    .action-card.locked .action-icon {
-      background: var(--warn-soft);
-      color: var(--warn);
-    }
-
-    .action-card.locked {
-      border-color: rgba(180, 83, 9, 0.25);
-    }
-
+    .action-card.locked .action-icon { background: var(--warn-soft); color: var(--warn); }
+    .action-card.locked { border-color: rgba(180, 83, 9, 0.25); }
     .action-card.locked:hover {
       border-color: var(--warn);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06),
-                  0 20px 40px -16px rgba(180, 83, 9, 0.25);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(180, 83, 9, 0.25);
     }
 
     .action-name {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 14.5px;
-      letter-spacing: -0.005em;
-      color: var(--ink);
+      font-family: var(--font-display); font-weight: 700; font-size: 14px;
+      letter-spacing: -0.005em; color: var(--ink);
     }
 
-    /* ★ 右上角小锁徽标(只在 .locked 卡上显示) */
     .lock-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--warn-soft);
-      color: var(--warn);
-      display: grid;
-      place-items: center;
+      position: absolute; top: 12px; right: 12px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--warn-soft); color: var(--warn);
+      display: grid; place-items: center;
     }
+    .lock-badge svg { width: 13px; height: 13px; stroke-width: 2.4; }
 
-    .lock-badge svg {
-      width: 13px;
-      height: 13px;
-      stroke-width: 2.4;
+    /* ── 密码弹窗 ── */
+    .lock-modal {
+      position: fixed; inset: 0; z-index: 9999;
+      display: grid; place-items: center;
+      background: rgba(15, 13, 10, 0.55); backdrop-filter: blur(6px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
     }
+    .lock-modal.show { opacity: 1; pointer-events: auto; }
 
-
-    /* ============================================================
-       ★ 5. Case 密码弹窗 (新增)
-       ============================================================ */
-    .case-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: grid;
-      place-items: center;
-      background: rgba(15, 13, 10, 0.55);
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      padding: 20px;
-    }
-
-    .case-modal.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .case-card {
-      background: var(--surface);
-      padding: 32px 32px 24px;
-      border-radius: var(--radius);
-      box-shadow: 0 30px 70px rgba(0,0,0,0.28);
-      text-align: center;
-      max-width: 380px;
-      width: 100%;
+    .lock-card {
+      background: var(--surface); padding: 32px 32px 24px;
+      border-radius: var(--radius); box-shadow: 0 30px 70px rgba(0,0,0,0.28);
+      text-align: center; max-width: 380px; width: 100%;
       transform: scale(0.9);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+    .lock-modal.show .lock-card { transform: scale(1); }
 
-    .case-modal.show .case-card {
-      transform: scale(1);
+    .lock-icon-big {
+      width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%;
+      background: var(--warn-soft); color: var(--warn);
+      display: grid; place-items: center;
     }
+    .lock-icon-big svg { width: 26px; height: 26px; stroke-width: 2; }
 
-    .case-icon-big {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 14px;
-      border-radius: 50%;
-      background: var(--warn-soft);
-      color: var(--warn);
-      display: grid;
-      place-items: center;
+    .lock-title {
+      font-family: var(--font-display); font-weight: 800; font-size: 19px;
+      color: var(--ink); margin-bottom: 4px; letter-spacing: -0.01em;
     }
+    .lock-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 20px; }
 
-    .case-icon-big svg {
-      width: 26px;
-      height: 26px;
-      stroke-width: 2;
-    }
-
-    .case-title {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 19px;
-      color: var(--ink);
-      margin-bottom: 4px;
-      letter-spacing: -0.01em;
-    }
-
-    .case-sub {
-      font-size: 13px;
-      color: var(--ink-soft);
-      margin-bottom: 20px;
-    }
-
-    .case-input {
-      width: 100%;
-      padding: 11px 16px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 14.5px;
-      color: var(--ink);
-      outline: none;
-      background: var(--bg);
+    .lock-input {
+      width: 100%; padding: 11px 16px; border: 1px solid var(--line);
+      border-radius: 10px; font-family: inherit; font-size: 14.5px;
+      color: var(--ink); outline: none; background: var(--bg);
       transition: border-color 0.2s, background 0.2s;
     }
-
-    .case-input::placeholder { color: var(--ink-faint); }
-
-    .case-input:focus {
-      border-color: var(--ink);
-      background: var(--surface);
-    }
-
-    .case-input.shake {
-      animation: shake 0.4s ease;
-      border-color: var(--accent);
-    }
+    .lock-input::placeholder { color: var(--ink-faint); }
+    .lock-input:focus { border-color: var(--ink); background: var(--surface); }
+    .lock-input.shake { animation: shake 0.4s ease; border-color: var(--accent); }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -510,102 +229,50 @@
       40%, 80% { transform: translateX(6px); }
     }
 
-    .case-hint {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      margin-top: 10px;
-      padding: 0 4px;
-      font-size: 12px;
-      color: var(--ink-faint);
-      text-align: left;
-      line-height: 1.5;
+    .lock-hint {
+      display: flex; align-items: flex-start; gap: 6px;
+      margin-top: 10px; padding: 0 4px; font-size: 12px;
+      color: var(--ink-faint); text-align: left; line-height: 1.5;
+    }
+    .lock-hint svg {
+      width: 13px; height: 13px; flex-shrink: 0;
+      color: #d4a226; stroke-width: 1.8; margin-top: 2px;
     }
 
-    .case-hint svg {
-      width: 13px;
-      height: 13px;
-      flex-shrink: 0;
-      color: #d4a226;
-      stroke-width: 1.8;
-      margin-top: 2px;
-    }
-
-    .case-error {
-      margin-top: 8px;
-      padding: 0 4px;
-      font-size: 12px;
-      color: var(--accent);
-      font-weight: 600;
-      text-align: left;
-      opacity: 0;
-      height: 0;
-      overflow: hidden;
+    .lock-error {
+      margin-top: 8px; padding: 0 4px; font-size: 12px;
+      color: var(--accent); font-weight: 600; text-align: left;
+      opacity: 0; height: 0; overflow: hidden;
       transition: opacity 0.2s, height 0.2s;
     }
+    .lock-error.show { opacity: 1; height: auto; margin-top: 8px; }
 
-    .case-error.show {
-      opacity: 1;
-      height: auto;
-      margin-top: 8px;
-    }
+    .lock-buttons { display: flex; gap: 10px; margin-top: 22px; }
 
-    .case-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 22px;
+    .lock-btn {
+      flex: 1; padding: 10px 16px; border-radius: 999px;
+      font-family: var(--font-display); font-weight: 600; font-size: 13.5px;
+      cursor: pointer; border: none; transition: all 0.18s;
     }
-
-    .case-btn {
-      flex: 1;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 13.5px;
-      cursor: pointer;
-      border: none;
-      transition: all 0.18s;
-      font: inherit;
-      font-weight: 600;
-    }
-
-    .case-btn-cancel {
-      background: var(--line-soft);
-      color: var(--ink-soft);
-    }
-
-    .case-btn-cancel:hover {
-      background: var(--line);
-      color: var(--ink);
-    }
-
-    .case-btn-submit {
-      background: var(--ink);
-      color: #fff;
-    }
-
-    .case-btn-submit:hover {
-      background: var(--accent);
-      transform: translateY(-1px);
-    }
+    .lock-btn-cancel { background: var(--line-soft); color: var(--ink-soft); }
+    .lock-btn-cancel:hover { background: var(--line); color: var(--ink); }
+    .lock-btn-submit { background: var(--ink); color: #fff; }
+    .lock-btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
   </style>
 </head>
 <body>
   <div class="container">
 
-    <!-- ═══════════ 1. 顶部导航 ═══════════ -->
     <header>
       <div class="header-left">
         <a href="xhs1.html" class="site-logo">
           <img src="images/tomatologo.png" alt="内网">
         </a>
-        <span class="intranet-badge">内网工作台破解版</span>
+        <span class="intranet-badge">内网工作台</span>
       </div>
       <a href="javascript:history.back()" class="back-link">← 返回</a>
     </header>
 
-    <!-- ═══════════ 2. 个人信息卡 ═══════════ -->
     <div class="profile-banner">
       <div class="profile-avatar">
         <img src="images/itavatar.png" alt="头像">
@@ -621,27 +288,81 @@
           <div><span class="label">直属主管</span><span class="value">XXX</span></div>
           <div><span class="label">入职</span><span class="value">202X.03.15</span></div>
         </div>
-
-        <!-- ★ 安全性进度条 (新增) -->
-        <div class="security-bar">
-          <div class="security-head">
-            <span class="security-label">安全性</span>
-            <span class="security-status">80% · 较高</span>
-          </div>
-          <div class="security-track">
-            <div class="security-fill"></div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- ═══════════ 3. 快捷功能区 ═══════════ -->
     <h2 class="section-title">快捷功能</h2>
 
-    <!-- 2 个按钮:收藏(可点) + Case(锁定,需密码) -->
     <div class="action-grid">
 
-      <!-- 1. 收藏 (active) -->
+      <!-- ★ 1. 工单 (锁定,需密码) -->
+      <a class="action-card active locked" href="#" id="lockBtn">
+        <span class="lock-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </span>
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="9" y1="13" x2="15" y2="13"/>
+            <line x1="9" y1="17" x2="13" y2="17"/>
+          </svg>
+        </div>
+        <div class="action-name">工单</div>
+      </a>
+
+      <!-- 2. 审批 -->
+      <div class="action-card" aria-disabled="true">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <polyline points="9 15 11 17 15 13"/>
+          </svg>
+        </div>
+        <div class="action-name">审批</div>
+      </div>
+
+      <!-- 3. 请假 -->
+      <div class="action-card" aria-disabled="true">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="action-name">请假</div>
+      </div>
+
+      <!-- 4. 报销 -->
+      <div class="action-card" aria-disabled="true">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2-3-2z"/>
+            <line x1="8" y1="9" x2="16" y2="9"/>
+            <line x1="8" y1="13" x2="14" y2="13"/>
+          </svg>
+        </div>
+        <div class="action-name">报销</div>
+      </div>
+
+      <!-- 5. 考勤 -->
+      <div class="action-card" aria-disabled="true">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="action-name">考勤</div>
+      </div>
+
+      <!-- ★ 6. 收藏 (可点) -->
       <a class="action-card active" href="xhsshoucang.html">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -651,139 +372,118 @@
         <div class="action-name">收藏</div>
       </a>
 
-      <!-- ★ 2. Case (锁定,点了弹密码框) -->
-      <a class="action-card active locked" href="#" id="caseBtn">
-        <span class="lock-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </span>
+      <!-- 7. 公告 -->
+      <div class="action-card" aria-disabled="true">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
           </svg>
         </div>
-        <div class="action-name">Case</div>
-      </a>
+        <div class="action-name">公告</div>
+      </div>
+
+      <!-- 8. 文档 -->
+      <div class="action-card" aria-disabled="true">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <div class="action-name">文档</div>
+      </div>
 
     </div>
-
   </div>
 
-  <!-- ============================================================
-       ★ Case 密码弹窗 (默认隐藏)
-       ============================================================ -->
-  <div class="case-modal" id="caseModal" role="dialog" aria-label="解锁 Case">
-    <div class="case-card">
-      <div class="case-icon-big">
+  <!-- ★ 工单密码弹窗 -->
+  <div class="lock-modal" id="lockModal" role="dialog" aria-label="解锁工单">
+    <div class="lock-card">
+      <div class="lock-icon-big">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
       </div>
-      <div class="case-title">此功能已加密</div>
-      <div class="case-sub">请输入密码以解锁 Case</div>
+      <div class="lock-title">此功能已加密</div>
+      <div class="lock-sub">请输入密码以解锁工单</div>
 
-      <input type="password" class="case-input" id="caseInput" placeholder="输入密码" autocomplete="off">
+      <input type="password" class="lock-input" id="lockInput" placeholder="输入密码" autocomplete="off">
 
       <!-- ↓↓↓ 密码提示词:改这一行的文字即可 ↓↓↓ -->
-      <div class="case-hint">
+      <div class="lock-hint">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
           <line x1="9" y1="18" x2="15" y2="18"/>
           <line x1="10" y1="22" x2="14" y2="22"/>
           <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>
         </svg>
-        <span>密码提示:十二生肖不同</span>
+        <span>密码提示:十二生肖不同(英文)</span>
       </div>
 
-      <div class="case-error" id="caseError">密码错误,请重试</div>
+      <div class="lock-error" id="lockError">密码错误,请重试</div>
 
-      <div class="case-buttons">
-        <button class="case-btn case-btn-cancel" id="caseCancel">取消</button>
-        <button class="case-btn case-btn-submit" id="caseSubmit">解锁</button>
+      <div class="lock-buttons">
+        <button class="lock-btn lock-btn-cancel" id="lockCancel">取消</button>
+        <button class="lock-btn lock-btn-submit" id="lockSubmit">解锁</button>
       </div>
     </div>
   </div>
 
   <script>
     /* ============================================================
-       Case 解锁配置
+       工单解锁配置
        ─────────────────────────────────────────────────────────
-       想改密码 / 跳转目标 → 改下面这两行
-       想改密码提示词 → 改 HTML 里 .case-hint <span> 里的文字
+       想改密码 → 改 LOCK_PASSWORD 数组(支持多个答案,忽略大小写)
+       想改跳转 → 改 LOCK_REDIRECT
+       想改提示词 → 改 HTML 里 .lock-hint <span> 里的文字
        ============================================================ */
-    const CASE_PASSWORD =  ['youya', 'yazi', 'ya', 'duck'];      // ← 改这里改密码
-    const CASE_REDIRECT = 'case.html';               // ← 改这里改解锁后跳转的页面
+    const LOCK_PASSWORD = ['duck','DUCK','Duck'];        // ← 改这里改密码
+    const LOCK_REDIRECT = 'xhsgongdanit.html'; // ← 改这里改解锁后跳转的页面
 
-    const caseBtn    = document.getElementById('caseBtn');
-    const caseModal  = document.getElementById('caseModal');
-    const caseInput  = document.getElementById('caseInput');
-    const caseError  = document.getElementById('caseError');
-    const caseCancel = document.getElementById('caseCancel');
-    const caseSubmit = document.getElementById('caseSubmit');
+    const lockBtn    = document.getElementById('lockBtn');
+    const lockModal  = document.getElementById('lockModal');
+    const lockInput  = document.getElementById('lockInput');
+    const lockError  = document.getElementById('lockError');
+    const lockCancel = document.getElementById('lockCancel');
+    const lockSubmit = document.getElementById('lockSubmit');
 
-    function openCaseModal() {
-      caseModal.classList.add('show');
+    function openLockModal() {
+      lockModal.classList.add('show');
       document.body.style.overflow = 'hidden';
-      setTimeout(() => caseInput.focus(), 200);
+      setTimeout(() => lockInput.focus(), 200);
     }
 
-    function closeCaseModal() {
-      caseModal.classList.remove('show');
-      caseInput.value = '';
-      caseError.classList.remove('show');
+    function closeLockModal() {
+      lockModal.classList.remove('show');
+      lockInput.value = '';
+      lockError.classList.remove('show');
       document.body.style.overflow = '';
     }
 
     function checkPassword() {
-    const val = caseInput.value.trim().toLowerCase();
-    // 把候选答案都转小写,看用户输入是否在里面
-    const valid = CASE_PASSWORD.map(p => p.toLowerCase()).includes(val);
-    if (valid) {
-        // 密码正确 → 跳转
-        window.location.href = CASE_REDIRECT;
-    } else {
-        // 密码错误 → 抖动 + 红色提示
-        caseError.classList.add('show');
-        caseInput.classList.remove('shake');
-        void caseInput.offsetWidth;
-        caseInput.classList.add('shake');
-    }
+      const val = lockInput.value.trim().toLowerCase();
+      const valid = LOCK_PASSWORD.map(p => p.toLowerCase()).includes(val);
+      if (valid) {
+        window.location.href = LOCK_REDIRECT;
+      } else {
+        lockError.classList.add('show');
+        lockInput.classList.remove('shake');
+        void lockInput.offsetWidth;
+        lockInput.classList.add('shake');
+      }
     }
 
-    // 点 Case 卡 → 弹窗
-    caseBtn.addEventListener('click', e => {
-      e.preventDefault();
-      openCaseModal();
-    });
-
-    // 取消按钮
-    caseCancel.addEventListener('click', closeCaseModal);
-
-    // 解锁按钮
-    caseSubmit.addEventListener('click', checkPassword);
-
-    // 输入框回车 → 提交
-    caseInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        checkPassword();
-      }
-    });
-
-    // 点遮罩空白处关闭(点卡片不关)
-    caseModal.addEventListener('click', e => {
-      if (e.target === caseModal) closeCaseModal();
-    });
-
-    // ESC 键关闭
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && caseModal.classList.contains('show')) {
-        closeCaseModal();
-      }
-    });
+    lockBtn.addEventListener('click', e => { e.preventDefault(); openLockModal(); });
+    lockCancel.addEventListener('click', closeLockModal);
+    lockSubmit.addEventListener('click', checkPassword);
+    lockInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkPassword(); } });
+    lockModal.addEventListener('click', e => { if (e.target === lockModal) closeLockModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lockModal.classList.contains('show')) closeLockModal(); });
   </script>
 </body>
 </html>

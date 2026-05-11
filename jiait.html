@@ -282,6 +282,17 @@
       color: var(--ink);
     }
 
+    /* Day2 着重标注 */
+    .day2-highlight {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.02em;
+    }
+
     @media (max-width: 480px) {
       .post-card .title { padding: 12px 12px 14px; font-size: 14px; }
     }
@@ -366,7 +377,7 @@
         <line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
     </button>
-    <img src="images/lanji.png" alt="头像放大查看">
+    <img src="images/itavatar.png" alt="头像放大查看">
   </div>
 
   <div class="container">
@@ -383,15 +394,15 @@
          头像点击会弹出 lightbox 查看大图 -->
     <section class="profile">
       <button class="avatar-large" id="avatarBtn" aria-label="查看头像大图">
-        <img src="images/lanji.png" alt="小蓝 的头像">
+        <img src="images/itavatar.png" alt="小蓝 的头像">
       </button>
       <div class="profile-text">
-        <h1 class="profile-name">小蓝</h1>
-        <p class="profile-bio">什么红色 小蓝 小蓝不知道啊</p>
-        <p class="profile-bio">工号<strong><em>TOMATO642</em></p>
+        <h1 class="profile-name">贾霭醍</h1>
+        <p class="profile-bio">我的代码是假的 我的配置是假的 我花的Token是真的</p>
+        <p class="profile-bio">工号<strong><em>TOMATO845</em></p>
         <div class="profile-stats">
           <div class="stat">
-            <span class="stat-num">1</span>
+            <span class="stat-num">3</span>
             <span class="stat-label">帖子</span>
           </div>
           <div class="stat">
@@ -407,18 +418,35 @@
     </section>
 
     <!-- ═══════════ 3. 我的帖子 ═══════════
-         目前只有 1 条,点击跳转到帖子详情页 -->
+         共 3 条,点击跳转到帖子详情页 -->
     <h2 class="section-title">
-      我的帖子 <span class="count">1</span>
+      我的帖子 <span class="count">3</span>
     </h2>
 
     <div class="post-grid">
-      <a class="post-card" href="xhsxiaolantx.html">
+       <a class="post-card" href="jisuanji3.html">
         <div class="image">
-          <img src="images/lanji.png" alt="" loading="lazy">
+          <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">康康我的西红柿新头像</h2>
+        <h2 class="title">一点都没用的计算机小知识 Day3</h2>
       </a>
+      <a class="post-card" href="jisuanji1.html">
+        <div class="image">
+          <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
+        </div>
+        <h2 class="title">一点都没用的计算机小知识 Day1</span></h2>
+      </a>
+      <a class="post-card" href="jisuanji2.html">
+        <div class="image">
+          <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
+        </div>
+        <h2 class="title">一点都有用的计算机小知识 <span class="day2-highlight">Day2</span></h2>
+      </a>
+
+
+
+
+      
     </div>
 
   </div>

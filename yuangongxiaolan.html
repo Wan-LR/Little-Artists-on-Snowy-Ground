@@ -344,6 +344,63 @@
     }
 
     .action-card { position: relative; }
+
+    /* ── 请假弹窗 ── */
+    .leave-modal-mask {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(20, 18, 16, 0.65);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: maskIn 0.25s ease;
+    }
+    @keyframes maskIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .leave-modal {
+      background: var(--surface);
+      border-radius: 16px;
+      max-width: 360px; width: 100%;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(24px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .leave-modal img {
+      width: 100%;
+      display: block;
+      max-height: 360px;
+      object-fit: cover;
+    }
+
+    .leave-modal .leave-caption {
+      padding: 20px 24px 6px;
+      font-size: 15px;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .leave-modal .leave-close {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 18px auto 20px;
+      padding: 10px 0;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .leave-modal .leave-close:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
   </style>
 </head>
 <body>
@@ -412,8 +469,8 @@
         <div class="action-name">审批</div>
       </div>
 
-      <!-- 3. 请假 -->
-      <div class="action-card" aria-disabled="true">
+      <!-- 3. 请假 (可点击,弹出图片) -->
+      <div class="action-card active" id="leaveCard" role="button" tabindex="0">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -458,7 +515,7 @@
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
-        <div class="action-name">通讯录</div>
+        <div class="action-name">收藏</div>
       </div>
 
       <!-- 7. 公告 -->
@@ -490,5 +547,27 @@
     </div>
 
   </div>
+
+  <!-- 请假弹窗 -->
+  <div class="leave-modal-mask" id="leaveMask" style="display:none;" role="dialog" aria-modal="true">
+    <div class="leave-modal">
+      <img src="images/lanjiku.png" alt="请假">
+      <p class="leave-caption"><strong>我的全勤———</strong></p>
+      <button class="leave-close" id="leaveClose">关 闭</button>
+    </div>
+  </div>
+
+<script>
+  const leaveCard = document.getElementById('leaveCard');
+  const leaveMask = document.getElementById('leaveMask');
+  const leaveClose = document.getElementById('leaveClose');
+
+  leaveCard.addEventListener('click', () => { leaveMask.style.display = 'flex'; });
+  leaveClose.addEventListener('click', () => { leaveMask.style.display = 'none'; });
+  leaveMask.addEventListener('click', (e) => { if (e.target === leaveMask) leaveMask.style.display = 'none'; });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && leaveMask.style.display === 'flex') leaveMask.style.display = 'none';
+  });
+</script>
 </body>
 </html>

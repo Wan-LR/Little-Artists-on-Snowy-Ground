@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -117,7 +117,6 @@
       }
     }
 
-    /* 大头像 (可点击放大) */
     .avatar-large {
       width: 130px;
       height: 130px;
@@ -127,7 +126,7 @@
       overflow: hidden;
       cursor: pointer;
       flex-shrink: 0;
-      background: linear-gradient(135deg, #faf7f2, #faf7f2); /* 加载失败兜底 */
+      background: linear-gradient(135deg, #faf7f2, #faf7f2);
       box-shadow: var(--shadow);
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
                   box-shadow 0.25s ease;
@@ -282,7 +281,6 @@
       color: var(--ink);
     }
 
-    /* Day2 着重标注 */
     .day2-highlight {
       display: inline-block;
       background: var(--accent);
@@ -300,9 +298,6 @@
 
     /* ============================================================
        4. 头像放大查看 (Lightbox)
-       ────────────────────────────────────────────────────────────
-       点头像弹出全屏遮罩,显示放大版头像。
-       关闭方式:点遮罩 / 点 × / 按 ESC
        ============================================================ */
     .lightbox {
       position: fixed;
@@ -363,6 +358,190 @@
       height: 20px;
       stroke-width: 2.4;
     }
+
+
+    /* ============================================================
+       5. Steam 风格成就弹窗
+       ============================================================ */
+    .achievement-toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741;
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 0 20px rgba(78, 154, 65, 0.25),
+        0 8px 32px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition:
+        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: var(--font-body);
+    }
+
+    .achievement-toast.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* 左侧图标区域 */
+    .achievement-icon {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 12px rgba(78, 154, 65, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .achievement-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+
+    @keyframes iconShine {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .achievement-icon svg {
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 0 6px rgba(180, 220, 100, 0.5));
+    }
+
+    /* 文字区域 */
+    .achievement-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .achievement-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8fbc5a;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .achievement-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px #8fbc5a; }
+      50% { opacity: 0.6; box-shadow: 0 0 2px #8fbc5a; }
+    }
+
+    .achievement-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 17px;
+      color: #e5e5e5;
+      line-height: 1.2;
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .achievement-desc {
+      font-size: 12.5px;
+      color: #8f98a0;
+      line-height: 1.4;
+    }
+
+    /* 底部进度条动画 */
+    .achievement-toast::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px;
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    .achievement-toast.show::after {
+      animation: progressShrink 5s 0.5s linear forwards;
+    }
+
+    @keyframes progressShrink {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+
+    /* 粒子光效 */
+    .achievement-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .achievement-toast.show .particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+
+    @keyframes particleFloat {
+      0%   { opacity: 0.8; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    @media (max-width: 480px) {
+      .achievement-toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -380,6 +559,34 @@
     <img src="images/itavatar.png" alt="头像放大查看">
   </div>
 
+
+  <!-- ============================================================
+       Steam 风格成就弹窗 (默认隐藏)
+       ============================================================ -->
+  <div class="achievement-toast" id="achievementToast" role="alert">
+    <div class="achievement-particles" id="particles"></div>
+    <div class="achievement-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              fill="#b8e060" stroke="#8fbc5a" stroke-width="0.5"/>
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              fill="url(#starGlow)" opacity="0.5"/>
+        <defs>
+          <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#b8e060" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="achievement-text">
+      <div class="achievement-label">成就已解锁</div>
+      <div class="achievement-title">知识收集者</div>
+      <div class="achievement-desc">已阅读全部 3 篇计算机小知识</div>
+    </div>
+  </div>
+
+
   <div class="container">
 
     <!-- ═══════════ 1. 顶部导航栏 ═══════════ -->
@@ -390,8 +597,7 @@
       <a href="xhs1.html" class="back-link">← 返回列表</a>
     </header>
 
-    <!-- ═══════════ 2. 个人信息区 ═══════════
-         头像点击会弹出 lightbox 查看大图 -->
+    <!-- ═══════════ 2. 个人信息区 ═══════════ -->
     <section class="profile">
       <button class="avatar-large" id="avatarBtn" aria-label="查看头像大图">
         <img src="images/itavatar.png" alt="小蓝 的头像">
@@ -399,7 +605,7 @@
       <div class="profile-text">
         <h1 class="profile-name">贾霭醍</h1>
         <p class="profile-bio">我的代码是假的 我的配置是假的 我花的Token是真的</p>
-        <p class="profile-bio">工号<strong><em>TOMATO845</em></p>
+        <p class="profile-bio">工号<strong><em>TOMATO845</em></strong></p>
         <div class="profile-stats">
           <div class="stat">
             <span class="stat-num">3</span>
@@ -417,45 +623,37 @@
       </div>
     </section>
 
-    <!-- ═══════════ 3. 我的帖子 ═══════════
-         共 3 条,点击跳转到帖子详情页 -->
+    <!-- ═══════════ 3. 我的帖子 ═══════════ -->
     <h2 class="section-title">
       我的帖子 <span class="count">3</span>
     </h2>
 
     <div class="post-grid">
-       <a class="post-card" href="jisuanji3.html">
+      <a class="post-card" href="jisuanji3.html" data-post-id="day3">
         <div class="image">
           <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
         </div>
         <h2 class="title">一点都没用的计算机小知识 Day3</h2>
       </a>
-      <a class="post-card" href="jisuanji1.html">
+      <a class="post-card" href="jisuanji1.html" data-post-id="day1">
         <div class="image">
           <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">一点都没用的计算机小知识 Day1</span></h2>
+        <h2 class="title">一点都没用的计算机小知识 Day1</h2>
       </a>
-      <a class="post-card" href="jisuanji2.html">
+      <a class="post-card" href="jisuanji2.html" data-post-id="day2">
         <div class="image">
           <img src="images/jisuanjizhishi.png" alt="" loading="lazy">
         </div>
         <h2 class="title">一点都有用的计算机小知识 <span class="day2-highlight">Day2</span></h2>
       </a>
-
-
-
-
-      
     </div>
 
   </div>
 
   <script>
     /* ============================================================
-       头像放大查看 — 显隐控制
-       触发:点头像 → 显示 lightbox
-       关闭:点遮罩 / 点 × / 按 ESC
+       头像放大查看
        ============================================================ */
     const avatarBtn = document.getElementById('avatarBtn');
     const lightbox = document.getElementById('lightbox');
@@ -463,7 +661,7 @@
 
     function openLightbox() {
       lightbox.classList.add('show');
-      document.body.style.overflow = 'hidden';   // 锁定背景滚动
+      document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
@@ -472,22 +670,122 @@
     }
 
     avatarBtn.addEventListener('click', openLightbox);
-
-    // 点遮罩任意空白处关闭
     lightbox.addEventListener('click', closeLightbox);
-
-    // 点关闭按钮关闭(阻止冒泡到遮罩)
     lightboxClose.addEventListener('click', e => {
       e.stopPropagation();
       closeLightbox();
     });
-
-    // ESC 键关闭
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && lightbox.classList.contains('show')) {
         closeLightbox();
       }
     });
+
+
+    /* ============================================================
+       成就系统 — 点满 3 篇帖子后弹出 Steam 风格弹窗
+       ────────────────────────────────────────────────────────────
+       · 用 localStorage 持久记录已点击的帖子 id
+       · 点击帖子时先记录,再放行跳转
+       · 已达成过的成就不再重复弹出(除非清除存储)
+       ============================================================ */
+    const STORAGE_KEY  = 'visited_posts';
+    const ACHIEVE_KEY  = 'achievement_unlocked';
+    const REQUIRED     = 3;
+
+    // 读取已访问集合
+    function getVisited() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+      } catch { return new Set(); }
+    }
+
+    // 保存
+    function saveVisited(set) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+    }
+
+    // 生成随机粒子
+    function spawnParticles() {
+      const container = document.getElementById('particles');
+      container.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle';
+        p.style.left  = Math.random() * 100 + '%';
+        p.style.top   = Math.random() * 100 + '%';
+        p.style.setProperty('--dx', (Math.random() - 0.5) * 80 + 'px');
+        p.style.setProperty('--dy', (Math.random() - 0.5) * 80 + 'px');
+        p.style.animationDelay = Math.random() * 0.6 + 's';
+        container.appendChild(p);
+      }
+    }
+
+    // 显示成就弹窗
+    function showAchievement() {
+      if (localStorage.getItem(ACHIEVE_KEY) === 'true') return;
+      localStorage.setItem(ACHIEVE_KEY, 'true');
+
+      const toast = document.getElementById('achievementToast');
+      spawnParticles();
+
+      // 播放一个短促的解锁音效（Web Audio，不依赖文件）
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const playNote = (freq, time, dur) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.18, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(time);
+          osc.stop(time + dur);
+        };
+        const t = ctx.currentTime;
+        playNote(587, t, 0.15);        // D5
+        playNote(784, t + 0.12, 0.15); // G5
+        playNote(988, t + 0.24, 0.3);  // B5
+      } catch(e) { /* 音效非关键 */ }
+
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      // 5.5 秒后自动收起
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 5500);
+    }
+
+    // 给每张帖子卡片绑定点击事件
+    document.querySelectorAll('.post-card[data-post-id]').forEach(card => {
+      card.addEventListener('click', function(e) {
+        const id = this.getAttribute('data-post-id');
+        const visited = getVisited();
+        visited.add(id);
+        saveVisited(visited);
+
+        // 若集齐全部 → 标记(下次加载此页面时弹窗)
+        if (visited.size >= REQUIRED) {
+          // 不立即弹窗(因为马上要跳转了),
+          // 而是留一个标记,返回此页面时再弹
+          localStorage.setItem('pending_achievement', 'true');
+        }
+        // 正常跳转,不阻止默认行为
+      });
+    });
+
+    // 页面加载时检查：是否有待弹出的成就
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('pending_achievement') === 'true') {
+        localStorage.removeItem('pending_achievement');
+        // 短暂延迟让页面渲染完
+        setTimeout(showAchievement, 600);
+      }
+    });
   </script>
+<script src="nav.js"></script>
 </body>
 </html>

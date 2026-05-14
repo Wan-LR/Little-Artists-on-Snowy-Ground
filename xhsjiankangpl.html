@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>西红柿评论无法加载恢复操作</title>
+  <title>《仨体》阅读 Day2</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -216,11 +216,7 @@
 
     /* ============================================================
        ★ 6. 帖子 Tags  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       蓝色胶囊标签,放在正文和操作栏之间。
-       # 符号由 ::before 自动添加 (HTML 不用写)。
-       注:HTML 中用 <span> 不可点击,但鼠标悬停仍会触发
-          .tag:hover 视觉变化(深蓝实心 + 上浮 1px)
+
        ============================================================ */
     .post-tags {
       display: flex;
@@ -344,9 +340,6 @@
 
     /* ============================================================
        9. 评论区 — 输入框
-       ────────────────────────────────────────────────────────────
-       ★【最近改动】底部已删除"以xx身份发布"提示行,
-                    .input-foot 改为 flex-end → "发布"按钮靠右
        ============================================================ */
     .comment-input {
       display: flex;
@@ -429,7 +422,7 @@
 
 
     /* ============================================================
-       10. 评论列表样式 (当前未渲染 — 因评论加载失败被替换)
+       10. 评论列表样式
        ============================================================ */
     .comment-list {
       list-style: none;
@@ -517,12 +510,35 @@
 
 
     /* ============================================================
+       ★ 10b. 嵌套回复  【新增 — 从鹦鹉帖子搬过来】
+       ============================================================ */
+    .comment-replies {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0 0 0 16px;
+      border-left: 2px solid var(--line);
+    }
+
+    .comment-replies .comment {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comment-replies .comment:first-child { padding-top: 4px; }
+    .comment-replies .comment:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .comment-replies .reply-to {
+      color: #2563eb;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+
+
+    /* ============================================================
        ★ 11. 顶部 Toast 弹窗  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       触发场景:用户点"发布"评论时
-       行为:从屏幕顶部滑下,显示"你不想留下任何评论",
-             2.6 秒后自动收回(也可点击立即关闭)
-       配套:.comment-input.shake → 输入框左右抖一下作为反馈
        ============================================================ */
     .toast {
       position: fixed;
@@ -593,97 +609,6 @@
 
 
     /* ============================================================
-       ★ 12. 评论加载失败状态  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       替换了原本的评论列表 (<ul class="comment-list">),
-       由 [圆形图标] + [失败文案] + [重新加载按钮] 组成。
-       重新加载按钮:点击后转 1.4s 圈,然后回到失败态(假装失败)
-       注:本版本 HTML 中已删除 .error-sub 副文案行,只保留主标题
-       ============================================================ */
-    .comment-error {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 56px 24px 52px;
-      background: var(--surface);
-      border: 1px dashed var(--line);
-      border-radius: var(--radius);
-      margin-top: 8px;
-    }
-
-    .comment-error .icon-wrap {
-      width: 64px;
-      height: 64px;
-      display: grid;
-      place-items: center;
-      background: var(--line-soft);
-      border-radius: 50%;
-      margin-bottom: 18px;
-      color: var(--ink-soft);
-    }
-
-    .comment-error .icon-wrap svg {
-      width: 28px;
-      height: 28px;
-      stroke-width: 1.6;
-    }
-
-    .comment-error .error-title {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 18px;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-      margin-bottom: 6px;
-    }
-
-    .comment-error .error-sub {
-      font-size: 13.5px;
-      color: var(--ink-faint);
-      margin-bottom: 20px;
-    }
-
-    .comment-error .retry-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 18px;
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 13.5px;
-      cursor: pointer;
-      transition: all 0.18s;
-    }
-
-    .comment-error .retry-btn:hover {
-      border-color: var(--ink);
-      background: var(--ink);
-      color: #fff;
-    }
-
-    .comment-error .retry-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: 2;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .comment-error .retry-btn.loading svg {
-      animation: spin 0.9s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-
-    /* ============================================================
        13. 头像渐变色变体 (av-1 ~ av-6)
        ============================================================ */
     .av-1 { background: linear-gradient(135deg, #e33932, #c2241d); }
@@ -710,55 +635,56 @@
 
     <!-- ═══════════ 1. 顶部导航栏 ═══════════ -->
     <header>
-      <a href="xhs1.html" class="site-logo">
+      <a href="xhspl.html" class="site-logo">
         <img src="images/tomatologo.png">
       </a>
-      <a href="xhs1.html" class="back-link">← 返回列表</a>
+      <a href="xhspl.html" class="back-link">← 返回列表</a>
     </header>
 
     <!-- ═══════════ 2. 帖子主图 ═══════════ -->
     <div class="hero">
-      <img src="images/xhspinglunhuifu.png" alt="毛米">
+      <img src="images/jiankang.png" alt="金刚鹦鹉">
     </div>
 
     <!-- ═══════════ 3. 作者信息 ═══════════ -->
     <div class="post-meta">
-      <div class="avatar av-1">W</div>
+      <div class="avatar av-5">M</div>
       <div class="meta-text">
-        <div class="user-id">@文麦特田高</div>
-        <div class="meta-sub">3 小时前 · 阅读 11,293</div>
+        <div class="user-id">@睦邻小站</div>
+        <div class="meta-sub">10 小时前 · 阅读 123</div>
       </div>
     </div>
 
     <!-- ═══════════ 4. 标题 ═══════════ -->
-    <h1 class="post-title">西红柿评论无法加载恢复操作</h1>
+    <h1 class="post-title">从今天起，对自己好一点</h1>
 
     <!-- ═══════════ 5. 正文 (含编号问题列表) ═══════════ -->
     <div class="post-body">
-      <p>最近西红柿的首页频繁出现了评论无法加载的现象</p>
-      <p>而西红柿也推出了一个内部测试入口 以下是操作步骤👇</p>
-      <p>1.进入设置</p>
-      <p>2.忽略"内网入口",还有剩余7个按键，接下来我们需要点击这些按键
-      <p>3.把7个按键视为钢琴7键，按照《欢乐颂》简朴的前四个小节点击，就能恢复了
+      <p>生活节奏越来越快，但身体和心态不能掉队。</p>
+      <p>规律作息，适度运动，均衡饮食——这些老生常谈的话，真正做到的人并不多。</p>
+      <p>少熬一次夜，多走一段路。少生一次气，多给身边的人一个微笑。健康从来不是一个人的事，它连着家人，连着邻里，连着每一个我们在乎的人。</p>
+      <p>大家一起行动起来，照顾好自己，也照顾好我们共同的家园。</p>
+      <p>❤️ 共建和谐社区，从今天做起。</p>
     </div>
 
     <!-- ═══════════ ★ 6. Tags ═══════════
          【最近改动 — 新增】蓝色胶囊标签,# 符号由 CSS 自动加 -->
     <div class="post-tags">
-      <span class="tag">计算机</span>
-      <span class="tag">小知识</span>
+      <span class="tag">健康生活</span>
+      <span class="tag">和谐家园</span>
+      <span class="tag">正能量</span>
+      <span class="tag">社区倡议</span>
     </div>
 
-    <!-- ═══════════ 7. 操作栏 (点赞 / 评论 / 分享) ═══════════
-         注:#commentTopCount 显示为 "—",因评论加载失败 -->
+    <!-- ═══════════ 7. 操作栏 (点赞 / 评论 / 分享) ═══════════ -->
     <div class="post-actions">
       <button class="action-btn" id="likeBtn" aria-pressed="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="count" id="likeCount">6823</span>
+        <span class="count" id="likeCount">12</span>
       </button>
       <button class="action-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="count" id="commentTopCount">—</span>
+        <span class="count" id="commentTopCount">4</span>
       </button>
       <button class="action-btn share-btn" onclick="alert('链接已复制!')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -766,15 +692,12 @@
       </button>
     </div>
 
-    <!-- ═══════════ 8. 评论区标题 ═══════════
-         注:#commentNumLabel 显示为 "—",因评论加载失败 -->
+    <!-- ═══════════ 8. 评论区标题 ═══════════ -->
     <h2 class="comments-title">
-      评论 <span class="num" id="commentNumLabel">—</span>
+      评论 <span class="num" id="commentNumLabel"></span>
     </h2>
 
-    <!-- ═══════════ 9. 评论输入框 ═══════════
-         ★【最近改动】.input-foot 内已删除 "以xx身份发布" 提示行,
-            现在只剩"发布"按钮且靠右对齐 -->
+    <!-- ═══════════ 9. 评论输入框 ═══════════ -->
     <div class="comment-input">
       <div class="avatar sm av-3">你</div>
       <div class="input-wrap">
@@ -785,27 +708,10 @@
       </div>
     </div>
 
-    <!-- ═══════════ ★ 10. 评论加载失败 UI ═══════════
-         【最近改动 — 新增】替换了原本的 <ul class="comment-list">
-         结构:[斜线评论气泡图标] + [失败文案] + [重新加载按钮] -->
-    <div class="comment-error" id="commentError">
-      <div class="icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-          <line x1="3" y1="3" x2="21" y2="21"/>
-        </svg>
-      </div>
-      <div class="error-title">评论加载失败</div>
-      <button class="retry-btn" id="retryBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-          <path d="M21 3v5h-5"/>
-          <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
-          <path d="M3 21v-5h5"/>
-        </svg>
-        重新加载
-      </button>
-    </div>
+    <!-- ═══════════ ★ 10. 评论列表  【替换:之前是「加载失败」UI,现在用真实评论 + 嵌套回复】 ═══════════ -->
+    <ul class="comment-list" id="commentList">
+      <!-- Seed comments rendered by JS -->
+    </ul>
 
   </div>
 
@@ -818,7 +724,62 @@
 
 
     /* ============================================================
-       1. 评论渲染函数 (当前未被实际调用 — 评论加载失败)
+       ★ 1. 种子评论数据  【新增】
+       两条评论各带一段嵌套回复
+       ============================================================ */
+    const seedComments = [
+      {
+        userId: '@卧石沙子',
+        avatar: 'av-2',
+        initial: 'W',
+        time: '7 小时前',
+        text: '大家一定要记得随身携带***小石子***，消化不良引起的急性肠胃炎已经是现代人的通病了...',
+        likes: 23,
+        replies: [
+          {
+            userId: '@睦邻小站',
+            replyTo: '@卧石沙子',
+            avatar: 'av-1',
+            initial: 'M',
+            time: '6 小时前',
+            text: '没错！不管为了别人还是自己都记得要带呀',
+            likes: 5
+          },
+         ]
+      },
+      {
+        userId: '@花开贫穷',
+        avatar: 'av-4',
+        initial: 'H',
+        time: '5 小时前',
+        text: '喝水这条，尤其是家长要看紧。最近要暑假了，独自在家的小孩很可能自己喝成水中毒 非常危险！',
+        likes: 41,
+        replies: [
+          {
+            userId: '@睦邻小站',
+            replyTo: '@花开贫穷',
+            avatar: 'av-1',
+            initial: 'M',
+            time: '4 小时前',
+            text: '👍👍',
+            likes: 12
+          }
+        ]
+      },
+      
+    ];
+
+
+    /* ============================================================
+       1b. 粗体解析：将 ***text*** 转为 <strong>
+       ============================================================ */
+    function parseBold(text) {
+      return text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong>$1</strong>');
+    }
+
+
+    /* ============================================================
+       2. 评论渲染函数 (含嵌套回复支持)
        ============================================================ */
     const commentList = document.getElementById('commentList');
 
@@ -843,10 +804,67 @@
           </div>
         </div>
       `;
-      // Set text safely
-      li.querySelector('.comment-text').textContent = c.text;
+
+      // 如果是回复(有 replyTo),前面带"回复 @xxx:"标签
+      const textEl = li.querySelector('.comment-text');
+      if (c.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + c.replyTo + ':';
+        textEl.appendChild(replyMark);
+        textEl.innerHTML += parseBold(c.text);
+      } else {
+        textEl.innerHTML = parseBold(c.text);
+      }
+
+      // 如果该评论有嵌套回复,渲染它们
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        const repliesUl = document.createElement('ul');
+        repliesUl.className = 'comment-replies';
+        c.replies.forEach(r => {
+          const replyLi = renderReplyItem(r);
+          repliesUl.appendChild(replyLi);
+        });
+        li.querySelector('.comment-body').appendChild(repliesUl);
+      }
+
       if (prepend) commentList.prepend(li);
       else commentList.appendChild(li);
+      return li;
+    }
+
+    // 单独渲染一条回复(结构跟评论一样,只是不再嵌套)
+    function renderReplyItem(r) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${r.avatar}">${r.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${r.userId}</span>
+            <span class="time">${r.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${r.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${r.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+      const textEl = li.querySelector('.comment-text');
+      if (r.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + r.replyTo + ':';
+        textEl.appendChild(replyMark);
+        textEl.innerHTML += parseBold(r.text);
+      } else {
+        textEl.innerHTML = parseBold(r.text);
+      }
       return li;
     }
 
@@ -854,12 +872,12 @@
 
 
     /* ============================================================
-       2. 帖子主点赞按钮 (爱心图标切换 + 计数 ±1)
+       3. 帖子主点赞按钮 (爱心图标切换 + 计数 ±1)
        ============================================================ */
     const likeBtn = document.getElementById('likeBtn');
     const likeCount = document.getElementById('likeCount');
     let postLiked = false;
-    let postLikes = 128;
+    let postLikes = 12;
 
     likeBtn.addEventListener('click', () => {
       postLiked = !postLiked;
@@ -871,7 +889,7 @@
 
 
     /* ============================================================
-       3. 评论点赞 (事件委托 — 给所有 .like-comment 按钮)
+       4. 评论点赞 (事件委托 — 给所有 .like-comment 按钮)
        ============================================================ */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.like-comment');
@@ -886,7 +904,7 @@
 
 
     /* ============================================================
-       4. 评论输入框 — 自动撑高 + 发布按钮启用/禁用
+       5. 评论输入框 — 自动撑高 + 发布按钮启用/禁用
        ============================================================ */
     const input = document.getElementById('commentInput');
     const submitBtn = document.getElementById('submitBtn');
@@ -902,7 +920,7 @@
 
 
     /* ============================================================
-       ★ 5. 提交评论 (拦截 → 触发弹窗)  【最近改动】
+       ★ 6. 提交评论 (拦截 → 触发弹窗)  【最近改动】
        ────────────────────────────────────────────────────────────
        原行为:把评论 prepend 到列表 + 计数 +1
        新行为:不发送,改为:
@@ -926,7 +944,7 @@
 
 
     /* ============================================================
-       ★ 6. Toast 弹窗显隐控制  【最近改动 — 新增】
+       ★ 7. Toast 弹窗显隐控制
        ────────────────────────────────────────────────────────────
        showToast()  → 加 .show 类显示,2.6 秒后自动收回
        点击 toast   → 立即关闭(不用等)
@@ -950,7 +968,7 @@
 
 
     /* ============================================================
-       7. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
+       8. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
        ============================================================ */
     submitBtn.addEventListener('click', submit);
 

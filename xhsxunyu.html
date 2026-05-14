@@ -1,0 +1,1685 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>健康生活 · 和谐家园</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #faf7f2;
+      --surface:   #ffffff;
+      --ink:       #1a1a1a;
+      --ink-soft:  #6b6b6b;
+      --ink-faint: #9a9a9a;
+      --line:      #ece7df;
+      --line-soft: #f4f0e8;
+      --accent:    #e33932;
+      --accent-soft: #fde8e7;
+      --shadow:    0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px -16px rgba(0,0,0,0.18);
+      --radius:    14px;
+      --radius-sm: 10px;
+      --font-display: 'Bricolage Grotesque', 'Noto Sans SC', system-ui, sans-serif;
+      --font-body:    'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 36px 24px 96px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 20px 16px 64px; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-logo {
+      display: inline-block;
+      line-height: 0;
+    }
+
+    .site-logo img {
+      height: 90px;
+      width: auto;
+      display: block;
+    }
+
+    .back-link {
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      transform: translateX(-2px);
+    }
+
+    .hero {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0ece4 0%, #e6e0d4 100%);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .hero img {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 520px;
+      object-fit: cover;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .avatar.sm { width: 36px; height: 36px; font-size: 14px; }
+
+    .meta-text { line-height: 1.3; }
+
+    .user-id {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .meta-sub {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      margin-top: 2px;
+    }
+
+    .post-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 38px;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .post-title { font-size: 28px; }
+    }
+
+    .post-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #2a2a2a;
+      margin-bottom: 36px;
+    }
+
+    .post-body p { margin-bottom: 18px; }
+    .post-body p:last-child { margin-bottom: 0; }
+
+    .post-body ol {
+      padding-left: 22px;
+      margin-bottom: 18px;
+    }
+
+    .post-body ol li {
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .post-body ol li::marker {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -16px 0 32px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      background: #eaf1ff;
+      color: #2563eb;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: all 0.18s ease;
+    }
+
+    .tag::before {
+      content: '#';
+      margin-right: 2px;
+      opacity: 0.7;
+    }
+
+    .tag:hover {
+      background: #2563eb;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 4px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 40px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transition: all 0.18s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--line-soft);
+      color: var(--ink);
+    }
+
+    .action-btn svg {
+      width: 18px; height: 18px;
+      stroke-width: 1.8;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .action-btn.liked {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .action-btn.liked svg {
+      fill: var(--accent);
+      stroke: var(--accent);
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+
+    .action-btn .count {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .action-btn.share-btn {
+      margin-left: auto;
+    }
+
+    .comments-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .comments-title .num {
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .comment-input {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      transition: border-color 0.2s;
+    }
+
+    .comment-input:focus-within {
+      border-color: var(--ink);
+    }
+
+    .input-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .comment-input textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink);
+      background: transparent;
+      min-height: 24px;
+      max-height: 160px;
+    }
+
+    .comment-input textarea::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .input-foot {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .submit-btn {
+      padding: 8px 18px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.18s;
+      letter-spacing: 0.01em;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      background: var(--line);
+      color: var(--ink-faint);
+      cursor: not-allowed;
+    }
+
+    .comment-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comment {
+      display: flex;
+      gap: 12px;
+      padding: 18px 4px;
+      border-bottom: 1px solid var(--line-soft);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .comment:last-child { border-bottom: none; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-body { flex: 1; min-width: 0; }
+
+    .comment-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .comment-head .user-id { font-size: 14px; }
+    .comment-head .time {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    .comment-text {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #2a2a2a;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .comment-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px 4px 6px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .comment-action:hover { color: var(--ink); background: var(--line-soft); }
+
+    .comment-action svg {
+      width: 14px; height: 14px;
+      stroke-width: 1.8;
+      transition: transform 0.2s;
+    }
+
+    .comment-action.liked {
+      color: var(--accent);
+    }
+
+    .comment-action.liked svg {
+      fill: var(--accent);
+      stroke: var(--accent);
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* 嵌套回复 */
+    .comment-replies {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0 0 0 16px;
+      border-left: 2px solid var(--line);
+    }
+
+    .comment-replies .comment {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comment-replies .comment:first-child { padding-top: 4px; }
+    .comment-replies .comment:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .comment-replies .reply-to {
+      color: #2563eb;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+
+    /* Toast(原有的"不想留下评论"提示) */
+    .toast {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 22px 14px 18px;
+      margin-top: 18px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14.5px;
+      letter-spacing: 0.005em;
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: calc(100vw - 32px);
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast .toast-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    @media (max-width: 480px) {
+      .toast {
+        font-size: 13px;
+        padding: 12px 18px 12px 14px;
+        white-space: normal;
+        text-align: center;
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    .comment-input.shake {
+      animation: shake 0.4s ease;
+      border-color: var(--accent) !important;
+    }
+
+    .av-1 { background: linear-gradient(135deg, #e33932, #c2241d); }
+    .av-2 { background: linear-gradient(135deg, #2d8a87, #1f6663); }
+    .av-3 { background: linear-gradient(135deg, #d4a226, #b08418); }
+    .av-4 { background: linear-gradient(135deg, #8e4a7e, #6f3760); }
+    .av-5 { background: linear-gradient(135deg, #6b8e5a, #4f6d40); }
+    .av-6 { background: linear-gradient(135deg, #c97b3a, #a55e22); }
+
+    /* ============================================================
+       🐟 浴缸喂金鱼小游戏(右下角浮窗)
+       ============================================================ */
+    .fish-game {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      width: 300px;
+      background: linear-gradient(180deg, #fefcf7 0%, #faf6ec 100%);
+      border-radius: 16px;
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 12px rgba(0,0,0,0.08),
+        0 20px 50px -15px rgba(0,0,0,0.18);
+      border: 1px solid #e8e0cd;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: var(--font-body);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s;
+    }
+
+    .fish-game.collapsed .fg-body {
+      display: none;
+    }
+
+    .fg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 14px;
+      background: rgba(0,0,0,0.025);
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+
+    .fg-header:hover { background: rgba(0,0,0,0.05); }
+
+    .fg-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--ink);
+      letter-spacing: 0.005em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fg-toggle {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: var(--font-display);
+      transition: background 0.18s, color 0.18s;
+    }
+
+    .fg-toggle:hover {
+      background: rgba(0,0,0,0.08);
+      color: var(--ink);
+    }
+
+    .fg-body {
+      position: relative;
+      padding: 6px 8px 8px;
+    }
+
+    .fg-stage { position: relative; }
+
+    .bathtub-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .food-bowl {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 58px;
+      height: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      padding: 3px 4px 4px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.72);
+      border: 1px dashed #c8b894;
+      transition: background 0.18s, border-color 0.18s, transform 0.15s;
+      z-index: 3;
+      backdrop-filter: blur(4px);
+    }
+
+    .food-bowl:hover {
+      background: rgba(255,255,255,0.95);
+      border-color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    .food-bowl:active { cursor: grabbing; }
+
+    .food-bowl svg {
+      width: 38px;
+      height: 34px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .food-bowl-hint {
+      font-size: 10px;
+      color: var(--ink-faint);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 1px;
+      pointer-events: none;
+    }
+
+    .food-bowl:hover .food-bowl-hint { color: var(--accent); }
+
+    /* 拖动时跟随鼠标的鱼食粒 */
+    .dragging-pellet {
+      position: fixed;
+      width: 11px;
+      height: 11px;
+      background: radial-gradient(circle at 30% 30%, #c89968, #5a3810);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10001;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35),
+                  inset 0 -2px 2px rgba(0,0,0,0.25);
+      display: none;
+    }
+
+    /* 鱼眼眨眼动画 */
+    @keyframes blink {
+      0%, 96%, 100% { transform: scaleY(1); }
+      98% { transform: scaleY(0.15); }
+    }
+
+    .fish-eye {
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+
+    @media (max-width: 600px) {
+      .fish-game {
+        width: 250px;
+        bottom: 12px;
+        right: 12px;
+      }
+      .food-bowl { width: 50px; height: 56px; }
+      .food-bowl svg { width: 32px; height: 28px; }
+      .food-bowl-hint { font-size: 9px; }
+    }
+
+    @media (max-width: 380px) {
+      .fish-game { display: none; }
+    }
+
+    /* ============================================================
+       Steam 风格成就弹窗(沿用 profile 页面的设计)
+       ============================================================ */
+    .achievement-toast {
+      position: fixed;
+      top: 28px;
+      right: 28px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741;
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 0 20px rgba(78, 154, 65, 0.25),
+        0 8px 32px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition:
+        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: var(--font-body);
+    }
+
+    .achievement-toast.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .achievement-icon {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 12px rgba(78, 154, 65, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .achievement-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+
+    @keyframes iconShine {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .achievement-icon svg {
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 0 6px rgba(180, 220, 100, 0.5));
+    }
+
+    .achievement-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .achievement-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8fbc5a;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .achievement-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px #8fbc5a; }
+      50% { opacity: 0.6; box-shadow: 0 0 2px #8fbc5a; }
+    }
+
+    .achievement-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 17px;
+      color: #e5e5e5;
+      line-height: 1.2;
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .achievement-desc {
+      font-size: 12.5px;
+      color: #8f98a0;
+      line-height: 1.4;
+    }
+
+    .achievement-toast::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px;
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    .achievement-toast.show::after {
+      animation: progressShrink 5s 0.5s linear forwards;
+    }
+
+    @keyframes progressShrink {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+
+    .achievement-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .achievement-toast.show .particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+
+    @keyframes particleFloat {
+      0%   { opacity: 0.8; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    @media (max-width: 480px) {
+      .achievement-toast {
+        top: 16px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-dot"></span>
+    <span class="toast-text">你不想留下任何评论</span>
+  </div>
+
+  <div class="container">
+
+    <header>
+      <a href="xhs1.html" class="site-logo">
+        <img src="images/tomatologo.png">
+      </a>
+      <a href="xhs1.html" class="back-link">← 返回列表</a>
+    </header>
+
+    <div class="hero">
+      <img src="images/xunyu.png" alt="健康生活">
+    </div>
+
+    <div class="post-meta">
+      <div class="avatar av-5">C</div>
+      <div class="meta-text">
+        <div class="user-id">@草草</div>
+        <div class="meta-sub">3 小时前 · 阅读 2381</div>
+      </div>
+    </div>
+
+    <h1 class="post-title">终其一生忘不掉熏鱼忧郁的眼睛</h1>
+
+    <div class="post-body">
+      <p>没想到<strong>过目不忘</strong>的技能点居然也点在这里了...</p>
+      <p>我能清楚地记得自己吃掉的每一条熏鱼的脸和眼神该怎么办</p>
+      <p>每一次吃熏鱼 晚上做梦都会梦到它们来讨债呃呃呃</p>
+    </div>
+
+    <div class="post-tags">
+      <span class="tag">健康生活</span>
+      <span class="tag">和谐家园</span>
+      <span class="tag">正能量</span>
+      <span class="tag">社区倡议</span>
+    </div>
+
+    <div class="post-actions">
+      <button class="action-btn" id="likeBtn" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="count" id="likeCount">327</span>
+      </button>
+      <button class="action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="count" id="commentTopCount">4</span>
+      </button>
+      <button class="action-btn share-btn" onclick="alert('链接已复制!')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        分享
+      </button>
+    </div>
+
+    <h2 class="comments-title">
+      评论 <span class="num" id="commentNumLabel">4</span>
+    </h2>
+
+    <div class="comment-input">
+      <div class="avatar sm av-3">你</div>
+      <div class="input-wrap">
+        <textarea id="commentInput" placeholder="留下你的看法..." rows="1"></textarea>
+        <div class="input-foot">
+            <button class="submit-btn" id="submitBtn" disabled>发布</button>
+        </div>
+      </div>
+    </div>
+
+    <ul class="comment-list" id="commentList"></ul>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       🐟 浴缸喂金鱼小游戏(右下角浮窗)
+       ──────────────────────────────────────────────────────────
+       玩法：按住右上角鱼食碗 → 拖到浴缸水里 → 松手放下鱼食
+            鱼会游过来吃掉,第一次吃到就解锁成就
+       ════════════════════════════════════════════════════════════ -->
+  <div class="fish-game" id="fishGame" aria-label="给金鱼喂食小游戏">
+    <div class="fg-header" id="fgHeader" title="点击折叠/展开">
+      <span class="fg-title">🐟 喂喂金鱼</span>
+      <button class="fg-toggle" id="fgToggle" aria-label="折叠/展开">−</button>
+    </div>
+
+    <div class="fg-body">
+      <div class="fg-stage">
+
+        <!-- 鱼食碗(拖拽起点) -->
+        <div class="food-bowl" id="foodBowl" title="按住拖到水里">
+          <svg viewBox="0 0 40 35" aria-hidden="true">
+            <!-- 阴影 -->
+            <ellipse cx="20" cy="32" rx="14" ry="1.5" fill="#1a1a1a" opacity="0.15"/>
+            <!-- 碗身 -->
+            <path d="M 6 16 L 9 29 Q 11 31 14 31 L 26 31 Q 29 31 31 29 L 34 16 Z"
+                  fill="#cba578" stroke="#7d5a30" stroke-width="0.8"/>
+            <!-- 碗内阴影 -->
+            <ellipse cx="20" cy="16" rx="13" ry="2.5" fill="#9a7547"/>
+            <!-- 碗口 -->
+            <ellipse cx="20" cy="15" rx="14" ry="3" fill="#dcb88e" stroke="#7d5a30" stroke-width="0.8"/>
+            <!-- 鱼食粒 -->
+            <circle cx="14" cy="14" r="2.2" fill="#6b4818"/>
+            <circle cx="20" cy="12.5" r="2.2" fill="#7a5524"/>
+            <circle cx="26" cy="14" r="2.2" fill="#6b4818"/>
+            <circle cx="17" cy="15.5" r="1.9" fill="#7a5524"/>
+            <circle cx="23" cy="15.5" r="1.9" fill="#8a6028"/>
+            <!-- 反光 -->
+            <circle cx="19" cy="11.5" r="0.6" fill="#fff" opacity="0.7"/>
+          </svg>
+          <span class="food-bowl-hint">鱼食</span>
+        </div>
+
+        <!-- 浴缸 + 水 + 鱼 -->
+        <svg class="bathtub-svg" viewBox="0 0 280 170" id="bathtubSvg" aria-hidden="true">
+          <defs>
+            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#bce0eb"/>
+              <stop offset="50%"  stop-color="#8cc4d6"/>
+              <stop offset="100%" stop-color="#6ba8be"/>
+            </linearGradient>
+            <linearGradient id="tubGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#f0ebd9"/>
+            </linearGradient>
+            <clipPath id="tubClip">
+              <path d="M 30 56 Q 22 56 22 65 L 28 130 Q 30 144 44 144 L 186 144 Q 200 144 202 130 L 208 65 Q 208 56 200 56 Z"/>
+            </clipPath>
+          </defs>
+
+          <!-- 背景 -->
+          <rect x="0" y="0" width="280" height="170" fill="#fdfbf6"/>
+
+          <!-- 地砖 -->
+          <rect x="0" y="156" width="280" height="14" fill="#e8dfc8"/>
+          <line x1="0" y1="156" x2="280" y2="156" stroke="#c4b896" stroke-width="0.6"/>
+          <line x1="50"  y1="156" x2="50"  y2="170" stroke="#c4b896" stroke-width="0.5" opacity="0.5"/>
+          <line x1="105" y1="156" x2="105" y2="170" stroke="#c4b896" stroke-width="0.5" opacity="0.5"/>
+          <line x1="160" y1="156" x2="160" y2="170" stroke="#c4b896" stroke-width="0.5" opacity="0.5"/>
+          <line x1="220" y1="156" x2="220" y2="170" stroke="#c4b896" stroke-width="0.5" opacity="0.5"/>
+
+          <!-- 浴缸脚(简化的爪足) -->
+          <path d="M 35 142 Q 32 153 39 156 L 50 156 Q 56 152 53 142 Z"
+                fill="#a09a87" stroke="#6f6a5a" stroke-width="0.8"/>
+          <path d="M 178 142 Q 175 153 182 156 L 193 156 Q 199 152 196 142 Z"
+                fill="#a09a87" stroke="#6f6a5a" stroke-width="0.8"/>
+
+          <!-- 浴缸底部阴影 -->
+          <ellipse cx="115" cy="148" rx="100" ry="4" fill="#1a1a1a" opacity="0.12"/>
+
+          <!-- 浴缸缸身(外轮廓) -->
+          <path d="M 30 56
+                   Q 22 56 22 65
+                   L 28 130
+                   Q 30 144 44 144
+                   L 186 144
+                   Q 200 144 202 130
+                   L 208 65
+                   Q 208 56 200 56 Z"
+                fill="url(#tubGrad)"
+                stroke="#bcb2a0"
+                stroke-width="1.8"/>
+
+          <!-- 浴缸顶部缸沿 -->
+          <ellipse cx="115" cy="56" rx="93" ry="7" fill="#dad1bc"/>
+          <ellipse cx="115" cy="55" rx="89" ry="5.5" fill="#7fb2c0"/>
+          <ellipse cx="115" cy="54" rx="80" ry="3" fill="#cdebf2" opacity="0.7"/>
+
+          <!-- 水内部(裁剪到浴缸形状) -->
+          <g clip-path="url(#tubClip)">
+            <!-- 水 -->
+            <rect x="22" y="58" width="190" height="90" fill="url(#waterGrad)"/>
+
+            <!-- 水面闪光 -->
+            <line x1="35" y1="80"  x2="80"  y2="80"  stroke="#fff" stroke-width="0.5" opacity="0.4"/>
+            <line x1="120" y1="95" x2="180" y2="95" stroke="#fff" stroke-width="0.4" opacity="0.35"/>
+            <line x1="40" y1="118" x2="100" y2="118" stroke="#fff" stroke-width="0.4" opacity="0.3"/>
+            <line x1="140" y1="125" x2="190" y2="125" stroke="#fff" stroke-width="0.4" opacity="0.25"/>
+
+            <!-- 气泡上升 -->
+            <circle r="2" fill="#fff" opacity="0">
+              <animate attributeName="cx" values="60;62;60;58;60" dur="5s" repeatCount="indefinite"/>
+              <animate attributeName="cy" values="138;65" dur="5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0.7;0.7;0" dur="5s" repeatCount="indefinite"/>
+            </circle>
+            <circle r="1.5" fill="#fff" opacity="0">
+              <animate attributeName="cx" values="155;157;155;153;155" dur="6.5s" begin="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="cy" values="138;65" dur="6.5s" begin="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0.6;0.6;0" dur="6.5s" begin="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle r="1" fill="#fff" opacity="0">
+              <animate attributeName="cx" values="115;117;115;113;115" dur="7s" begin="3s" repeatCount="indefinite"/>
+              <animate attributeName="cy" values="138;65" dur="7s" begin="3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;0.6;0.6;0" dur="7s" begin="3s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- 水里的鱼食颗粒(JS 动态添加) -->
+            <g id="pelletsInWater"></g>
+
+            <!-- 鱼 1:大橘鱼 -->
+            <g class="fish" id="fish1" transform="translate(70 100)">
+              <!-- 身体 -->
+              <ellipse cx="0" cy="0" rx="14" ry="8" fill="#f59538"/>
+              <!-- 腹部高光 -->
+              <ellipse cx="-1" cy="2.5" rx="11" ry="4" fill="#ffc680" opacity="0.65"/>
+              <!-- 尾鳍 -->
+              <path d="M -12 0 L -22 -8 Q -19 0 -22 8 Z" fill="#f59538"/>
+              <path d="M -13 -1 L -20 -7 L -20 -2 Z" fill="#dd7818" opacity="0.6"/>
+              <!-- 背鳍 -->
+              <path d="M -3 -7 Q 1 -13 7 -8 Q 5 -7 -3 -7 Z" fill="#dd7818"/>
+              <!-- 腹鳍 -->
+              <path d="M -2 7 Q 1 11 5 8 Q 3 7 -2 7 Z" fill="#dd7818"/>
+              <!-- 鳃纹 -->
+              <path d="M 3 -5 Q 4 0 3 5" stroke="#b86010" stroke-width="0.7" fill="none" opacity="0.45"/>
+              <!-- 眼睛 -->
+              <circle cx="7" cy="-2" r="2.2" fill="white"/>
+              <circle cx="7.5" cy="-2" r="1.4" fill="#1a1a1a" class="fish-eye"/>
+              <circle cx="8" cy="-2.5" r="0.5" fill="white"/>
+              <!-- 嘴巴 -->
+              <path d="M 13 1 Q 14 2.5 12.5 3" stroke="#a85f10" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+            </g>
+
+            <!-- 鱼 2:小红鱼 -->
+            <g class="fish" id="fish2" transform="translate(150 115) scale(-1 1)">
+              <ellipse cx="0" cy="0" rx="11" ry="6" fill="#e85a35"/>
+              <ellipse cx="-1" cy="1.8" rx="8" ry="3" fill="#ff9070" opacity="0.65"/>
+              <path d="M -9 0 L -18 -6 Q -16 0 -18 6 Z" fill="#e85a35"/>
+              <path d="M -10 -0.5 L -16 -5 L -16 -1.5 Z" fill="#c2401e" opacity="0.55"/>
+              <path d="M -2 -5 Q 1 -10 6 -6 Q 4 -5 -2 -5 Z" fill="#c2401e"/>
+              <path d="M -2 5 Q 1 8 5 6 Q 3 5 -2 5 Z" fill="#c2401e"/>
+              <circle cx="5.5" cy="-1.5" r="1.8" fill="white"/>
+              <circle cx="6" cy="-1.5" r="1.1" fill="#1a1a1a" class="fish-eye"/>
+              <circle cx="6.3" cy="-1.9" r="0.4" fill="white"/>
+              <path d="M 10 0.5 Q 11 2 9.5 2.5" stroke="#882010" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+
+          <!-- 缸沿前侧高光 -->
+          <path d="M 30 56 Q 22 56 22 65 L 28 130"
+                stroke="#fff" stroke-width="1" fill="none" opacity="0.65"/>
+          <path d="M 200 56 Q 208 56 208 65 L 202 130"
+                stroke="#fff" stroke-width="0.8" fill="none" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 拖拽过程中跟随鼠标的鱼食粒 -->
+  <div class="dragging-pellet" id="draggingPellet"></div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       🏆 Steam 风格成就弹窗(吃到第一颗鱼食后触发)
+       ════════════════════════════════════════════════════════════ -->
+  <div class="achievement-toast" id="achievementToast" role="alert">
+    <div class="achievement-particles" id="particles"></div>
+    <div class="achievement-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              fill="#b8e060" stroke="#8fbc5a" stroke-width="0.5"/>
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              fill="url(#starGlow)" opacity="0.5"/>
+        <defs>
+          <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#b8e060" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="achievement-text">
+      <div class="achievement-label">成就已解锁</div>
+      <div class="achievement-title">良心未泯</div>
+      <div class="achievement-desc">给浴缸里的金鱼喂了一顿饭,稍微补偿一下</div>
+    </div>
+  </div>
+
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
+       原有评论系统(完全保留)
+       ════════════════════════════════════════════════════════════ */
+    const HEART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const REPLY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5M4 12h11a5 5 0 0 1 5 5v3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    function appendFormatted(parent, text) {
+      const regex = /\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+      let last = 0, m;
+      while ((m = regex.exec(text)) !== null) {
+        if (m.index > last) {
+          parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+        }
+        if (m[1]) {
+          const s = document.createElement('strong');
+          const e = document.createElement('em');
+          e.textContent = m[1];
+          s.appendChild(e);
+          parent.appendChild(s);
+        } else if (m[2]) {
+          const s = document.createElement('strong');
+          s.textContent = m[2];
+          parent.appendChild(s);
+        } else if (m[3]) {
+          const e = document.createElement('em');
+          e.textContent = m[3];
+          parent.appendChild(e);
+        }
+        last = m.index + m[0].length;
+      }
+      if (last < text.length) {
+        parent.appendChild(document.createTextNode(text.slice(last)));
+      }
+    }
+
+    const seedComments = [
+      {
+        userId: '@炸药鱼',
+        avatar: 'av-2',
+        initial: 'Z',
+        time: '2 小时前',
+        text: '等一下，那贴主你做梦的时候岂不是能认出今天吃的是哪一条鱼',
+        likes: 89,
+        replies: [
+          {
+            userId: '@草草',
+            replyTo: '@炸药鱼',
+            avatar: 'av-5',
+            initial: 'C',
+            time: '58 分钟前',
+            text: '没错，我甚至会给它们每个鱼起名字来着...',
+            likes: 47
+          }
+        ]
+      },
+      {
+        userId: '@天青色瞪眼鱼',
+        avatar: 'av-4',
+        initial: 'T',
+        time: '45 分钟前',
+        text: '钓鱼佬狂喜',
+        likes: 56,
+
+      },
+      {
+        userId: '@百年熏鱼店',
+        avatar: 'av-1',
+        initial: 'B',
+        time: '12 分钟前',
+        text: '鱼在我这里',
+        likes: 312
+      }
+    ];
+
+    const commentList = document.getElementById('commentList');
+
+    function renderReplyItem(r) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${r.avatar}">${r.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${r.userId}</span>
+            <span class="time">${r.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${r.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${r.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+      const textEl = li.querySelector('.comment-text');
+      if (r.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + r.replyTo + ':';
+        textEl.appendChild(replyMark);
+      }
+      appendFormatted(textEl, r.text);
+      return li;
+    }
+
+    function renderComment(c, prepend = false) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${c.avatar}">${c.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${c.userId}</span>
+            <span class="time">${c.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${c.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${c.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+
+      const textEl = li.querySelector('.comment-text');
+      if (c.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + c.replyTo + ':';
+        textEl.appendChild(replyMark);
+      }
+      appendFormatted(textEl, c.text);
+
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        const repliesUl = document.createElement('ul');
+        repliesUl.className = 'comment-replies';
+        c.replies.forEach(r => repliesUl.appendChild(renderReplyItem(r)));
+        li.querySelector('.comment-body').appendChild(repliesUl);
+      }
+
+      if (prepend) commentList.prepend(li);
+      else commentList.appendChild(li);
+      return li;
+    }
+
+    seedComments.forEach(c => renderComment(c));
+
+    /* 帖子点赞 */
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    let postLiked = false;
+    let postLikes = 327;
+
+    likeBtn.addEventListener('click', () => {
+      postLiked = !postLiked;
+      postLikes += postLiked ? 1 : -1;
+      likeCount.textContent = postLikes;
+      likeBtn.classList.toggle('liked', postLiked);
+      likeBtn.setAttribute('aria-pressed', postLiked);
+    });
+
+    /* 评论点赞 */
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.like-comment');
+      if (!btn) return;
+      const isLiked = btn.classList.toggle('liked');
+      let n = parseInt(btn.dataset.likes, 10);
+      n += isLiked ? 1 : -1;
+      btn.dataset.likes = n;
+      btn.querySelector('.lc').textContent = n;
+      btn.setAttribute('aria-pressed', isLiked);
+    });
+
+    /* 输入框 */
+    const input = document.getElementById('commentInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const commentNumLabel = document.getElementById('commentNumLabel');
+    const commentTopCount = document.getElementById('commentTopCount');
+    let commentTotal = seedComments.length;
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      submitBtn.disabled = input.value.trim().length === 0;
+    });
+
+    /* 提交拦截 */
+    function submit() {
+      const text = input.value.trim();
+      if (!text) return;
+      showToast();
+      const inputBox = document.querySelector('.comment-input');
+      inputBox.classList.remove('shake');
+      void inputBox.offsetWidth;
+      inputBox.classList.add('shake');
+    }
+
+    /* Toast */
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast() {
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    toast.addEventListener('click', () => {
+      toast.classList.remove('show');
+      clearTimeout(toastTimer);
+    });
+
+    submitBtn.addEventListener('click', submit);
+    input.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submit();
+      }
+    });
+
+
+    /* ════════════════════════════════════════════════════════════
+       🐟 浴缸喂金鱼小游戏
+       ════════════════════════════════════════════════════════════ */
+    (function fishGame() {
+      const fg            = document.getElementById('fishGame');
+      const fgHeader      = document.getElementById('fgHeader');
+      const fgToggle      = document.getElementById('fgToggle');
+      const foodBowl      = document.getElementById('foodBowl');
+      const draggingPellet = document.getElementById('draggingPellet');
+      const bathtubSvg    = document.getElementById('bathtubSvg');
+      const pelletsLayer  = document.getElementById('pelletsInWater');
+      const fish1El       = document.getElementById('fish1');
+      const fish2El       = document.getElementById('fish2');
+      const achievementToast = document.getElementById('achievementToast');
+
+      // 水域边界(SVG 坐标系内 280x170)
+      const WATER = { left: 32, right: 198, top: 65, bottom: 135 };
+      const SVG_VB = { w: 280, h: 170 };
+
+      // 鱼的状态
+      const fish = {
+        fish1: { el: fish1El, x: 70,  y: 100, vx: 0.38,  vy: 0.04,  dir: 1,  target: null, eating: 0, baseSpeed: 0.38 },
+        fish2: { el: fish2El, x: 150, y: 115, vx: -0.32, vy: -0.03, dir: -1, target: null, eating: 0, baseSpeed: 0.32 }
+      };
+
+      // 水里待吃的鱼食粒
+      let pellets = [];
+      let pid = 0;
+      let hasFedThisSession = false;
+
+      // ───── 动画主循环 ─────
+      function tick() {
+        const now = Date.now();
+
+        for (const id of ['fish1', 'fish2']) {
+          const f = fish[id];
+
+          if (f.eating > 0) {
+            // 吃东西的小动作
+            f.eating--;
+          } else if (f.target) {
+            // 朝鱼食游
+            const p = f.target;
+            const dx = p.x - f.x;
+            const dy = p.y - f.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 7) {
+              // 吃掉!
+              p.el.remove();
+              pellets = pellets.filter(x => x !== p);
+              f.target = null;
+              f.eating = 18;
+
+              // 首次喂食成功 → 解锁成就
+              if (!hasFedThisSession) {
+                hasFedThisSession = true;
+                setTimeout(showAchievement, 700);
+              }
+            } else {
+              const speed = 1.5;
+              f.vx = (dx / dist) * speed;
+              f.vy = (dy / dist) * speed;
+              f.x += f.vx;
+              f.y += f.vy;
+              f.dir = f.vx >= 0 ? 1 : -1;
+            }
+          } else {
+            // 找最近的没被认领的鱼食
+            let nearest = null;
+            let nd = Infinity;
+            for (const p of pellets) {
+              if (p.claimedBy) continue;
+              const d = Math.hypot(p.x - f.x, p.y - f.y);
+              if (d < nd) { nd = d; nearest = p; }
+            }
+            if (nearest) {
+              nearest.claimedBy = id;
+              f.target = nearest;
+            } else {
+              // 自由游
+              f.x += f.vx;
+              f.y += f.vy;
+
+              // 偶尔上下漂移一下
+              if (Math.random() < 0.015) {
+                f.vy += (Math.random() - 0.5) * 0.12;
+              }
+              f.vy *= 0.985;
+              f.vy = Math.max(-0.35, Math.min(0.35, f.vy));
+
+              // 撞墙反弹
+              if (f.x < WATER.left + 18) {
+                f.vx = Math.abs(f.vx) || f.baseSpeed;
+                f.dir = 1;
+              }
+              if (f.x > WATER.right - 18) {
+                f.vx = -(Math.abs(f.vx) || f.baseSpeed);
+                f.dir = -1;
+              }
+              if (f.y < WATER.top + 10) {
+                f.vy = Math.abs(f.vy) + 0.06;
+              }
+              if (f.y > WATER.bottom - 8) {
+                f.vy = -(Math.abs(f.vy) + 0.06);
+              }
+
+              // 微微上下浮动
+              f.y += Math.sin(now / 600 + (id === 'fish1' ? 0 : 2)) * 0.08;
+            }
+          }
+
+          // 吃东西时左右摇头
+          const wiggle = f.eating > 0 ? Math.sin(now / 45) * 6 : 0;
+          f.el.setAttribute('transform',
+            `translate(${f.x.toFixed(2)} ${f.y.toFixed(2)}) scale(${f.dir} 1) rotate(${wiggle})`);
+        }
+
+        // 鱼食沉降
+        for (const p of pellets) {
+          if (p.y < p.targetY) {
+            p.y = Math.min(p.targetY, p.y + 0.42);
+            p.el.setAttribute('cy', p.y.toFixed(2));
+          } else if (p.y < WATER.bottom - 4) {
+            // 到目标位置后继续慢慢沉
+            p.y += 0.06;
+            p.el.setAttribute('cy', p.y.toFixed(2));
+          }
+        }
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+
+      // ───── 拖拽喂食 ─────
+      let isDragging = false;
+
+      function startDrag(cx, cy) {
+        isDragging = true;
+        draggingPellet.style.display = 'block';
+        moveDrag(cx, cy);
+      }
+
+      function moveDrag(cx, cy) {
+        draggingPellet.style.left = cx + 'px';
+        draggingPellet.style.top  = cy + 'px';
+      }
+
+      function endDrag(cx, cy) {
+        if (!isDragging) return;
+        isDragging = false;
+        draggingPellet.style.display = 'none';
+
+        const rect = bathtubSvg.getBoundingClientRect();
+        if (cx < rect.left || cx > rect.right || cy < rect.top || cy > rect.bottom) return;
+
+        // 转 SVG 坐标
+        const sx = (cx - rect.left) / rect.width  * SVG_VB.w;
+        const sy = (cy - rect.top)  / rect.height * SVG_VB.h;
+
+        if (sx < WATER.left || sx > WATER.right) return;
+        if (sy < WATER.top - 6 || sy > WATER.bottom) return;
+
+        spawnPellet(sx, Math.max(WATER.top + 4, sy));
+      }
+
+      function spawnPellet(x, targetY) {
+        const ns = 'http://www.w3.org/2000/svg';
+        const el = document.createElementNS(ns, 'circle');
+        el.setAttribute('cx', x);
+        el.setAttribute('cy', WATER.top);
+        el.setAttribute('r', 3);
+        el.setAttribute('fill', '#7a5524');
+        el.setAttribute('stroke', '#3a2008');
+        el.setAttribute('stroke-width', '0.4');
+        pelletsLayer.appendChild(el);
+
+        pellets.push({
+          id: ++pid,
+          el,
+          x,
+          y: WATER.top,
+          targetY: Math.min(targetY, WATER.bottom - 10),
+          claimedBy: null
+        });
+      }
+
+      // 鼠标事件
+      foodBowl.addEventListener('mousedown', e => {
+        e.preventDefault();
+        startDrag(e.clientX, e.clientY);
+      });
+      window.addEventListener('mousemove', e => {
+        if (isDragging) moveDrag(e.clientX, e.clientY);
+      });
+      window.addEventListener('mouseup', e => {
+        if (isDragging) endDrag(e.clientX, e.clientY);
+      });
+
+      // 触屏事件
+      foodBowl.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const t = e.touches[0];
+        startDrag(t.clientX, t.clientY);
+      }, { passive: false });
+      window.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        const t = e.touches[0];
+        moveDrag(t.clientX, t.clientY);
+      }, { passive: true });
+      window.addEventListener('touchend', e => {
+        if (!isDragging) return;
+        const t = e.changedTouches[0];
+        endDrag(t.clientX, t.clientY);
+      });
+
+      // ───── 折叠/展开 ─────
+      function toggleCollapse() {
+        const isCollapsed = fg.classList.toggle('collapsed');
+        fgToggle.textContent = isCollapsed ? '+' : '−';
+      }
+
+      fgToggle.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleCollapse();
+      });
+      fgHeader.addEventListener('click', toggleCollapse);
+
+      // ───── 成就弹窗 ─────
+      function spawnParticles() {
+        const c = document.getElementById('particles');
+        if (!c) return;
+        c.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement('span');
+          p.className = 'particle';
+          p.style.left = Math.random() * 100 + '%';
+          p.style.top  = Math.random() * 100 + '%';
+          p.style.setProperty('--dx', (Math.random() - 0.5) * 80 + 'px');
+          p.style.setProperty('--dy', (Math.random() - 0.5) * 80 + 'px');
+          p.style.animationDelay = Math.random() * 0.6 + 's';
+          c.appendChild(p);
+        }
+      }
+
+      function showAchievement() {
+        spawnParticles();
+
+        // 解锁音效(Web Audio,不需要文件)
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const playNote = (freq, time, dur) => {
+            const osc  = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.18, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + dur);
+          };
+          const t = ctx.currentTime;
+          playNote(587, t, 0.15);         // D5
+          playNote(784, t + 0.12, 0.15);  // G5
+          playNote(988, t + 0.24, 0.3);   // B5
+        } catch(e) { /* 无声也行 */ }
+
+        requestAnimationFrame(() => achievementToast.classList.add('show'));
+        setTimeout(() => achievementToast.classList.remove('show'), 5500);
+      }
+    })();
+  </script>
+</body>
+</html>

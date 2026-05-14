@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -610,6 +610,72 @@
         <button class="reset" id="reset-btn" type="button">重置进度</button>
       </p>
     </div>
+    <!-- ═══════════ 板块 1 · 待我处理 ═══════════ -->
+    <section class="section">
+      <div class="section-title">
+        <h2>待我处理</h2>
+        <span class="count urgent">3</span>
+      </div>
+
+      <div class="ticket-list">
+
+
+        <!-- 工单 1 - 高优先级 - 待处理 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">电脑权限申请</div>
+            <div class="ticket-time">2 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240315</span>
+              <span class="sep">·</span>
+              <span>提交人 @性感母蟑螂</span>
+              <span class="sep">·</span>
+              <span class="priority-label low">低</span>
+            </div>
+            <span class="status-tag status-pending">待处理</span>
+          </div>
+        </div>
+
+        <!-- 工单 2 - 中优先级 - 处理中 -->
+        <div class="ticket-card priority-medium">
+          <div class="ticket-head">
+            <div class="ticket-title">新功能测试反馈提交</div>
+            <div class="ticket-time">5 小时前</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240314</span>
+              <span class="sep">·</span>
+              <span>提交人 @上下一百块</span>
+              <span class="sep">·</span>
+              <span class="priority-label medium">中</span>
+            </div>
+            <span class="status-tag status-progress">处理中</span>
+          </div>
+        </div>
+
+        <!-- 工单 3 - 低优先级 - 待处理 -->
+        <div class="ticket-card priority-low">
+          <div class="ticket-head">
+            <div class="ticket-title">软件开放权限范围管理</div>
+            <div class="ticket-time">昨天</div>
+          </div>
+          <div class="ticket-meta">
+            <div class="ticket-meta-left">
+              <span class="ticket-id">#T-20240313</span>
+              <span class="sep">·</span>
+              <span>提交人 @挑42是吧</span>
+              <span class="sep">·</span>
+              <span class="priority-label low">低</span>
+            </div>
+            <span class="status-tag status-pending">待处理</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
 
     <!-- ═══════ 已处理工单列表(可点击、带追踪逻辑) ═══════ -->
     <section class="section">
@@ -678,7 +744,7 @@
         </a>
 
         <!-- Case 4 - 已限流 -->
-        <a class="ticket-card priority-low case-limited" href="" data-id="case-04">
+        <a class="ticket-card priority-low case-limited" href="xhshuajia.html" data-id="case-04">
           <div class="ticket-head">
             <div class="ticket-title">语文书的配图是不是有问题啊</div>
             <div class="ticket-time">6 小时前</div>
@@ -888,5 +954,6 @@
     applyViewedState();
     maybeShowModal();
   </script>
+<script src="nav.js"></script>
 </body>
 </html>

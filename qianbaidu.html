@@ -252,38 +252,140 @@
   </div>
 
   <script>
+    /* ============================================================
+       千百度 — 渐进式关键词系统
 
+       Phase 0 : 始终可用
+       Phase 1 : xhs-version >= "pl" 后激活
+                 找完全部 3 个关键词 → 自动解锁 xhs2
+       Phase 2 : xhs-version >= "2" 后激活
+                 找完全部 2 个关键词 → 自动解锁 xhs3
 
-    const KEYWORDS = {
-      "雪地里的小画家":  "qbdxdldxhj.html",
-      "昴星":    "qbdmaoxing.html",
-      "人":    "qbdrenlei.html",
-      "旧城疫":    "qbdxcy.html",
-      // 想加更多就在这里继续加,例如:
-      // "新关键词": "目标页面.html",
+       localStorage:
+         xhs-version → "1" | "pl" | "2" | "3"
+         qbd-found   → JSON 数组,已找到的关键词
+       ============================================================ */
+
+    /* ── Phase 0: 基础关键词 (始终可用) ── */
+    var PHASE0 = {
+      "雪地里的小画家": "qbdxdldxhj.html",
+      "昴星":            "qbdmaoxing.html",
+      "人":             "qbdrenlei.html",
+      "旧城疫":          "qbdxcy.html"
     };
 
-    /* ══════════════ 配置结束,下面是搜索逻辑,一般不需要改 ══════════════ */
+    /* ── Phase 1: xhspl 解锁后激活,找齐全部 3 个 → 解锁 xhs2 ── */
+    /* TODO: 把下面 3 个关键词和目标页替换成你要的 */
+    var PHASE1 = {
+      "关键词A占位": "pageA.html",
+      "关键词B占位": "pageB.html",
+      "关键词C占位": "pageC.html"
+    };
+    var PHASE1_UNLOCK = '2';
+
+    /* ── Phase 2: xhs2 解锁后激活,找齐全部 2 个 → 解锁 xhs3 ── */
+    /* TODO: 把下面 2 个关键词和目标页替换成你要的 */
+    var PHASE2 = {
+      "关键词D占位": "pageD.html",
+      "关键词E占位": "pageE.html"
+    };
+    var PHASE2_UNLOCK = '3';
 
 
-    const form = document.getElementById('searchForm');
-    const input = document.getElementById('searchInput');
-    const modalMask = document.getElementById('modalMask');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    /* ══════════════ 搜索逻辑 (一般不需要改) ══════════════ */
 
-    form.addEventListener('submit', e => {
+    function getActiveKeywords() {
+      var version = localStorage.getItem('xhs-version') || '1';
+      var all = {};
+      var k;
+      for (k in PHASE0) { all[k] = PHASE0[k]; }
+      if (version === 'pl' || version === '2' || version === '3') {
+        for (k in PHASE1) { all[k] = PHASE1[k]; }
+      }
+      if (version === '2' || version === '3') {
+        for (k in PHASE2) { all[k] = PHASE2[k]; }
+      }
+      return all;
+    }
+
+    function getFound() {
+      try { return JSON.parse(localStorage.getItem('qbd-found') || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function addFound(keyword) {
+      var found = getFound();
+      if (found.indexOf(keyword) === -1) {
+        found.push(keyword);
+        localStorage.setItem('qbd-found', JSON.stringify(found));
+      }
+      return found;
+    }
+
+    function checkPhaseUnlock() {
+      var version = localStorage.getItem('xhs-version') || '1';
+      var found = getFound();
+      var needed, i, allFound;
+
+      if (version === 'pl') {
+        needed = Object.keys(PHASE1);
+        allFound = true;
+        for (i = 0; i < needed.length; i++) {
+          if (found.indexOf(needed[i]) === -1) { allFound = false; break; }
+        }
+        if (allFound) {
+          localStorage.setItem('xhs-version', PHASE1_UNLOCK);
+          localStorage.removeItem('qbd-found');  // 清空,为下一阶段准备
+          return PHASE1_UNLOCK;
+        }
+      }
+      if (version === '2') {
+        needed = Object.keys(PHASE2);
+        allFound = true;
+        for (i = 0; i < needed.length; i++) {
+          if (found.indexOf(needed[i]) === -1) { allFound = false; break; }
+        }
+        if (allFound) {
+          localStorage.setItem('xhs-version', PHASE2_UNLOCK);
+          localStorage.removeItem('qbd-found');
+          return PHASE2_UNLOCK;
+        }
+      }
+      return null;
+    }
+
+    var form = document.getElementById('searchForm');
+    var input = document.getElementById('searchInput');
+    var modalMask = document.getElementById('modalMask');
+    var modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      const raw = input.value.trim();
+      var raw = input.value.trim();
       if (!raw) { input.focus(); return; }
 
-      const key = raw.toLowerCase();
-      let matchedUrl = null;
-      for (const [k, url] of Object.entries(KEYWORDS)) {
-        if (k.toLowerCase() === key) { matchedUrl = url; break; }
+      var key = raw.toLowerCase();
+      var keywords = getActiveKeywords();
+      var matchedUrl = null;
+      var matchedKeyword = null;
+      var k;
+      for (k in keywords) {
+        if (k.toLowerCase() === key) {
+          matchedUrl = keywords[k];
+          matchedKeyword = k;
+          break;
+        }
       }
 
       if (matchedUrl) {
-        window.location.href = matchedUrl;
+        addFound(matchedKeyword);
+        var unlocked = checkPhaseUnlock();
+        if (unlocked) {
+          var pages = { '2': 'xhs2.html', '3': 'xhs3.html' };
+          window.location.href = pages[unlocked] || matchedUrl;
+        } else {
+          window.location.href = matchedUrl;
+        }
       } else {
         showModal();
       }
@@ -296,8 +398,10 @@
       input.select();
     }
     modalCloseBtn.addEventListener('click', hideModal);
-    modalMask.addEventListener('click', e => { if (e.target === modalMask) hideModal(); });
-    document.addEventListener('keydown', e => {
+    modalMask.addEventListener('click', function (e) {
+      if (e.target === modalMask) hideModal();
+    });
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && modalMask.classList.contains('show')) hideModal();
     });
   </script>

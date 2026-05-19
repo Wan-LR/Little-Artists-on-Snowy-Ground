@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #0a0a0a;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    overflow: hidden;
+  }
+
+  /* CRT 外壳 */
+  .screen {
+    height: 100vh;
+    padding: 24px;
+    background:
+      radial-gradient(ellipse at center, rgba(0,40,0,0.15) 0%, rgba(0,0,0,0.6) 100%),
+      #0a0e0a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 扫描线 */
+  .screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 100, 0.04) 0px,
+      rgba(0, 255, 100, 0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* 微弱的亮点 */
+  .screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(120,255,150,0.06), transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .titlebar {
+    color: #5fd97a;
+    font-size: 12px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .titlebar .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #5fd97a;
+    margin-right: 6px;
+    animation: blink 1.4s infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.3; }
+  }
+
+  .terminal {
+    height: calc(100% - 40px);
+    color: #6cf08a;
+    font-size: 15px;
+    line-height: 1.55;
+    text-shadow: 0 0 6px rgba(108, 240, 138, 0.5);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 3;
+  }
+
+  .output {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #2a5a2a transparent;
+  }
+  .output::-webkit-scrollbar { width: 6px; }
+  .output::-webkit-scrollbar-thumb { background: #2a5a2a; border-radius: 3px; }
+
+  .line { white-space: pre-wrap; word-break: break-word; }
+  .line.user { color: #b8ffcc; }
+  .line.system { color: #6cf08a; }
+  .line.dim { color: #3a7a4a; opacity: 0.8; }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+  }
+
+  .prompt {
+    color: #b8ffcc;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  .input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #b8ffcc;
+    font: inherit;
+    text-shadow: inherit;
+    caret-color: transparent;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 9px;
+    height: 18px;
+    background: #6cf08a;
+    box-shadow: 0 0 8px #6cf08a;
+    animation: cursorBlink 1s steps(1) infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+  @keyframes cursorBlink {
+    50% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="titlebar"><span class="dot"></span>SESSION // /dev/tty0 — connected</div>
+    <div class="terminal">
+      <div class="output" id="output"></div>
+      <div class="input-row">
+        <span class="prompt">guest@local:~$</span>
+        <input class="input" id="input" autocomplete="off" autofocus spellcheck="false">
+        <span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const output = document.getElementById('output');
+  const input  = document.getElementById('input');
+
+  function print(text, cls='system') {
+    const div = document.createElement('div');
+    div.className = 'line ' + cls;
+    div.textContent = text;
+    output.appendChild(div);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  // 启动信息
+  const boot = [
+    ['booting tty0 ...',                 'dim'],
+    ['kernel loaded. memory ok.',        'dim'],
+    ['establishing link ............ ok','dim'],
+    ['',                                  'dim'],
+    ['> 这是你与外星人的第一次接触 要好好想想怎么打招呼',     'system'],
+    ['> 试着说点什么吧。', 'system'],
+    ['',                                  'system'],
+  ];
+  let i = 0;
+  (function bootSeq(){
+    if (i >= boot.length) return;
+    print(boot[i][0], boot[i][1]);
+    i++;
+    setTimeout(bootSeq, 220);
+  })();
+
+  // 简单的回复逻辑
+  function reply(text) {
+    const t = text.toLowerCase().trim();
+    if (!t) return '...';
+    if (t === 'help')            return '可用指令: hello / 你是谁 / 现在几点 / clear / 其他什么都行,我会瞎聊';
+    if (t === 'clear')           { output.innerHTML=''; return null; }
+    if (t.includes('hello') || t.includes('hi') || t.includes('你好'))
+                                 return 'hello, 朋友。今天还好吗?';
+    if (t.includes('你是谁') || t.includes('who'))
+                                 return '我是一只住在终端里的小猫,只会用文字喵。';
+    if (t.includes('时间') || t.includes('几点') || t.includes('time')) {
+      const d = new Date();
+      return '现在是 ' + d.toLocaleTimeString();
+    }
+    if (t.includes('再见') || t.includes('bye'))
+                                 return '保重,下次见 👋';
+    // 默认
+    const fallbacks = [
+      '嗯……继续说。',
+      '这有意思。然后呢?',
+      '我在听。',
+      '说说看,为什么会想到这个?',
+    ];
+    return fallbacks[Math.floor(Math.random()*fallbacks.length)];
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const value = input.value;
+    input.value = '';
+    print('guest@local:~$ ' + value, 'user');
+    const r = reply(value);
+    if (r === null) return;
+    // 模拟打字延迟
+    setTimeout(() => print('> ' + r, 'system'), 280);
+  });
+
+  // 点击任何位置都聚焦输入框
+  document.addEventListener('click', () => input.focus());
+</script>
+</body>
+</html>

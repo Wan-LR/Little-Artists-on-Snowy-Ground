@@ -70,8 +70,96 @@
     .ts-btn:hover { background: var(--accent-hover); }
     .ts-btn svg { width: 13px; height: 13px; }
 
-    /* ── 主体 ── */
-    .page-body { max-width: 740px; margin: 0 auto; padding: 48px 24px 100px; }
+    /* ── 两栏布局 ── */
+    .layout {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 100px;
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 40px;
+      align-items: start;
+    }
+    .page-body { min-width: 0; }
+
+    /* ── 侧栏:最近编辑 ── */
+    .sidebar { position: sticky; top: 80px; }
+
+    .editors-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .editors-card-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .editors-card-title svg {
+      width: 12px; height: 12px;
+      flex-shrink: 0;
+      opacity: .6;
+    }
+
+    .editor-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .editor-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .editor-item:first-of-type { padding-top: 0; }
+
+    /* 可点击的 editor item */
+    .editor-item.clickable {
+      cursor: pointer;
+      margin: 0 -8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: background 0.18s, transform 0.18s;
+    }
+    .editor-item.clickable:hover {
+      background: var(--line-soft);
+      transform: translateX(2px);
+    }
+    .editor-item.clickable:active {
+      transform: translateX(1px) scale(0.98);
+    }
+
+    .editor-avatar {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0;
+    }
+    .editor-info { flex: 1; min-width: 0; }
+    .editor-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .editor-time {
+      font-size: 10.5px;
+      color: var(--ink-faint);
+      line-height: 1.3;
+    }
 
     /* ── 大标题区 ── */
     .hero { margin-bottom: 40px; animation: fadeUp .5s ease backwards; }
@@ -82,9 +170,9 @@
     .hero-phonetic { font-size: 16px; font-weight: 300; color: var(--ink-faint); margin-top: 8px; letter-spacing: .03em; }
     .hero-oneliner { font-size: 18px; color: var(--ink-soft); margin-top: 16px; max-width: 560px; }
 
-    /* ── 主图 ── */
+    /* ── 主图(改为读取外部 svg/png) ── */
     .main-image { width: 100%; border-radius: var(--radius); overflow: hidden; margin-bottom: 40px; border: 1px solid var(--line); animation: fadeUp .55s ease .08s backwards; background: #0a0a0a; }
-    .main-image svg { width: 100%; display: block; }
+    .main-image img, .main-image svg { width: 100%; display: block; }
     .main-image figcaption { padding: 10px 16px; font-size: 12px; color: var(--ink-faint); background: var(--surface); text-align: center; }
 
     /* ── 信息卡片 ── */
@@ -124,15 +212,200 @@
     .page-footer { text-align: center; font-size: 12.5px; color: var(--ink-faint); padding: 28px 24px; border-top: 1px solid var(--line-soft); }
 
     /* ── 响应式 ── */
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; padding: 32px 16px 80px; }
+      .sidebar { display: none; }
+    }
     @media (max-width: 520px) {
       .top-bar { padding: 10px 16px; gap: 12px; }
       .top-logo { font-size: 17px; }
-      .page-body { padding: 32px 16px 80px; }
       .hero-title { font-size: 38px; }
       .hero-oneliner { font-size: 16px; }
       .info-card { padding: 20px; }
       .info-grid { grid-template-columns: 68px 1fr; font-size: 13px; }
       .section-title { font-size: 19px; }
+    }
+
+    /* ============================================================
+       Steam 风格成就弹窗
+       ============================================================ */
+    .achievement-toast {
+      position: fixed;
+      top: 28px;
+      right: 28px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741;
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 0 20px rgba(78, 154, 65, 0.25),
+        0 8px 32px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition:
+        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: var(--font-body);
+    }
+
+    .achievement-toast.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .achievement-icon {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 12px rgba(78, 154, 65, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .achievement-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+
+    @keyframes iconShine {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .achievement-icon .icon-emoji {
+      font-size: 30px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(180, 220, 100, 0.55));
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 10px rgba(143, 188, 90, 0.7), 0 0 20px rgba(143, 188, 90, 0.35);
+    }
+
+    .achievement-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .achievement-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8fbc5a;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .achievement-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px #8fbc5a; }
+      50% { opacity: 0.6; box-shadow: 0 0 2px #8fbc5a; }
+    }
+
+    .achievement-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 17px;
+      color: #e5e5e5;
+      line-height: 1.2;
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .achievement-desc {
+      font-size: 12.5px;
+      color: #8f98a0;
+      line-height: 1.4;
+    }
+
+    .achievement-toast::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px;
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    .achievement-toast.show::after {
+      animation: progressShrink 5s 0.5s linear forwards;
+    }
+
+    @keyframes progressShrink {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+
+    .achievement-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .achievement-toast.show .particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+
+    @keyframes particleFloat {
+      0%   { opacity: 0.8; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    @media (max-width: 480px) {
+      .achievement-toast {
+        top: 16px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -152,101 +425,102 @@
     </form>
   </header>
 
-  <!-- 主体 -->
-  <main class="page-body">
+  <!-- 两栏布局 -->
+  <div class="layout">
 
-    <!-- 大标题 -->
-    <div class="hero">
-      <p class="hero-eyebrow">千百度百科 · 文学作品</p>
-      <h1 class="hero-title">威尔已死</h1>
-      <p class="hero-phonetic">Wēi Ěr Yǐ Sǐ  ·  Will Is Dead</p>
-      <p class="hero-oneliner">华裔作家<strong>关策喆</strong>于 2026 年出版的短篇悬疑小说,以强烈的导向型以及被誉为"指针般准确"的剧情闻名。</p>
-    </div>
+    <!-- 左:正文 -->
+    <main class="page-body">
 
-    <!-- 主图 -->
-    <figure class="main-image">
-      <svg viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <radialGradient id="bg1" cx="50%" cy="45%" r="65%">
-            <stop offset="0%" stop-color="#3d2a28"/>
-            <stop offset="100%" stop-color="#0a0a0a"/>
-          </radialGradient>
-          <filter id="grain1">
-            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7"/>
-            <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.07 0"/>
-          </filter>
-        </defs>
-        <rect width="800" height="480" fill="url(#bg1)"/>
-        <rect width="800" height="480" filter="url(#grain1)" opacity="0.6"/>
-
-        <!-- 心电图归零 -->
-        <g stroke="#e33932" stroke-width="2" fill="none" opacity="0.9">
-          <path d="M 40 240 L 220 240 L 235 180 L 250 300 L 265 215 L 285 240 L 460 240 L 475 200 L 490 280 L 500 240 L 760 240"/>
-        </g>
-        <g stroke="#e33932" stroke-width="0.5" fill="none" opacity="0.35">
-          <path d="M 40 240 L 760 240"/>
-        </g>
-
-        <!-- 书名 -->
-        <text x="400" y="155" text-anchor="middle" fill="#faf7f2"
-              font-family="'Bricolage Grotesque', serif" font-weight="800" font-size="74"
-              letter-spacing="10">威尔已死</text>
-        <text x="400" y="195" text-anchor="middle" fill="#9a9a9a"
-              font-family="'Bricolage Grotesque', sans-serif" font-weight="500" font-size="16"
-              letter-spacing="10">WILL  IS  DEAD</text>
-
-        <line x1="320" y1="370" x2="480" y2="370" stroke="#e33932" stroke-width="1"/>
-        <text x="400" y="400" text-anchor="middle" fill="#c9c4ba"
-              font-family="'Noto Sans SC', serif" font-weight="500" font-size="14"
-              letter-spacing="6">陈墨 · 长篇小说</text>
-        <text x="400" y="438" text-anchor="middle" fill="#6b6b6b"
-              font-family="'Bricolage Grotesque', sans-serif" font-weight="500" font-size="11"
-              letter-spacing="4">A NOVEL  ·  2018</text>
-      </svg>
-      <figcaption>《威尔已死》中文版封面 · 设计:朱赢椿工作室</figcaption>
-    </figure>
-
-    <!-- 信息卡 -->
-    <div class="info-card">
-      <p class="info-card-title">基础信息</p>
-      <dl class="info-grid">
-        <dt>中文名</dt><dd>威尔已死</dd>
-        <dt>外文名</dt><dd>Where is</dd>
-        <dt>作者</dt><dd>关策喆</dd>
-        <dt>类型</dt><dd>短篇悬疑</dd>
-        <dt>首版</dt><dd>2026 年 4 月 · 沃兹吉硕德文学出版社</dd>
-        <dt>主要奖项</dt><dd>2026 年沃兹吉便德传媒大奖 · 年度小说家提名</dd>
-      </dl>
-    </div>
-
-    <!-- 概述 -->
-    <section class="section">
-      <h2 class="section-title">概述</h2>
-      <p><strong>将</strong>《威尔已死》发布,为作家关策喆一直所向往</p>
-      <p>网络般的情节让读者们努力想要解读作者传达的信号</p>
-      <p>址在表达真实的社会，作者着重描写了人性的恶</p>
-      <p>结束这本书的写作后，作者表示反思了如何改善团队融入</p>
-      <p>尾声的精彩反转如高山一般巍峨</p>
-      <p>改动是常有的事，作者最后将主角的名字改为了单字母i</p>
-      <p>为了完成作品，作者会在工作结束之后雷打不动写四个小时</p>
-      <p>每天如此，没有例外</p>
-      <p>段落的评论中有读者表示，反派的行为令人作呕</p>
-      <p>尾句十分精彩，甚至让不少影视剧引入</p>
-      <p>字里行间的伏笔也让本书最终出名</p>
-      <p>首次说起此书时，作者就强调了要忽略主角们<em>此行的结局</em>,而注重传达的<em>符号</em>.</p>
-      <p>字词的运用十分准确难以替换</p>
-      <p>母舰的设计也让读者反复重提</p>
-      <p>相较于其他悬疑小说，威尔已死有不同的美</p>
-      <p>加大宣传力度能让更多人懂得作者的内里</p>
-      <div class="tags">
-        <span class="tag">悬疑推理</span>
-        <span class="tag">2026年小说</span>
+      <!-- 大标题 -->
+      <div class="hero">
+        <p class="hero-eyebrow">千百度百科 · 文学作品</p>
+        <h1 class="hero-title">威尔已死</h1>
+        <p class="hero-phonetic">Wēi Ěr Yǐ Sǐ  ·  Will Is Dead</p>
+        <p class="hero-oneliner">华裔作家<strong>关策喆</strong>于 2026 年出版的短篇悬疑小说,以强烈的导向型以及被誉为"指针般准确"的剧情闻名。</p>
       </div>
 
+      <!-- 主图(改为引用外部文件) -->
+      <figure class="main-image">
+        <img src="images/weieryisi.png" alt="《威尔已死》封面">
+        <figcaption>《威尔已死》中文版封面</figcaption>
+      </figure>
 
-  </main>
+      <!-- 信息卡 -->
+      <div class="info-card">
+        <p class="info-card-title">基础信息</p>
+        <dl class="info-grid">
+          <dt>中文名</dt><dd>威尔已死</dd>
+          <dt>外文名</dt><dd>Where is</dd>
+          <dt>作者</dt><dd>关策喆</dd>
+          <dt>类型</dt><dd>短篇悬疑</dd>
+          <dt>首版</dt><dd>2026 年 4 月 · 沃兹吉硕德文学出版社</dd>
+          <dt>主要奖项</dt><dd>2026 年沃兹吉便德传媒大奖 · 年度小说家提名</dd>
+        </dl>
+      </div>
+
+      <!-- 概述 -->
+      <section class="section">
+        <h2 class="section-title">概述</h2>
+        <p><strong>将</strong>《威尔已死》发布,为作家关策喆一直所向往</p>
+        <p>网络般的情节让读者们努力想要解读作者传达的信号</p>
+        <p>址在表达真实的社会，作者着重描写了人性的恶</p>
+        <p>结束这本书的写作后，作者表示反思了如何改善团队融入</p>
+        <p>尾声的精彩反转如高山一般巍峨</p>
+        <p>改动是常有的事，作者最后将主角的名字改为了单字母i</p>
+        <p>为了完成作品，作者会在工作结束之后雷打不动写四个小时</p>
+        <p>每天如此，没有例外</p>
+        <p>段落的评论中有读者表示，反派的行为令人作呕</p>
+        <p>尾句十分精彩，甚至让不少影视剧引入</p>
+        <p>字里行间的伏笔也让本书最终出名</p>
+        <p>首次说起此书时，作者就强调了要忽略主角们<em>此行的结局</em>,而注重传达的<em>符号</em>.</p>
+        <p>字词的运用十分准确难以替换</p>
+        <p>母舰的设计也让读者反复重提</p>
+        <p>相较于其他悬疑小说，威尔已死有不同的美</p>
+        <p>加大宣传力度能让更多人懂得作者的内里</p>
+        <div class="tags">
+          <span class="tag">悬疑推理</span>
+          <span class="tag">2026年小说</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 右:侧栏 · 最近编辑 -->
+    <aside class="sidebar">
+      <div class="editors-card">
+        <div class="editors-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          最近编辑
+        </div>
+
+        <div class="editor-item clickable" id="editorGuanguan" role="button" tabindex="0" title="点一下试试?">
+          <div class="editor-avatar" style="background:linear-gradient(135deg,#3252e3,#2240c5)">M</div>
+          <div class="editor-info">
+            <div class="editor-name">关关啾啾</div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
 
   <footer class="page-footer">© 2025 千百度 · 千百度百科 · 内容绝对不一定正确</footer>
+
+
+  <!-- 成就弹窗 -->
+  <div class="achievement-toast" id="achievementToast" role="alert">
+    <div class="achievement-particles" id="particles"></div>
+    <div class="achievement-icon">
+      <span class="icon-emoji">🐦</span>
+    </div>
+    <div class="achievement-text">
+      <div class="achievement-label">成就已解锁</div>
+      <div class="achievement-title">Chirp chirp</div>
+      <div class="achievement-desc">你按到了关关啾啾</div>
+    </div>
+  </div>
+
 
   <script>
     document.getElementById('topSearchForm').addEventListener('submit', e => {
@@ -255,6 +529,72 @@
       if (!q) return;
       alert('正在搜索: ' + q);
     });
+
+    /* ════════════════════════════════════════════════════════════
+       关关啾啾 · 成就弹窗
+       ════════════════════════════════════════════════════════════ */
+    (function achievementSystem() {
+      const editorBtn        = document.getElementById('editorGuanguan');
+      const achievementToast = document.getElementById('achievementToast');
+      let hideTimer = null;
+
+      function spawnParticles() {
+        const c = document.getElementById('particles');
+        if (!c) return;
+        c.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement('span');
+          p.className = 'particle';
+          p.style.left = Math.random() * 100 + '%';
+          p.style.top  = Math.random() * 100 + '%';
+          p.style.setProperty('--dx', (Math.random() - 0.5) * 80 + 'px');
+          p.style.setProperty('--dy', (Math.random() - 0.5) * 80 + 'px');
+          p.style.animationDelay = Math.random() * 0.6 + 's';
+          c.appendChild(p);
+        }
+      }
+
+      function showAchievement() {
+        // 如果当前已经在显示,先重置一遍动画
+        achievementToast.classList.remove('show');
+        clearTimeout(hideTimer);
+
+        // 强制 reflow,让 transition 重新跑
+        void achievementToast.offsetWidth;
+
+        spawnParticles();
+
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const playNote = (freq, time, dur) => {
+            const osc  = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.18, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + dur);
+          };
+          const t = ctx.currentTime;
+          playNote(587, t, 0.15);
+          playNote(784, t + 0.12, 0.15);
+          playNote(988, t + 0.24, 0.3);
+        } catch(e) { /* 无声也行 */ }
+
+        requestAnimationFrame(() => achievementToast.classList.add('show'));
+        hideTimer = setTimeout(() => achievementToast.classList.remove('show'), 5500);
+      }
+
+      editorBtn.addEventListener('click', showAchievement);
+      editorBtn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showAchievement();
+        }
+      });
+    })();
   </script>
 </body>
 </html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>重磅问卷 · 万众期待</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
+    background: #0a0014;
+    color: #fff;
+    user-select: none;
+    overflow-x: hidden;
+  }
+
+  /* ─── 背景 ─── */
+  body {
+    background:
+      radial-gradient(circle at 20% 30%, #4a0080 0%, transparent 45%),
+      radial-gradient(circle at 80% 70%, #800040 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, #1a0033 0%, #000010 80%);
+  }
+  body::before {
+    content: '';
+    position: fixed; top: 50%; left: 50%;
+    width: 200vmax; height: 200vmax;
+    transform: translate(-50%, -50%);
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255,215,0,.04) 0deg 6deg,
+      transparent 6deg 12deg
+    );
+    animation: spin 20s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  /* ─── 跑马灯 ─── */
+  .marquee {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg,#ff0080,#ffd700,#ff0080);
+    background-size: 200% 100%;
+    color: #000; font-weight: 900; font-size: 15px;
+    padding: 7px 0; overflow: hidden; white-space: nowrap;
+    z-index: 20; border-bottom: 3px solid #ffd700;
+    box-shadow: 0 4px 20px rgba(255,215,0,.5);
+    animation: mqbg 3s linear infinite;
+  }
+  @keyframes mqbg { to { background-position: -200% 0; } }
+  .marquee-track {
+    display: inline-block; padding-left: 100%;
+    animation: mq 16s linear infinite;
+  }
+  .marquee.bot {
+    top: auto; bottom: 0;
+    border-top: 3px solid #ffd700; border-bottom: none;
+    background: linear-gradient(90deg,#00ffff,#ffd700,#ff00ff,#ffd700,#00ffff);
+    background-size: 200% 100%;
+  }
+  .marquee.bot .marquee-track { animation: mq 20s linear infinite reverse; }
+  @keyframes mq { to { transform: translateX(-100%); } }
+  .marquee-track span { margin: 0 32px; }
+
+  /* ─── 角落装饰 ─── */
+  .corner {
+    position: fixed; width: 70px; height: 70px;
+    border: 4px solid #ffd700; z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 0 16px rgba(255,215,0,.6);
+  }
+  .corner.tl { top:44px;    left:16px;  border-right:0; border-bottom:0; }
+  .corner.tr { top:44px;    right:16px; border-left:0;  border-bottom:0; }
+  .corner.bl { bottom:44px; left:16px;  border-right:0; border-top:0;    }
+  .corner.br { bottom:44px; right:16px; border-left:0;  border-top:0;    }
+
+  /* ─── 星星 ─── */
+  #stars { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+  .star {
+    position: absolute; color: #ffd700; font-size: 22px;
+    animation: twinkle 1.5s ease-in-out infinite, fl 8s ease-in-out infinite;
+    text-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:.3; transform:scale(.8); }
+    50%     { opacity:1;  transform:scale(1.2); }
+  }
+  @keyframes fl {
+    0%,100% { transform:translateY(0); }
+    50%     { transform:translateY(-26px); }
+  }
+
+  /* ════════════════════════════════════════
+     SCREENS — 多页系统
+  ════════════════════════════════════════ */
+  .screen {
+    display: none;
+    position: relative; z-index: 5;
+    min-height: 100vh;
+    padding: 72px 20px 72px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .screen.active { display: flex; }
+
+  /* ════════════════════════════════════════
+     SCREEN 0 — 首页 · 箭头轰炸
+  ════════════════════════════════════════ */
+  #s0 { gap: 0; }
+
+  .s0-eyebrow {
+    font-size: 18px; letter-spacing: 10px; padding-left: 10px;
+    color: #ffd700; font-weight: 700;
+    text-shadow: 0 0 8px #ffd700, 0 0 16px #ff8c00;
+    animation: fadeUp .5s ease .1s both, glow 2s ease-in-out infinite;
+    margin-bottom: 14px;
+  }
+  @keyframes glow {
+    0%,100% { text-shadow: 0 0 8px #ffd700, 0 0 16px #ff8c00; }
+    50%     { text-shadow: 0 0 18px #ffd700, 0 0 36px #ff8c00, 0 0 52px #ff8c00; }
+  }
+
+  .s0-title {
+    font-weight: 900;
+    font-size: clamp(52px, 11vw, 140px);
+    letter-spacing: 8px; line-height: 1.1;
+    text-align: center;
+    background: linear-gradient(180deg, #fffacd 0%, #ffd700 30%, #ff8c00 60%, #c00000 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 1.5px #800020;
+    filter: drop-shadow(0 0 14px rgba(255,215,0,.8)) drop-shadow(0 6px 0 rgba(0,0,0,.5));
+    animation: titleIn 1s cubic-bezier(.34,1.56,.64,1), titleBounce 2.5s ease-in-out 1s infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes titleIn {
+    0%  { opacity:0; transform:scale(.3) rotate(-8deg); }
+    60% { opacity:1; transform:scale(1.15) rotate(2deg); }
+    100%{ opacity:1; transform:scale(1) rotate(0); }
+  }
+  @keyframes titleBounce {
+    0%,100% { transform:scale(1) rotate(0); }
+    50%     { transform:scale(1.04) rotate(-1deg); }
+  }
+
+  .s0-sub {
+    font-size: 16px; color: rgba(255,255,255,.7);
+    letter-spacing: 3px; margin-bottom: 40px;
+    animation: fadeUp .5s ease .5s both;
+  }
+
+  /* ── 箭头区 ── */
+  .arrow-ring {
+    position: relative;
+    width: 360px; height: 360px;
+    flex-shrink: 0;
+    animation: fadeUp .5s ease .7s both;
+  }
+  @media (max-width: 480px) {
+    .arrow-ring { width: 270px; height: 270px; }
+  }
+
+  /* 中央按钮 */
+  .start-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff0080, #ff4500);
+    border: 4px solid #ffd700;
+    box-shadow:
+      0 0 0 8px rgba(255,215,0,.18),
+      0 0 30px rgba(255,0,128,.8),
+      0 0 60px rgba(255,0,128,.4);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    color: #fff; font-weight: 900;
+    font-size: 18px; letter-spacing: 2px;
+    transition: transform .15s, box-shadow .15s;
+    animation: btnPulse 1.2s ease-in-out infinite;
+    z-index: 3;
+  }
+  .start-btn:hover {
+    transform: translate(-50%,-50%) scale(1.12);
+    box-shadow:
+      0 0 0 12px rgba(255,215,0,.25),
+      0 0 50px rgba(255,0,128,1),
+      0 0 90px rgba(255,0,128,.6);
+  }
+  .start-btn small {
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 1px; opacity: .85;
+  }
+  @keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 0 8px rgba(255,215,0,.18), 0 0 30px rgba(255,0,128,.8), 0 0 60px rgba(255,0,128,.4); }
+    50%     { box-shadow: 0 0 0 16px rgba(255,215,0,.08), 0 0 50px rgba(255,0,128,1), 0 0 100px rgba(255,0,128,.5); }
+  }
+
+  /* 轨道箭头（用 SVG 字符 + CSS 放置） */
+  .arr {
+    position: absolute;
+    font-size: 44px;
+    line-height: 1;
+    transform-origin: center;
+    color: #ffd700;
+    text-shadow: 0 0 12px #ffd700, 0 0 24px #ff8c00;
+    animation: arrBounce 0.7s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes arrBounce {
+    from { transform: var(--base-t) translateY(0) scale(1); }
+    to   { transform: var(--base-t) translateY(-8px) scale(1.15); }
+  }
+
+  /* 8 个箭头各自定位 + 旋转指向中心 */
+  /* TOP */
+  .arr.a0  { top: -10px; left:50%; --base-t: translateX(-50%) rotate(180deg); animation-delay:0s;    font-size:52px; color:#ff0080; }
+  /* TOP-RIGHT */
+  .arr.a1  { top: 14px;  right:14px; --base-t: rotate(225deg); animation-delay:.1s;   font-size:38px; color:#ff8c00; }
+  /* RIGHT */
+  .arr.a2  { right:-12px; top:50%; --base-t: translateY(-50%) rotate(270deg); animation-delay:.2s;  font-size:52px; color:#00ffff; }
+  /* BOTTOM-RIGHT */
+  .arr.a3  { bottom:14px; right:14px; --base-t: rotate(315deg); animation-delay:.3s;  font-size:38px; color:#ff00ff; }
+  /* BOTTOM */
+  .arr.a4  { bottom:-10px; left:50%; --base-t: translateX(-50%) rotate(0deg); animation-delay:.4s;   font-size:52px; color:#ff0080; }
+  /* BOTTOM-LEFT */
+  .arr.a5  { bottom:14px; left:14px; --base-t: rotate(45deg);  animation-delay:.5s;   font-size:38px; color:#ffd700; }
+  /* LEFT */
+  .arr.a6  { left:-12px;  top:50%; --base-t: translateY(-50%) rotate(90deg);  animation-delay:.6s;   font-size:52px; color:#00ff88; }
+  /* TOP-LEFT */
+  .arr.a7  { top: 14px;  left:14px; --base-t: rotate(135deg); animation-delay:.7s;   font-size:38px; color:#ff8c00; }
+
+  /* 外圈大箭头 文字标注 */
+  .arr-label {
+    position: absolute;
+    font-size: 13px; font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 8px #ff0080;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    animation: arrBounce .9s ease-in-out infinite alternate;
+    pointer-events: none;
+    background: rgba(255,0,128,.7);
+    padding: 3px 8px; border-radius: 100px;
+    border: 1px solid #ffd700;
+  }
+  .arr-label.al-t { top: -46px; left:50%; transform:translateX(-50%); animation-delay:.1s; --base-t: none; }
+  .arr-label.al-r { right:-60px; top:50%; transform:translateY(-50%); animation-delay:.3s; }
+  .arr-label.al-b { bottom:-46px; left:50%; transform:translateX(-50%); animation-delay:.2s; }
+  .arr-label.al-l { left:-62px; top:50%; transform:translateY(-50%); animation-delay:.4s; }
+
+  /* 第二圈更大的装饰箭头 */
+  .arr-outer {
+    position: absolute;
+    font-size: 60px;
+    color: rgba(255,215,0,.35);
+    text-shadow: 0 0 20px #ffd700;
+    pointer-events: none;
+    animation: outerSpin 6s linear infinite;
+  }
+  @keyframes outerSpin {
+    to { transform: var(--spin-t) rotate(360deg); }
+  }
+  .arr-outer.o0 { top:-80px;  left:50%; --spin-t: translateX(-50%); animation-duration:5s; }
+  .arr-outer.o1 { right:-80px;top:50%; --spin-t: translateY(-50%); animation-duration:7s; animation-direction:reverse; }
+  .arr-outer.o2 { bottom:-80px;left:50%; --spin-t: translateX(-50%); animation-duration:6s; }
+  .arr-outer.o3 { left:-80px; top:50%; --spin-t: translateY(-50%); animation-duration:8s; animation-direction:reverse; }
+
+  /* ────────────────────────────────────────
+     SCREEN 1 — 问题页（共用样式）
+  ──────────────────────────────────────── */
+  .q-wrap {
+    width: 100%; max-width: 560px;
+    display: flex; flex-direction: column; gap: 24px;
+    animation: fadeUp .4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(22px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .q-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,.12);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid rgba(255,215,0,.2);
+  }
+  .q-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0080, #ffd700);
+    border-radius: 100px;
+    transition: width .5s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 0 12px rgba(255,215,0,.6);
+  }
+
+  .q-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: #000; background: #ffd700;
+    padding: 4px 12px; border-radius: 100px;
+    box-shadow: 0 0 12px rgba(255,215,0,.5);
+    align-self: flex-start;
+  }
+
+  .q-title {
+    font-weight: 900; font-size: clamp(22px, 5vw, 36px);
+    line-height: 1.3; letter-spacing: 1px;
+    background: linear-gradient(135deg, #fffacd, #ffd700, #ff8c00);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 8px rgba(255,215,0,.5));
+  }
+
+  /* 选项 */
+  .q-options { display: flex; flex-direction: column; gap: 12px; }
+
+  .q-opt {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(255,215,0,.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all .22s;
+    position: relative;
+    overflow: hidden;
+  }
+  .q-opt::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(255,0,128,.15), rgba(255,215,0,.08));
+    opacity: 0; transition: opacity .22s;
+  }
+  .q-opt:hover { border-color: #ffd700; transform: translateX(5px); }
+  .q-opt:hover::before { opacity: 1; }
+  .q-opt.selected {
+    border-color: #ff0080;
+    background: rgba(255,0,128,.18);
+    box-shadow: 0 0 20px rgba(255,0,128,.4);
+    transform: translateX(5px);
+  }
+  .q-opt.selected::before { opacity: 1; }
+
+  .opt-letter {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,215,0,.15);
+    border: 2px solid rgba(255,215,0,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px; color: #ffd700;
+    flex-shrink: 0; transition: all .22s;
+    box-shadow: 0 0 8px rgba(255,215,0,.2);
+  }
+  .q-opt.selected .opt-letter {
+    background: #ff0080; border-color: #ff0080; color: #fff;
+    box-shadow: 0 0 16px rgba(255,0,128,.6);
+  }
+  .opt-text { font-size: 16px; font-weight: 500; letter-spacing: .5px; color: rgba(255,255,255,.9); }
+
+  /* 文本输入题 */
+  .q-textarea {
+    width: 100%;
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(255,215,0,.3);
+    border-radius: 12px;
+    padding: 16px;
+    color: #fff; font-family: inherit; font-size: 16px;
+    resize: vertical; min-height: 120px;
+    outline: none; transition: border-color .2s;
+    letter-spacing: .5px;
+  }
+  .q-textarea::placeholder { color: rgba(255,255,255,.3); font-style: italic; }
+  .q-textarea:focus { border-color: #ff0080; box-shadow: 0 0 16px rgba(255,0,128,.3); }
+
+  /* 底部按钮区 */
+  .q-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .q-counter {
+    font-size: 12px; letter-spacing: 2px;
+    color: rgba(255,255,255,.4);
+  }
+  .q-next, .q-prev {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 100px;
+    font-family: inherit; font-weight: 900;
+    font-size: 14px; letter-spacing: 2px;
+    cursor: pointer; transition: all .2s; border: none;
+  }
+  .q-next {
+    background: linear-gradient(135deg, #ff0080, #ff4500);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255,0,128,.5);
+  }
+  .q-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 36px rgba(255,0,128,.8);
+  }
+  .q-prev {
+    background: transparent;
+    border: 2px solid rgba(255,215,0,.35) !important;
+    color: rgba(255,215,0,.7);
+    font-size: 12px; padding: 10px 20px;
+  }
+  .q-prev:hover { border-color: #ffd700 !important; color: #ffd700; }
+
+  /* ────────────────────────────────────────
+     SCREEN FINAL — 感谢页
+  ──────────────────────────────────────── */
+  #sfinal { gap: 24px; text-align: center; }
+  .final-boom {
+    font-size: clamp(60px, 16vw, 120px);
+    line-height: 1;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,.9));
+    animation: boom .6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes boom {
+    from { transform:scale(0); opacity:0; }
+    to   { transform:scale(1); opacity:1; }
+  }
+  .final-title {
+    font-weight: 900; font-size: clamp(32px, 8vw, 72px);
+    letter-spacing: 4px;
+    background: linear-gradient(180deg, #fffacd, #ffd700, #ff8c00);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 16px rgba(255,215,0,.8));
+    animation: fadeUp .5s ease .3s both;
+  }
+  .final-sub {
+    font-size: 16px; color: rgba(255,255,255,.65);
+    letter-spacing: 2px; line-height: 1.8;
+    animation: fadeUp .5s ease .5s both;
+  }
+  .final-tags {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp .5s ease .7s both;
+  }
+  .final-tag {
+    padding: 6px 18px; border-radius: 100px;
+    font-weight: 800; font-size: 14px; letter-spacing: 1px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 12px rgba(255,215,0,.4);
+  }
+  .final-tag:nth-child(1) { background:rgba(255,0,128,.8); color:#fff; }
+  .final-tag:nth-child(2) { background:rgba(0,200,255,.8); color:#fff; }
+  .final-tag:nth-child(3) { background:rgba(255,140,0,.8); color:#fff; }
+
+  /* ─── 通用工具 ─── */
+  @media (max-width: 520px) {
+    .arr { font-size: 32px; }
+    .arr.a0, .arr.a2, .arr.a4, .arr.a6 { font-size: 40px; }
+    .start-btn { width: 100px; height: 100px; font-size: 15px; }
+    .arr-label { display:none; }
+    .arr-outer { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 闪光 -->
+<div id="flash" style="position:fixed;inset:0;background:#fff;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s;"></div>
+
+<!-- 跑马灯 -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>★ 重磅问卷 ★</span><span>万众期待 · 全球首发</span>
+    <span>★ 不填后悔 ★</span><span>你的意见非常重要</span>
+    <span>★ 只需三分钟 ★</span><span>填完有好消息</span>
+    <span>★ 巅峰之作 ★</span><span>家人们谁懂啊</span>
+  </div>
+</div>
+<div class="marquee bot">
+  <div class="marquee-track">
+    <span>◆ 全员行动 ◆</span><span>五星好评 · 路人皆知</span>
+    <span>◆ 历史性时刻 ◆</span><span>建议直接封神</span>
+    <span>◆ 跑马灯永不停 ◆</span><span>你的声音改变世界</span>
+  </div>
+</div>
+
+<!-- 角落 -->
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<!-- 星星 -->
+<div id="stars"></div>
+
+<!-- ════════════════════════════
+     SCREEN 0 — 首页
+════════════════════════════ -->
+<div class="screen active" id="s0">
+
+  <div class="s0-eyebrow">★ 隆 重 推 出 ★</div>
+  <h1 class="s0-title">重磅问卷</h1>
+  <p class="s0-sub">你 · 的 · 意 · 见 · 最 · 重 · 要</p>
+
+  <!-- 箭头 + 按钮 -->
+  <div class="arrow-ring">
+
+    <!-- 外圈装饰大箭头 -->
+    <div class="arr-outer o0">↓</div>
+    <div class="arr-outer o1">←</div>
+    <div class="arr-outer o2">↑</div>
+    <div class="arr-outer o3">→</div>
+
+    <!-- 8方向指向箭头 -->
+    <div class="arr a0">▼</div>
+    <div class="arr a1">▼</div>
+    <div class="arr a2">▼</div>
+    <div class="arr a3">▼</div>
+    <div class="arr a4">▼</div>
+    <div class="arr a5">▼</div>
+    <div class="arr a6">▼</div>
+    <div class="arr a7">▼</div>
+
+    <!-- 标签 -->
+    <div class="arr-label al-t">点这里！！</div>
+    <div class="arr-label al-r">就是它👈</div>
+    <div class="arr-label al-b">快点击！</div>
+    <div class="arr-label al-l">这个👉</div>
+
+    <!-- 中央开始按钮 -->
+    <button class="start-btn" id="startBtn">
+      开始填写
+      <small>点我！</small>
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ════════════════════════════
+     SCREEN 1 — Q1 单选
+════════════════════════════ -->
+<div class="screen" id="s1">
+  <div class="q-wrap">
+    <div class="q-progress-bar"><div class="q-progress-fill" style="width:20%"></div></div>
+    <span class="q-badge">★ 第 1 题 / 共 4 题 ★</span>
+    <div class="q-title">你是怎么来到这里的？</div>
+    <div class="q-options">
+      <div class="q-opt" data-q="1" data-v="A"><span class="opt-letter">A</span><span class="opt-text">被朋友强行发来的链接</span></div>
+      <div class="q-opt" data-q="1" data-v="B"><span class="opt-letter">B</span><span class="opt-text">自己主动找来的，我很厉害</span></div>
+      <div class="q-opt" data-q="1" data-v="C"><span class="opt-letter">C</span><span class="opt-text">不小心点进来的，但不打算离开</span></div>
+      <div class="q-opt" data-q="1" data-v="D"><span class="opt-letter">D</span><span class="opt-text">命中注定，天意如此</span></div>
+    </div>
+    <div class="q-foot">
+      <span class="q-counter">进度 20%</span>
+      <button class="q-next" data-next="s2">下一题 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN 2 — Q2 单选
+════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="q-wrap">
+    <div class="q-progress-bar"><div class="q-progress-fill" style="width:40%"></div></div>
+    <span class="q-badge">★ 第 2 题 / 共 4 题 ★</span>
+    <div class="q-title">看到首页那些箭头的第一反应？</div>
+    <div class="q-options">
+      <div class="q-opt" data-q="2" data-v="A"><span class="opt-letter">A</span><span class="opt-text">太壮观了，直接震撼</span></div>
+      <div class="q-opt" data-q="2" data-v="B"><span class="opt-letter">B</span><span class="opt-text">笑到肚子疼，无法呼吸</span></div>
+      <div class="q-opt" data-q="2" data-v="C"><span class="opt-letter">C</span><span class="opt-text">有点烦但还是点了，中计了</span></div>
+      <div class="q-opt" data-q="2" data-v="D"><span class="opt-letter">D</span><span class="opt-text">我就知道会这样，早有预料</span></div>
+    </div>
+    <div class="q-foot">
+      <button class="q-prev" data-prev="s1">← 上一题</button>
+      <button class="q-next" data-next="s3">下一题 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN 3 — Q3 单选
+════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="q-wrap">
+    <div class="q-progress-bar"><div class="q-progress-fill" style="width:60%"></div></div>
+    <span class="q-badge">★ 第 3 题 / 共 4 题 ★</span>
+    <div class="q-title">填到这里了，你觉得这份问卷如何？</div>
+    <div class="q-options">
+      <div class="q-opt" data-q="3" data-v="A"><span class="opt-letter">A</span><span class="opt-text">⭐⭐⭐⭐⭐ 满分！建议封神</span></div>
+      <div class="q-opt" data-q="3" data-v="B"><span class="opt-letter">B</span><span class="opt-text">⭐⭐⭐⭐ 很好，还差一颗星</span></div>
+      <div class="q-opt" data-q="3" data-v="C"><span class="opt-letter">C</span><span class="opt-text">⭐⭐⭐ 还行，但可以更夸张</span></div>
+      <div class="q-opt" data-q="3" data-v="D"><span class="opt-letter">D</span><span class="opt-text">这就是艺术，不接受反驳</span></div>
+    </div>
+    <div class="q-foot">
+      <button class="q-prev" data-prev="s2">← 上一题</button>
+      <button class="q-next" data-next="s4">下一题 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN 4 — Q4 文本
+════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="q-wrap">
+    <div class="q-progress-bar"><div class="q-progress-fill" style="width:85%"></div></div>
+    <span class="q-badge">★ 第 4 题 / 共 4 题 ★</span>
+    <div class="q-title">最后！用一句话描述一下你此刻的心情</div>
+    <textarea class="q-textarea" id="freeText" placeholder="在这里写下你的感受……（可以很夸张，鼓励夸张）"></textarea>
+    <div class="q-foot">
+      <button class="q-prev" data-prev="s3">← 上一题</button>
+      <button class="q-next" id="submitBtn" data-next="sfinal">提交问卷 ★</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SCREEN FINAL — 感谢页
+════════════════════════════ -->
+<div class="screen" id="sfinal">
+  <div class="final-boom">🎊</div>
+  <div class="final-title">感谢填写！</div>
+  <p class="final-sub">
+    你的意见已收到<br>
+    历史将铭记这一刻<br>
+    <span style="font-size:13px;opacity:.6;letter-spacing:1px;">感谢参与 · 填完了真厉害</span>
+  </p>
+  <div class="final-tags">
+    <span class="final-tag">★ 问卷完成 ★</span>
+    <span class="final-tag">★ 功德圆满 ★</span>
+    <span class="final-tag">★ 倾力感谢 ★</span>
+  </div>
+</div>
+
+<script>
+  /* ── 星星 ── */
+  const sc = document.getElementById('stars');
+  const chars = ['★','☆','✦','✧','⭐'];
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.textContent = chars[i % chars.length];
+    s.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:${Math.random()*100}vh;
+      font-size:${14+Math.random()*26}px;
+      animation-delay:${Math.random()*2}s;
+      animation-duration:${1+Math.random()*1.5}s, ${5+Math.random()*6}s;
+      color:${['#ffd700','#ff8c00','#ff0080','#00ffff'][Math.floor(Math.random()*4)]};
+    `;
+    sc.appendChild(s);
+  }
+
+  /* ── 页面切换 ── */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    // 重新触发动画
+    el.querySelectorAll('.q-wrap').forEach(w => {
+      w.style.animation = 'none';
+      requestAnimationFrame(() => { w.style.animation = ''; });
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ── 首页开始按钮 ── */
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const f = document.getElementById('flash');
+    f.style.opacity = '1';
+    setTimeout(() => {
+      f.style.opacity = '0';
+      showScreen('s1');
+    }, 260);
+  });
+
+  /* ── 选项点击 ── */
+  document.querySelectorAll('.q-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const q = opt.dataset.q;
+      document.querySelectorAll(`.q-opt[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  /* ── 下一题 / 上一题 ── */
+  document.querySelectorAll('.q-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showScreen(btn.dataset.next);
+    });
+  });
+  document.querySelectorAll('.q-prev').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showScreen(btn.dataset.prev);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>华容道拼图</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+  :root {
+    --bg:     #0a1628;
+    --accent: #4a90d9;
+    --light:  #a8ccf0;
+    --white:  #e8f2ff;
+    --border: #2a4a7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 28% 22%, rgba(74,144,217,0.18) 0%, transparent 52%),
+      radial-gradient(ellipse at 76% 80%, rgba(20,60,140,0.22) 0%, transparent 50%),
+      repeating-linear-gradient(45deg, transparent, transparent 38px,
+        rgba(74,144,217,0.022) 38px, rgba(74,144,217,0.022) 39px);
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    color: rgba(168,204,240,0.45);
+    letter-spacing: 0.28em;
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  /* ── 3D 卡片 ── */
+  .card-scene {
+    width: 442px;
+    height: 442px;
+    perspective: 1600px;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+  .card.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* 正面：拼完后整面可点击 */
+  .card-front { cursor: default; }
+  .card-front.clickable { cursor: pointer; }
+
+  /* 反面 */
+  .card-back {
+    transform: rotateY(180deg);
+    cursor: pointer;
+  }
+  .card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* ── 棋盘 ── */
+  .board-wrap {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    background: rgba(8,18,36,0.9);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 1px rgba(74,144,217,0.08),
+      0 10px 44px rgba(0,0,0,0.65),
+      0 0 60px rgba(74,144,217,0.07),
+      inset 0 1px 0 rgba(74,144,217,0.13);
+  }
+
+  #puzzle-board {
+    display: grid;
+    grid-template-columns: repeat(3, 140px);
+    grid-template-rows: repeat(3, 140px);
+    gap: 4px;
+    background: #040a14;
+  }
+
+  .tile {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    background: #040a14;
+  }
+  .tile:not(.empty):hover {
+    transform: scale(0.96);
+    z-index: 2;
+    box-shadow: 0 0 14px rgba(74,144,217,0.55);
+  }
+  .tile:not(.empty):active { transform: scale(0.93); }
+  .tile.empty { cursor: default; }
+
+  .tile img {
+    width: 420px;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .tile-num {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(74,144,217,0.85);
+    border-radius: 50%;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    pointer-events: none;
+    font-family: 'Noto Serif SC', serif;
+    z-index: 3;
+  }
+
+  @keyframes tileFlash {
+    0%   { box-shadow: inset 0 0 0 2px rgba(74,144,217,0.9); }
+    100% { box-shadow: none; }
+  }
+  .tile.just-moved { animation: tileFlash 0.35s ease forwards; }
+
+  @keyframes revealLast {
+    0%   { opacity: 0; transform: scale(0.78); }
+    65%  { transform: scale(1.06); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .tile.solved-reveal {
+    animation: revealLast 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+
+  /* ── 底部 ── */
+  .action-area {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    padding: 9px 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--light);
+    cursor: pointer;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.22s ease;
+    z-index: 0;
+  }
+  .btn:hover::before { transform: scaleX(1); }
+  .btn:hover { color: white; border-color: var(--accent); }
+  .btn span { position: relative; z-index: 1; }
+
+  /* 密码输入框 */
+  .word-input-wrap {
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .word-input-wrap.show { display: flex; animation: fadeInUp 0.4s ease; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .word-input {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: rgba(8,18,36,0.8);
+    color: var(--white);
+    border-radius: 3px;
+    width: 180px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .word-input::placeholder {
+    color: rgba(168,204,240,0.3);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .word-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+  }
+  .word-input.correct {
+    border-color: #4ad980;
+    box-shadow: 0 0 0 2px rgba(74,217,128,0.25);
+  }
+  .word-input.wrong {
+    border-color: #d94a4a;
+    box-shadow: 0 0 0 2px rgba(217,74,74,0.25);
+    animation: shake 0.35s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  .hint {
+    font-size: 0.66rem;
+    color: rgba(168,204,240,0.28);
+    letter-spacing: 0.1em;
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+    transition: opacity 0.3s;
+  }
+
+  #flip-hint {
+    font-size: 0.66rem;
+    color: rgba(168,204,240,0.35);
+    letter-spacing: 0.15em;
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    height: 1em;
+  }
+  #flip-hint.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <p class="subtitle">移动方块 · 还原图像</p>
+
+  <div class="card-scene">
+    <div class="card" id="card">
+      <div class="card-face card-front" id="card-front">
+        <div class="board-wrap">
+          <div id="puzzle-board"></div>
+        </div>
+      </div>
+      <div class="card-face card-back" id="card-back">
+        <img id="back-img" src="" alt="背面">
+      </div>
+    </div>
+  </div>
+
+  <div class="action-area">
+    <button class="btn" id="shuffle-btn" onclick="shufflePuzzle()">
+      <span>重新打乱</span>
+    </button>
+    <div class="word-input-wrap" id="word-wrap">
+      <input class="word-input" id="word-input" type="text"
+             placeholder="输入密码…" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <p class="hint" id="main-hint">点击相邻方块移动 · 也可使用方向键</p>
+  <p id="flip-hint">点击图片可来回翻转</p>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════
+  const FRONT_IMAGE = 'images/gongyegming.png';
+  const BACK_IMAGE  = 'images/mx1.png';
+  const PASSWORD    = 'trulin';          // ← 在这里改密码
+  const PUZZLE_ID   = 'puzzle_1';       // ← 传给大九宫格的标识
+  // ═══════════════════════════════════════════
+
+  const GRID = 3, TOTAL = GRID * GRID, EMPTY_VAL = TOTAL - 1;
+  let tiles = [], emptyPos = TOTAL - 1, solved = false;
+
+  window.onload = () => {
+    document.getElementById('back-img').src = BACK_IMAGE;
+
+    // 正面点击 → 翻转（仅拼完后有效）
+    document.getElementById('card-front').addEventListener('click', () => {
+      if (solved) flipCard();
+    });
+
+    // 背面点击 → 翻转（仅拼完后有效）
+    document.getElementById('card-back').addEventListener('click', () => {
+      if (solved) flipCard();
+    });
+
+    // 密码框回车确认
+    document.getElementById('word-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    shufflePuzzle();
+  };
+
+  // ── 翻转（正反可无限来回）──────────────────────────────────────
+  function flipCard() {
+    const card = document.getElementById('card');
+    const nowFlipped = card.classList.toggle('flipped');
+    document.getElementById('flip-hint').textContent = nowFlipped
+      ? '点击图片可翻回正面'
+      : '点击拼图可翻到背面';
+  }
+
+  // ── 密码验证 ──────────────────────────────────────────────────
+  function checkPassword() {
+    const input = document.getElementById('word-input');
+    const val = input.value.trim();
+
+    if (val.toLowerCase() === PASSWORD.toLowerCase()) {
+      // 正确：翻回正面
+      input.classList.remove('wrong');
+      input.classList.add('correct');
+
+      const card = document.getElementById('card');
+      if (card.classList.contains('flipped')) {
+        flipCard(); // 翻回正面
+      }
+
+      // 通知大九宫格这一关已解锁
+      localStorage.setItem(PUZZLE_ID + '_unlocked', 'true');
+
+      // 禁用输入框
+      input.disabled = true;
+
+    } else {
+      // 错误：抖动提示
+      input.classList.remove('correct', 'wrong');
+      void input.offsetWidth; // 触发重绘让动画重新播放
+      input.classList.add('wrong');
+      input.value = '';
+      setTimeout(() => input.classList.remove('wrong'), 400);
+    }
+  }
+
+  // ── 打乱 ──────────────────────────────────────────────────────
+  function shufflePuzzle() {
+    solved = false;
+    document.getElementById('card').classList.remove('flipped');
+    document.getElementById('card-front').classList.remove('clickable');
+    document.getElementById('flip-hint').classList.remove('show');
+    document.getElementById('shuffle-btn').style.display = '';
+    document.getElementById('word-wrap').classList.remove('show');
+    const inp = document.getElementById('word-input');
+    inp.value = '';
+    inp.disabled = false;
+    inp.classList.remove('correct', 'wrong');
+    document.getElementById('main-hint').style.opacity = '1';
+
+    tiles = Array.from({length: TOTAL}, (_, i) => i);
+    let ep = TOTAL - 1;
+    for (let i = 0; i < 400; i++) {
+      const nb = neighbors(ep);
+      const pick = nb[Math.floor(Math.random() * nb.length)];
+      [tiles[ep], tiles[pick]] = [tiles[pick], tiles[ep]];
+      ep = pick;
+    }
+    emptyPos = ep;
+    render();
+  }
+
+  function neighbors(idx) {
+    const r = Math.floor(idx / GRID), c = idx % GRID, n = [];
+    if (r > 0)        n.push(idx - GRID);
+    if (r < GRID - 1) n.push(idx + GRID);
+    if (c > 0)        n.push(idx - 1);
+    if (c < GRID - 1) n.push(idx + 1);
+    return n;
+  }
+
+  // ── 移动 ──────────────────────────────────────────────────────
+  function moveTile(pos) {
+    if (solved || !neighbors(emptyPos).includes(pos)) return;
+    [tiles[emptyPos], tiles[pos]] = [tiles[pos], tiles[emptyPos]];
+    emptyPos = pos;
+    render(pos);
+    checkWin();
+  }
+
+  // ── 渲染 ──────────────────────────────────────────────────────
+  function render(justMoved = -1) {
+    const board = document.getElementById('puzzle-board');
+    board.innerHTML = '';
+
+    tiles.forEach((val, pos) => {
+      const el = document.createElement('div');
+      el.className = 'tile';
+
+      if (val === EMPTY_VAL) {
+        el.classList.add('empty');
+      } else {
+        const sc = val % GRID, sr = Math.floor(val / GRID);
+        const img = document.createElement('img');
+        img.src = FRONT_IMAGE;
+        img.style.marginLeft = `-${sc * 140}px`;
+        img.style.marginTop  = `-${sr * 140}px`;
+        el.appendChild(img);
+
+        const num = document.createElement('span');
+        num.className = 'tile-num';
+        num.textContent = val + 1;
+        el.appendChild(num);
+
+        el.addEventListener('click', () => moveTile(pos));
+        if (pos === justMoved) el.classList.add('just-moved');
+      }
+
+      board.appendChild(el);
+    });
+  }
+
+  // ── 胜利判断 ──────────────────────────────────────────────────
+  function checkWin() {
+    if (!tiles.every((v, i) => v === i)) return;
+    solved = true;
+    setTimeout(revealNinth, 150);
+    setTimeout(onSolved, 900);
+  }
+
+  function revealNinth() {
+    const empEl = document.querySelector('.tile.empty');
+    if (!empEl) return;
+    empEl.classList.remove('empty');
+
+    const sc = EMPTY_VAL % GRID, sr = Math.floor(EMPTY_VAL / GRID);
+    const img = document.createElement('img');
+    img.src = FRONT_IMAGE;
+    img.style.marginLeft = `-${sc * 140}px`;
+    img.style.marginTop  = `-${sr * 140}px`;
+    empEl.appendChild(img);
+
+    const num = document.createElement('span');
+    num.className = 'tile-num';
+    num.textContent = EMPTY_VAL + 1;
+    empEl.appendChild(num);
+
+    empEl.classList.add('solved-reveal');
+  }
+
+  function onSolved() {
+    // 翻到背面
+    document.getElementById('card').classList.add('flipped');
+    // 正面加 clickable 样式
+    document.getElementById('card-front').classList.add('clickable');
+
+    document.getElementById('shuffle-btn').style.display = 'none';
+    document.getElementById('word-wrap').classList.add('show');
+    document.getElementById('main-hint').style.opacity = '0';
+
+    setTimeout(() => {
+      document.getElementById('flip-hint').classList.add('show');
+      document.getElementById('word-input').focus();
+    }, 800);
+  }
+
+  // ── 键盘方向键 ────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (document.activeElement === document.getElementById('word-input')) return;
+    if (solved) return;
+    const r = Math.floor(emptyPos / GRID), c = emptyPos % GRID;
+    let t = -1;
+    if (e.key === 'ArrowUp'    && r < GRID-1) t = emptyPos + GRID;
+    if (e.key === 'ArrowDown'  && r > 0)      t = emptyPos - GRID;
+    if (e.key === 'ArrowLeft'  && c < GRID-1) t = emptyPos + 1;
+    if (e.key === 'ArrowRight' && c > 0)      t = emptyPos - 1;
+    if (t !== -1) { e.preventDefault(); moveTile(t); }
+  });
+</script>
+</body>
+</html>

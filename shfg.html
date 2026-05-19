@@ -73,37 +73,6 @@
   }
   .logo em { font-style: italic; color: var(--accent); }
 
-  /* 重点关注 印章 */
-  .watch-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: white;
-    background: #dc2626;
-    padding: 4px 9px 4px 7px;
-    border-radius: 3px;
-    margin-left: 4px;
-    align-self: center;
-    transform: rotate(-3deg);
-    box-shadow: 0 2px 5px rgba(220, 38, 38, 0.28);
-    animation: watch-pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes watch-pulse {
-    0%, 100% { box-shadow: 0 2px 5px rgba(220, 38, 38, 0.28), 0 0 0 0 rgba(220, 38, 38, 0.5); }
-    50%      { box-shadow: 0 2px 5px rgba(220, 38, 38, 0.28), 0 0 0 5px rgba(220, 38, 38, 0); }
-  }
-  .watch-tag svg {
-    width: 12px; height: 12px;
-    stroke: white; fill: none;
-    stroke-width: 2.2;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-  .watch-tag .eye-dot { fill: white; stroke: none; }
-
   .nav-links {
     display: flex;
     gap: 36px;
@@ -159,56 +128,6 @@
     font-size: 12px;
     color: var(--ink-mute);
     letter-spacing: 1px;
-  }
-
-  /* ============ ★ 邮箱链接 ============ */
-  .mail-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    color: var(--ink-soft);
-    background: var(--paper-warm);
-    border: 1px solid var(--line);
-    padding: 5px 11px 5px 9px;
-    border-radius: 100px;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-  }
-  .mail-link:hover {
-    background: var(--ink);
-    color: white;
-    border-color: var(--ink);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(10, 37, 64, 0.18);
-  }
-  .mail-link svg {
-    width: 13px; height: 13px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform 0.3s ease;
-  }
-  .mail-link:hover svg {
-    transform: translateX(1px);
-  }
-  .mail-link .mail-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #16a34a;
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
-    margin-right: 2px;
-    animation: mail-blink 2s ease-in-out infinite;
-  }
-  @keyframes mail-blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
   }
 
   /* ============ POST CARDS ============ */
@@ -338,7 +257,7 @@
   }
 
   /* ============================================================
-     ★ 转发卡片样式
+     转发卡片样式
      ============================================================ */
   .repost-banner {
     display: inline-flex;
@@ -396,64 +315,6 @@
     line-height: 1.5;
   }
 
-  /* ============================================================
-     ★ 全黑加载界面
-     ============================================================ */
-  .black-loader {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-  }
-  .black-loader.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .loader-spinner {
-    width: 38px;
-    height: 38px;
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
-    border-top-color: rgba(255, 255, 255, 0.85);
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-    margin-bottom: 28px;
-  }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  .loader-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.55);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .loader-dots::after {
-    content: '';
-    animation: dots 1.4s steps(4, end) infinite;
-  }
-  @keyframes dots {
-    0%   { content: ''; }
-    25%  { content: '.'; }
-    50%  { content: '..'; }
-    75%  { content: '...'; }
-  }
-  .loader-sub {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.3);
-    margin-top: 4px;
-  }
-
   /* ============ FOOTER ============ */
   footer {
     margin-top: 80px;
@@ -493,8 +354,6 @@
     .post:hover { padding-left: 12px; }
     footer { grid-template-columns: 1fr; }
     .foot-meta { text-align: left; }
-    .watch-tag { font-size: 9.5px; padding: 3px 7px; }
-    .section-meta { width: 100%; }
   }
 
   /* fade-in on load */
@@ -507,7 +366,262 @@
   .post:nth-child(2) { animation-delay: 0.2s; }
   .post:nth-child(3) { animation-delay: 0.3s; }
   .post:nth-child(4) { animation-delay: 0.4s; }
+  .post:nth-child(5) { animation-delay: 0.5s; }
+  .post:nth-child(6) { animation-delay: 0.6s; }
+  .post:nth-child(7) { animation-delay: 0.7s; }
+  .post:nth-child(8) { animation-delay: 0.8s; }
   @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+
+  /* ============================================================
+     ★ 密码弹窗
+     ============================================================ */
+  .pw-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .pw-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pw-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    width: 420px;
+    max-width: calc(100vw - 48px);
+    padding: 44px 40px 40px;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(10, 37, 64, 0.18), 0 4px 16px rgba(10, 37, 64, 0.08);
+    transform: translateY(16px) scale(0.98);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+  }
+  .pw-overlay.show .pw-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  /* 顶部装饰线 */
+  .pw-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 40px; right: 40px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 0 0 2px 2px;
+  }
+
+  .pw-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--ink-mute);
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    background: none;
+    border: none;
+  }
+  .pw-close:hover { background: var(--wash); color: var(--ink); }
+  .pw-close svg {
+    width: 15px; height: 15px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round;
+  }
+
+  .pw-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .pw-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .pw-title em { font-style: italic; color: var(--accent-deep); }
+
+  .pw-hint {
+    font-size: 14px;
+    color: var(--ink-mute);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    padding: 12px 14px;
+    background: var(--wash);
+    border-radius: 4px;
+    border-left: 2px solid var(--accent);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+  }
+  .pw-hint strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+  }
+
+  .pw-input-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .pw-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    outline: none;
+    letter-spacing: 1px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .pw-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+  .pw-input.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+  }
+
+  .pw-error-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #dc2626;
+    letter-spacing: 0.5px;
+    height: 18px;
+    transition: opacity 0.2s;
+    opacity: 0;
+    margin-bottom: 16px;
+  }
+  .pw-error-msg.show { opacity: 1; }
+
+  .pw-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: var(--accent);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+  .pw-btn:hover {
+    background: var(--accent-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  }
+  .pw-btn:active { transform: translateY(0); }
+
+  /* ---- 解锁成功状态 ---- */
+  .pw-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+  .pw-success.show { display: flex; }
+
+  .pw-success-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #dcfce7;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes pop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .pw-success-icon svg {
+    width: 24px; height: 24px;
+    stroke: #16a34a; fill: none;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .pw-success-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    color: #16a34a;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .pw-success-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    color: var(--ink-mute);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .pw-revealed {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 2px;
+    padding: 14px 24px;
+    background: var(--wash);
+    border: 1.5px solid var(--accent);
+    border-radius: 4px;
+    user-select: all;
+    cursor: text;
+    animation: fadeUp 0.4s 0.2s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .pw-copy-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 1px;
+    margin-top: 10px;
+    opacity: 0.7;
+  }
 </style>
 </head>
 <body>
@@ -520,13 +634,6 @@
       <div class="logo">
         <img src="images/shihu.png" width="50" height="50" alt="logo">
         <span>矢<em>呼</em></span>
-        <span class="watch-tag">
-          <svg viewBox="0 0 24 24">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
-            <circle class="eye-dot" cx="12" cy="12" r="2.6"/>
-          </svg>
-          重点关注
-        </span>
       </div>
       <ul class="nav-links">
         <li><a href="#" class="active">日志</a></li>
@@ -538,120 +645,13 @@
   <div class="section-head">
     <h2>日志</h2>
     <div class="section-meta">
-      <span class="count">文麦特田凡高 · 05 ENTRIES</span>
-
-      <!-- ★ 邮箱链接 - 点击触发黑色加载页 -->
-      <a href="#" class="mail-link" id="mailLink" title="发送私信">
-        <span class="mail-dot"></span>
-        <svg viewBox="0 0 24 24">
-          <path d="M4 6h16c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"/>
-          <polyline points="2,8 12,14 22,8"/>
-        </svg>
-        VinmatTivert@Cmail.com
-      </a>
+      <span class="count">文麦特田凡高 · 08 ENTRIES</span>
     </div>
   </div>
 
   <article class="posts">
-   <!-- POST 4 - 转发 -->
-    <a class="post is-repost" href="shheianmaitian.html">
-      <div class="post-num">NO.<span>05</span></div>
-      <div class="post-body">
-        <span class="repost-banner">
-          <svg viewBox="0 0 24 24">
-            <polyline points="17 1 21 5 17 9"/>
-            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-            <polyline points="7 23 3 19 7 15"/>
-            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-          </svg>
-          转发了 <strong>@金黄的穗子</strong> 的日志
-        </span>
-        <span class="post-tag">学说</span>
-        <h3>仨体<em>黑暗麦田法则</em></h3>
-        <p>当你凝视深渊的时候 深渊也在凝视着你</p>
-        <div class="post-foot">
 
-        </div>
-      </div>
-      <div class="post-img">
-        <img src="images/maitianqunya.png" alt="麦田">
-      </div>
-    </a>
-
-
-    <!-- POST 2 - 转发 -->
-    <a class="post is-repost" href="shwosihu.html">
-      <div class="post-num">NO.<span>04</span></div>
-      <div class="post-body">
-        <span class="repost-banner">
-          <svg viewBox="0 0 24 24">
-            <polyline points="17 1 21 5 17 9"/>
-            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-            <polyline points="7 23 3 19 7 15"/>
-            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-          </svg>
-          转发了 <strong>@金黄的穗子</strong> 的日志
-        </span>
-
-        <span class="post-tag">调查</span>
-        <h3>沃斯湖水怪 <em>是鸭子还是水怪?</em></h3>
-        <p>没区别,感觉是最无聊的怪物</p>
-        <div class="post-foot">
-
-        </div>
-      </div>
-      <div class="post-img">
-        <img src="images/wosihu.png" alt="沃斯湖">
-      </div>
-    </a>
-
-
- 
-
-
-    <!-- POST 2 - 转发 -->
-    <a class="post is-repost" href="shxueshan.html">
-      <div class="post-num">NO.<span>03</span></div>
-      <div class="post-body">
-        <span class="repost-banner">
-          <svg viewBox="0 0 24 24">
-            <polyline points="17 1 21 5 17 9"/>
-            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-            <polyline points="7 23 3 19 7 15"/>
-            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-          </svg>
-          转发了 <strong>@金黄的穗子</strong> 的日志
-        </span>
-        <span class="post-tag">调查</span>
-        <h3>雪山巨人<em>蓝白色羽毛究竟是不是染色?</em></h3>
-        <p>它们在雪山吃什么呢</p>
-        <div class="post-foot">
-        </div>
-      </div>
-      <div class="post-img">
-        <img src="images/xueshan.png" alt="沃斯湖">
-      </div>
-    </a>
-
-    <!-- POST 3 -->
-    <a class="post" href="#">
-      <div class="post-num">NO.<span>02</span></div>
-      <div class="post-body">
-        <span class="post-tag">喜欢的曲子</span>
-        <h3>长亭外<em>古道边</em></h3>
-        <p>很想快点学会</p>
-        <div class="post-foot">
-          <span>12 年前</span>
-          <span class="dotsep"></span>
-          <span>1 min read</span>
-        </div>
-      </div>
-      <div class="post-img">
-        <img src="images/songbie.png" alt="窗外">
-      </div>
-    </a>
-
-        <!-- POST 2 - 转发 -->
+    <!-- POST 1 - 转发 -->
     <a class="post is-repost" href="shsjz.html">
       <div class="post-num">NO.<span>01</span></div>
       <div class="post-body">
@@ -667,11 +667,161 @@
         <span class="post-tag">调查</span>
         <h3>为什么我们要用<em>8进制?</em></h3>
         <p>呜呜8进制好难</p>
-        <div class="post-foot">
-        </div>
+        <div class="post-foot"></div>
       </div>
       <div class="post-img">
         <img src="images/shijinzhi.png" alt="沃斯湖">
+      </div>
+    </a>
+
+    <!-- POST 2 - 转发 -->
+    <a class="post is-repost" href="shxueshan.html">
+      <div class="post-num">NO.<span>02</span></div>
+      <div class="post-body">
+        <span class="repost-banner">
+          <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          转发了 <strong>@金黄的穗子</strong> 的日志
+        </span>
+        <span class="post-tag">调查</span>
+        <h3>雪山巨人<em>蓝白色羽毛究竟是不是染色?</em></h3>
+        <p>它们在雪山吃什么呢</p>
+        <div class="post-foot"></div>
+      </div>
+      <div class="post-img">
+        <img src="images/xueshan.png" alt="沃斯湖">
+      </div>
+    </a>
+
+    <!-- POST 3 - 转发 -->
+    <a class="post is-repost" href="shhpy.html">
+      <div class="post-num">NO.<span>03</span></div>
+      <div class="post-body">
+        <span class="repost-banner">
+          <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          转发了 <strong>@金黄的穗子</strong> 的日志
+        </span>
+        <span class="post-tag">日常</span>
+        <h3>我们永远是<em>好朋友</em></h3>
+        <p>和文麦特</p>
+        <div class="post-foot"></div>
+      </div>
+      <div class="post-img">
+        <img src="images/zipai.png" alt="沃斯湖">
+      </div>
+    </a>
+
+    <!-- POST 4 - 转发 -->
+    <a class="post is-repost" href="shwosihu.html">
+      <div class="post-num">NO.<span>04</span></div>
+      <div class="post-body">
+        <span class="repost-banner">
+          <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          转发了 <strong>@金黄的穗子</strong> 的日志
+        </span>
+        <span class="post-tag">调查</span>
+        <h3>沃斯湖水怪 <em>是鸭子还是水怪?</em></h3>
+        <p>没区别,感觉是最无聊的怪物</p>
+        <div class="post-foot"></div>
+      </div>
+      <div class="post-img">
+        <img src="images/wosihu.png" alt="沃斯湖">
+      </div>
+    </a>
+
+    <!-- POST 5 - 原创 -->
+    <a class="post" href="#">
+      <div class="post-num">NO.<span>05</span></div>
+      <div class="post-body">
+        <span class="post-tag">喜欢的曲子</span>
+        <h3>长亭外<em>古道边</em></h3>
+        <p>很想快点学会</p>
+        <div class="post-foot">
+          <span>12 年前</span>
+          <span class="dotsep"></span>
+          <span>1 min read</span>
+        </div>
+      </div>
+      <div class="post-img">
+        <img src="images/songbie.png" alt="窗外">
+      </div>
+    </a>
+
+    <!-- POST 6 - 转发 -->
+    <a class="post is-repost" href="shdx.html">
+      <div class="post-num">NO.<span>06</span></div>
+      <div class="post-body">
+        <span class="repost-banner">
+          <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          转发了 <strong>@金黄的穗子</strong> 的日志
+        </span>
+        <span class="post-tag">日常</span>
+        <h3>居然<em>还是去学了计算机</em></h3>
+        <p>和文麦特</p>
+        <div class="post-foot"></div>
+      </div>
+      <div class="post-img">
+        <img src="images/luqu.png" alt="麦田">
+      </div>
+    </a>
+
+    <!-- POST 7 - 转发 -->
+    <a class="post is-repost" href="shheianmaitian.html">
+      <div class="post-num">NO.<span>07</span></div>
+      <div class="post-body">
+        <span class="repost-banner">
+          <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          转发了 <strong>@金黄的穗子</strong> 的日志
+        </span>
+        <span class="post-tag">学说</span>
+        <h3>仨体<em>黑暗麦田法则</em></h3>
+        <p>当你凝视深渊的时候 深渊也在凝视着你</p>
+        <div class="post-foot"></div>
+      </div>
+      <div class="post-img">
+        <img src="images/maitianqunya.png" alt="麦田">
+      </div>
+    </a>
+
+    <!-- POST 8 - 密码帖 ★ -->
+    <a class="post" id="pwPost" href="#">
+      <div class="post-num">NO.<span>08</span></div>
+      <div class="post-body">
+        <span class="post-tag">穗穗黏黏密码</span>
+        <h3>没错 就是这么明显</h3>
+        <p>so mi so do~</p>
+        <div class="post-foot">
+          <span>12 年前</span>
+          <span class="dotsep"></span>
+          <span>1 min read</span>
+        </div>
+      </div>
+      <div class="post-img">
+        <img src="images/songbie.png" alt="窗外">
       </div>
     </a>
 
@@ -685,36 +835,118 @@
 
 </div>
 
+
 <!-- ============================================================
-     ★ 全黑加载界面
+     ★ 密码弹窗
      ============================================================ -->
-<div class="black-loader" id="blackLoader">
-  <div class="loader-spinner"></div>
-  <div class="loader-text">CONNECTING<span class="loader-dots"></span></div>
-  <div class="loader-sub">电视、显示器、智能手机，一旦关闭屏幕，就像黑色的镜子一样，使人感到冷冽、畏惧。</div>
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-card" id="pwCard">
+
+    <!-- 关闭按钮 -->
+    <button class="pw-close" id="pwClose">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <!-- 输入区 -->
+    <div id="pwForm">
+      <div class="pw-label">— 加密日志 · 08 —</div>
+      <div class="pw-title">没错 就是这么<em>明显</em></div>
+
+      <div class="pw-hint">
+        提示：我爱的曲子 <strong>五位数字</strong><br>
+        <strong style="letter-spacing:3px; font-size:15px;">so · mi · so · do</strong>
+      </div>
+
+      <div class="pw-input-wrap">
+        <input
+          class="pw-input"
+          id="pwInput"
+          type="text"
+          placeholder="输入密码…"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+      <div class="pw-error-msg" id="pwError">密码不对哦，再想想~</div>
+
+      <button class="pw-btn" id="pwSubmit">确认 · ENTER</button>
+    </div>
+
+    <!-- 解锁成功区 -->
+    <div class="pw-success" id="pwSuccess">
+      <div class="pw-success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="pw-success-label">· 解锁成功 ·</div>
+      <div class="pw-success-title">穗穗黏黏，记住了吗？</div>
+      <div class="pw-revealed" id="pwRevealed">suisuiniannianmima</div>
+
+    </div>
+
+  </div>
 </div>
 
+
 <script>
-  /* ============================================================
-     ★ 邮箱点击 → 全黑加载 → 跳转
-     ────────────────────────────────────────────────────────────
-     • 改跳转目标:MAIL_TARGET_URL
-     • 改加载时长:LOADING_DURATION (毫秒)
-     ============================================================ */
-  const MAIL_TARGET_URL  = 'emlogin.html';   // ← 改跳转目标
-  const LOADING_DURATION = 6000;          // ← 加载停留时长(ms)
+  const CORRECT_PASSWORD = '53510';   // 正确密码（不区分大小写）
+  const SECRET           = 'suisuiniannianmima';
 
-  const mailLink    = document.getElementById('mailLink');
-  const blackLoader = document.getElementById('blackLoader');
+  const pwPost    = document.getElementById('pwPost');
+  const pwOverlay = document.getElementById('pwOverlay');
+  const pwClose   = document.getElementById('pwClose');
+  const pwInput   = document.getElementById('pwInput');
+  const pwSubmit  = document.getElementById('pwSubmit');
+  const pwError   = document.getElementById('pwError');
+  const pwForm    = document.getElementById('pwForm');
+  const pwSuccess = document.getElementById('pwSuccess');
+  const pwRevealed= document.getElementById('pwRevealed');
 
-  mailLink.addEventListener('click', e => {
+  /* 打开弹窗 */
+  pwPost.addEventListener('click', e => {
     e.preventDefault();
-    blackLoader.classList.add('show');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => {
-      window.location.href = MAIL_TARGET_URL;
-    }, LOADING_DURATION);
+    pwInput.value = '';
+    pwError.classList.remove('show');
+    pwInput.classList.remove('error');
+    pwForm.style.display = '';
+    pwSuccess.classList.remove('show');
+    pwOverlay.classList.add('show');
+    setTimeout(() => pwInput.focus(), 350);
+  });
+
+  /* 关闭弹窗 */
+  function closeModal() {
+    pwOverlay.classList.remove('show');
+  }
+  pwClose.addEventListener('click', closeModal);
+  pwOverlay.addEventListener('click', e => {
+    if (e.target === pwOverlay) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  /* 验证密码 */
+  function verify() {
+    const val = pwInput.value.trim().toLowerCase().replace(/\s/g, '');
+    if (val === CORRECT_PASSWORD) {
+      pwForm.style.display = 'none';
+      pwRevealed.textContent = SECRET;
+      pwSuccess.classList.add('show');
+    } else {
+      pwInput.classList.add('error');
+      pwError.classList.add('show');
+      setTimeout(() => pwInput.classList.remove('error'), 500);
+    }
+  }
+
+  pwSubmit.addEventListener('click', verify);
+  pwInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') verify();
+    if (pwError.classList.contains('show')) {
+      pwError.classList.remove('show');
+    }
   });
 </script>
+
 </body>
 </html>

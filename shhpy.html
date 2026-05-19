@@ -361,6 +361,25 @@
     border-radius: 2px;
     text-transform: uppercase;
   }
+  .bot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 7px 1px 6px;
+    background: var(--ink-mute);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .bot-badge::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #6ee7b7;
+  }
 
   .comment-text {
     font-size: 15px;
@@ -668,14 +687,23 @@
           likes: 4
         },
         {
-          name: '@文麦特田凡高', isAuthor: true,
+          name: '@文麦特田凡高',
           avatar: 'av-2', initial: 'W',
           replyTo: '@金黄的穗子',
  
-          text: '安啦，当数字民工我也陪你',
+          text: '安啦，当数字民工我也在',
           likes: 4
         }
       ]
+    },
+    
+    {
+      name: '@知识挖土机',
+      isBot: true,
+      avatar: 'av-4', initial: 'Z',
+      time: '12年前',
+      text: '好朋友很有趣呢',
+      likes: 12,
     },
 
   ];
@@ -693,7 +721,8 @@
         <div class="comment-head">
           <span class="name"></span>
           ${c.isAuthor ? '<span class="author-badge">作者</span>' : ''}
-          <span class="time">${c.time}</span>
+          ${c.isBot ? '<span class="bot-badge">BOT</span>' : ''}
+          ${c.time ? `<span class="time">${c.time}</span>` : ''}
         </div>
         <p class="comment-text"></p>
         <div class="comment-actions">

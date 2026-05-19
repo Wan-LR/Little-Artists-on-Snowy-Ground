@@ -361,6 +361,25 @@
     border-radius: 2px;
     text-transform: uppercase;
   }
+  .bot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 7px 1px 6px;
+    background: var(--ink-mute);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .bot-badge::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #6ee7b7;
+  }
 
   .comment-text {
     font-size: 15px;
@@ -672,7 +691,14 @@
         }
       ]
     },
-
+    {
+      name: '@知识拖拉机',
+      isBot: true,
+      avatar: 'av-4', initial: 'Z',
+      time: '12年前',
+      text: '雪山巨人很有趣呢',
+      likes: 12,
+    },
   ];
 
   /* ============================================================
@@ -689,7 +715,8 @@
         <div class="comment-head">
           <span class="name"></span>
           ${c.isAuthor ? '<span class="author-badge">作者</span>' : ''}
-          <span class="time">${c.time}</span>
+          ${c.isBot ? '<span class="bot-badge">BOT</span>' : ''}
+          ${c.time ? `<span class="time">${c.time}</span>` : ''}
         </div>
         <p class="comment-text"></p>
         <div class="comment-actions">

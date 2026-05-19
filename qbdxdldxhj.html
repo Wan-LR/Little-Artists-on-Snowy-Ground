@@ -70,8 +70,91 @@
     .ts-btn:hover { background: var(--accent-hover); }
     .ts-btn svg { width: 13px; height: 13px; }
 
-    /* ── 主体 ── */
-    .page-body { max-width: 740px; margin: 0 auto; padding: 48px 24px 100px; }
+    /* ── 主体布局(两列:正文 + 侧栏) ── */
+    .layout {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 100px;
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .page-body { min-width: 0; }
+
+    /* ── 侧栏 ── */
+    .sidebar { position: sticky; top: 80px; }
+
+    .editors-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 12.5px;
+    }
+
+    .editors-card-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .editors-card-title svg {
+      width: 12px; height: 12px;
+      flex-shrink: 0;
+      opacity: .6;
+    }
+
+    .editor-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .editor-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .editor-item:first-of-type { padding-top: 0; }
+
+    .editor-avatar {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0;
+    }
+
+    .editor-info { flex: 1; min-width: 0; }
+    .editor-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .editor-time {
+      font-size: 10.5px;
+      color: var(--ink-faint);
+      line-height: 1.3;
+    }
+
+    .editor-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
 
     /* ── 大标题区 ── */
     .hero { margin-bottom: 40px; animation: fadeUp .5s ease backwards; }
@@ -125,11 +208,17 @@
     /* ── 页脚 ── */
     .page-footer { text-align: center; font-size: 12.5px; color: var(--ink-faint); padding: 28px 24px; border-top: 1px solid var(--line-soft); }
 
-    /* ── 响应式 ── */
+    /* ── 响应式:窄屏隐藏侧栏 ── */
+    @media (max-width: 720px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 32px 16px 80px;
+      }
+      .sidebar { display: none; }
+    }
     @media (max-width: 520px) {
       .top-bar { padding: 10px 16px; gap: 12px; }
       .top-logo img { height: 30px; }
-      .page-body { padding: 32px 16px 80px; }
       .hero-title { font-size: 38px; }
       .hero-oneliner { font-size: 16px; }
       .info-card { padding: 20px; }
@@ -154,25 +243,50 @@
     </form>
   </header>
 
-  <!-- 主体 -->
-  <main class="page-body">
+  <!-- 两栏布局 -->
+  <div class="layout">
 
-    <!-- 大标题 -->
-    <div class="hero">
-      <p class="hero-eyebrow">千百度百科</p>
-      <h1 class="hero-title">雪地里的小画家</h1>
-      <p class="hero-phonetic"></p>
-      <p class="hero-oneliner">该课文以韵文形式展现四种动物爪（蹄）的形状特征</p>
-    </div>
+    <!-- 左:正文 -->
+    <main class="page-body">
 
-    <!-- 主图 -->
-    <figure class="main-image">
-      <img src="images/huajiayuanwen.png" alt="雪地里的小画家">
-      <figcaption>原文</figcaption>
-    </figure>
+      <!-- 大标题 -->
+      <div class="hero">
+        <p class="hero-eyebrow">千百度百科</p>
+        <h1 class="hero-title">雪地里的小画家</h1>
+        <p class="hero-phonetic"></p>
+        <p class="hero-oneliner">该课文以韵文形式展现四种动物爪（蹄）的形状特征</p>
+      </div>
 
-    
+      <!-- 主图 -->
+      <figure class="main-image">
+        <img src="images/huajiayuanwen.png" alt="雪地里的小画家">
+        <figcaption>原文</figcaption>
+      </figure>
 
+    </main>
+
+    <!-- 右:侧栏 -->
+    <aside class="sidebar">
+      <div class="editors-card">
+        <div class="editors-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          最近编辑
+        </div>
+
+
+        <div class="editor-item">
+          <div class="editor-avatar" style="background:linear-gradient(135deg,#8e4a7e,#6f3760)">匿</div>
+          <div class="editor-info">
+            <div class="editor-name">匿名用户</div>
+            <div class="editor-time">昨天</div>
+          </div>
+          <div class="editor-dot" style="background:#ece7df"></div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
 
   <footer class="page-footer">© 2025 千百度 · 千百度百科 · 内容绝对不一定正确</footer>
 

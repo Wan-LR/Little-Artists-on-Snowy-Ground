@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -288,7 +288,80 @@
 
 
     /* ============================================================
-       4. 头像放大查看 (Lightbox)
+       4. 开场介绍遮罩
+       ────────────────────────────────────────────────────────────
+       页面加载时弹出,只弹一次 (localStorage 记忆)
+       关闭方式:点击「开始调查」按钮
+       ============================================================ */
+    .intro-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(20, 18, 16, 0.72);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: introFadeIn 0.35s ease;
+    }
+    .intro-overlay.dismissing {
+      animation: introFadeOut 0.30s ease forwards;
+      pointer-events: none;
+    }
+    @keyframes introFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes introFadeOut { to { opacity: 0; transform: scale(1.03); } }
+
+    .intro-card {
+      background: var(--surface);
+      border-radius: 18px;
+      max-width: 400px; width: 100%;
+      padding: 32px 28px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      animation: introCardIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+    @keyframes introCardIn { from { opacity: 0; transform: translateY(30px) scale(0.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .intro-card .intro-emoji { font-size: 42px; line-height: 1; margin-bottom: 14px; }
+
+    .intro-card .intro-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .intro-card .intro-body {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .intro-card .intro-body em { font-style: normal; color: var(--accent); font-weight: 600; }
+    .intro-card .intro-body strong { color: var(--ink); }
+
+    .intro-btn {
+      width: 100%; height: 44px;
+      border: none; border-radius: 10px;
+      background: var(--ink);
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .intro-btn:hover { background: #333; }
+    .intro-btn:active { transform: scale(0.97); }
+
+    @media (max-width: 480px) {
+      .intro-card { padding: 24px 20px 20px; }
+      .intro-card .intro-title { font-size: 18px; }
+      .intro-card .intro-body { font-size: 13px; }
+    }
+
+    /* ============================================================
+       5. 头像放大查看 (Lightbox)
        ────────────────────────────────────────────────────────────
        点头像弹出全屏遮罩,显示放大版头像。
        关闭方式:点遮罩 / 点 × / 按 ESC
@@ -356,9 +429,23 @@
 </head>
 <body>
 
-  <!-- ============================================================
-       头像放大遮罩 (默认隐藏,点头像才显示)
-       ============================================================ -->
+  <!-- ★ 开场介绍 -->
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-card">
+      <div class="intro-emoji">🍅</div>
+      <h2 class="intro-title">你的帖子被限流了</h2>
+      <p class="intro-body">
+        你是<strong>肖右袅</strong>。今天早上你发了一篇帖子——图片是你亲手拍的。
+        <br><br>
+        来看的人不少也不多
+        <br><br>
+        一切都<strong>很平静</strong>。
+      </p>
+      <button class="intro-btn" id="introBtn">首页 →</button>
+    </div>
+  </div>
+
+  <!-- 头像放大遮罩 -->
   <div class="lightbox" id="lightbox" role="dialog" aria-label="头像放大">
     <button class="lightbox-close" id="lightboxClose" aria-label="关闭">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -412,17 +499,37 @@
     </h2>
 
     <div class="post-grid">
-      <a class="post-card" href="xhshuajia.html">
+      <a class="post-card" href="xhshuajiabucuo.html">
         <div class="image">
-          <img src="images/huajiaphoto.png" alt="" loading="lazy">
+          <img src="images/huajiayuanwen.png" alt="" loading="lazy">
         </div>
-        <h2 class="title">语文书的配图是不是有问题啊</h2>
+        <h2 class="title">雪地上的小画家这篇课文真的不错</h2>
       </a>
     </div>
 
   </div>
 
   <script>
+    /* ============================================================
+       开场介绍 — 显隐控制
+       只弹一次 (localStorage 记忆)
+       ============================================================ */
+    (function() {
+      const overlay = document.getElementById('introOverlay');
+      const btn = document.getElementById('introBtn');
+
+      if (localStorage.getItem('intro-xhs4-shown')) {
+        overlay.remove();
+        return;
+      }
+
+      btn.addEventListener('click', () => {
+        localStorage.setItem('intro-xhs4-shown', '1');
+        overlay.classList.add('dismissing');
+        overlay.addEventListener('animationend', () => overlay.remove());
+      });
+    })();
+
     /* ============================================================
        头像放大查看 — 显隐控制
        触发:点头像 → 显示 lightbox

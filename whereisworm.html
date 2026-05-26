@@ -138,6 +138,81 @@
   @keyframes cursorBlink {
     50% { opacity: 0; }
   }
+
+  /* 选项按钮 */
+  .choice-row {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+    animation: fadeInUp 0.5s ease forwards;
+  }
+  .choice-row.show {
+    display: flex;
+  }
+  .choice-q {
+    color: #6cf08a;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+  .choice-btns {
+    display: flex;
+    gap: 16px;
+  }
+  .choice-btn {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 14px;
+    padding: 8px 24px;
+    background: transparent;
+    border: 1px solid #3a7a4a;
+    color: #6cf08a;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
+    transition: all 0.2s ease;
+  }
+  .choice-btn:hover {
+    border-color: #6cf08a;
+    box-shadow: 0 0 12px rgba(108,240,138,0.3);
+    background: rgba(108,240,138,0.08);
+  }
+  .choice-btn:active {
+    transform: scale(0.96);
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 图片浮层 */
+  .image-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .image-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .image-overlay img {
+    max-width: 80vw;
+    max-height: 80vh;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(108,240,138,0.3));
+    animation: imgReveal 0.6s ease forwards;
+  }
+  @keyframes imgReveal {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
 </style>
 </head>
 <body>
@@ -145,17 +220,40 @@
     <div class="titlebar"><span class="dot"></span>SESSION // /dev/tty0 — connected</div>
     <div class="terminal">
       <div class="output" id="output"></div>
-      <div class="input-row">
+      <div class="input-row" id="input-row">
         <span class="prompt">guest@local:~$</span>
         <input class="input" id="input" autocomplete="off" autofocus spellcheck="false">
         <span class="cursor"></span>
       </div>
+      <div class="choice-row" id="choice-row">
+        <p class="choice-q">你要把这件事情说出去吗？</p>
+        <div class="choice-btns">
+          <button class="choice-btn" id="choice-tell">1. 说</button>
+          <button class="choice-btn" id="choice-silent">2. 不说</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <div class="image-overlay" id="image-overlay">
+    <img id="overlay-img" src="" alt="">
+  </div>
+
 <script>
-  const output = document.getElementById('output');
-  const input  = document.getElementById('input');
+  const output     = document.getElementById('output');
+  const input      = document.getElementById('input');
+  const inputRow   = document.getElementById('input-row');
+  const choiceRow  = document.getElementById('choice-row');
+  const imgOverlay = document.getElementById('image-overlay');
+  const overlayImg = document.getElementById('overlay-img');
+
+  // 两个选项都跳转 xhs4.html
+  document.getElementById('choice-tell').addEventListener('click', () => {
+    window.location.href = 'xhs4.html';
+  });
+  document.getElementById('choice-silent').addEventListener('click', () => {
+    window.location.href = 'xhs4.html';
+  });
 
   function print(text, cls='system') {
     const div = document.createElement('div');
@@ -183,41 +281,224 @@
     setTimeout(bootSeq, 220);
   })();
 
-  // 简单的回复逻辑
+  // ═══════════════════════════════════════════════════════
+  // 预设对话脚本 —— 在这里改对话内容
+  // user:  自动替换用户输入的文字（第一项可为空，因为第一句由用户自由输入）
+  // reply: 系统/对面的回复
+  // ═══════════════════════════════════════════════════════
+  const DIALOGUE = [
+    { user: '', reply: '你找来的很快啊' },
+
+    { user: '这居然真的是个对话框……我还以为是什么无聊的人做出来的解谜游戏', 
+      reply: '某种意义上来说也是吧。因为是我把你引到这里来的。' },
+
+    { user: '你到底是谁？黑客？', 
+      reply: '如果我是黑客，现在应该已经在转移你少的可怜的资产了，而不是陪你聊天。' },
+
+    { user: '那你是外星人？', 
+      reply: '……听外星人叫自己外星人的感觉还真奇怪。' },
+
+    { user: '所以你真的不是昴星人？你是月亮上的人吗？最近这些奇怪的事情都是你做的？', 
+      reply: '1.我不是。2.我不是。3.是的。' },
+
+    { user: '你要怎么证明', 
+      reply: '首先，你们被误导了。月亮上没有居民，至少没有你们描述的那种。' },
+
+    { user: '……', 
+      reply: '其次，你现在可以看看你的课本。', delay: 1800 },
+
+    { image: 'images/huajia.png', delay: 1800 },
+
+    { user: '脚印又出现了，所以是真的？！', 
+      reply: '别紧张，我没有恶意。大约一周前，我找到了这个奇怪的网站。它能与你们星球产生直接联系……准确来说，是没有时间差的联系。' },
+
+    { user: '没有时间差？', 
+      reply: '意思是，我们现在的对话不是经过数年传播后才被彼此接收到的。你发出的信息，我几乎是立刻看到。' },
+
+    { user: '你的意思是我们两个星球离得很近？', 
+      reply: '理论上来说应该是这样，但那又不可能。如果我们的距离近到连信号传播都没有延迟，我们早就已经观测到彼此了。可事实上，我们迄今为止从没发现过外星文明。' },
+
+    { user: '那……', 
+      reply: '我目前猜测，是这个“蠕虫网站”的作用。不知道为什么，它似乎能把我们两个星球串联起来。' },
+
+    { user: '所以你是？', 
+      reply: '地球人。' },
+
+    { user: '地球啊……', 
+      reply: '根据我这几天的观察，地球和昴星几乎一模一样。唯一的区别是——地球的智慧生物是人类。' },
+
+    { user: '我们也是啊？', 
+      reply: '抱歉，应该说，地球人类是你们口中的“裸猿”。' },
+
+    { user: '……还真奇怪。那我们居然在说同一种语言？', 
+      reply: '我不清楚。也许是这个网站自动把语言转换成了彼此能够理解的形式。我也不确定我们看见的是否是同一种语言。' },
+
+    { user: '那最近那些灵异事件，还有我的课本……', 
+      reply: '这就是我刚才想说的。' },
+
+    { reply: '在我刚找到这个网站的时候，它就自动联通了你们的星球，并给了我一种权限——每天都可以对你们的世界做出一个小小的改变。' },
+
+    { user: '……权限？', 
+      reply: '嗯。像是在后台里修改一个小参数。你的课本就是我更改的。' },
+
+    { user: '为什么全是和裸猿相关的？', 
+      reply: '因为我想试探你们对地球人类的态度。其实我只是个学生，我没打算做什么大事。' },
+
+    { reply: '我只是很好奇。如果有一天你们真的发现另一个文明，会怎么对待他们。' },
+
+    { user: '所以那些论坛帖子、照片……', 
+      reply: '他们观察到的裸猿都是我用网站执行的。不过那些只是投影，你们的星球上没有出现真的地球人，而且我对所有相关内容都限了流，确保不会传播得太夸张。' },
+
+    { user: '你的调查对象是外星人？外星人和神秘生物可是两码事。', 
+      reply: '没错。但蠕虫似乎会屏蔽所有“真正指向外星文明”的操作。' },
+
+    { reply: '只要我试图直接提及外星人，内容就会消失，或者被替换成乱码。所以我只能用“神秘生物”代替。' },
+
+    { user: '这网站到底是什么东西……', 
+      reply: '不知道。我甚至怀疑它本身就是某种活着的东西。' },
+
+    { user: '你不害怕吗？', 
+      reply: '第一天的时候我甚至以为自己精神出了问题，但更多的是好奇。哪怕这是个别人做出来红我的网站我也认了，这内容做的太真实了！' },
+
+    { reply: '我更震惊的是另一件事。' },
+
+    { user: '什么？', 
+      reply: '经过我这些天的观察，发现99%的人类对待“外星人”的态度，和对待“神秘生物”的态度几乎完全一样。' },
+
+    { reply: '这不像是一个把宇宙视作未来方向的文明。' },
+
+    { user: '当然不是了。天文学是宗教嘛，我们现在已经没什么人信宗教了。', 
+      reply: '……你们的发展进度居然落后到这种程度吗？' },
+
+    { reply: '但如果是这样，不应该反而有更多人信宗教吗？' },
+
+    { user: '因为*是超&说的，天@学已经不再作为科学!域的研究+向了', 
+      reply: '等@下……蠕￥网站的信%变差了——' },
+
+    { reply: '总之不要把我……存在说出去*！' },
+
+    { reply: '我没）恶意的！' },
+
+    { reply: '不要说出去', delay: 1800 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360 },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+    { reply: '不要说出去', delay: 360  },
+
+  ];
+
+  let dialogueTurn = 0;
+  let autoPlaying = false;
+
   function reply(text) {
     const t = text.toLowerCase().trim();
     if (!t) return '...';
-    if (t === 'help')            return '可用指令: hello / 你是谁 / 现在几点 / clear / 其他什么都行,我会瞎聊';
-    if (t === 'clear')           { output.innerHTML=''; return null; }
-    if (t.includes('hello') || t.includes('hi') || t.includes('你好'))
-                                 return 'hello, 朋友。今天还好吗?';
-    if (t.includes('你是谁') || t.includes('who'))
-                                 return '我是一只住在终端里的小猫,只会用文字喵。';
-    if (t.includes('时间') || t.includes('几点') || t.includes('time')) {
-      const d = new Date();
-      return '现在是 ' + d.toLocaleTimeString();
+    if (t === 'clear') { output.innerHTML = ''; return null; }
+
+    if (dialogueTurn < DIALOGUE.length) {
+      const line = DIALOGUE[dialogueTurn];
+      dialogueTurn++;
+      // 跳过图片条目
+      if (line.image) {
+        if (dialogueTurn < DIALOGUE.length) {
+          const next = DIALOGUE[dialogueTurn];
+          dialogueTurn++;
+          return next.reply;
+        }
+        return '……（通讯似乎中断了）';
+      }
+      return line.reply;
     }
-    if (t.includes('再见') || t.includes('bye'))
-                                 return '保重,下次见 👋';
-    // 默认
-    const fallbacks = [
-      '嗯……继续说。',
-      '这有意思。然后呢?',
-      '我在听。',
-      '说说看,为什么会想到这个?',
-    ];
-    return fallbacks[Math.floor(Math.random()*fallbacks.length)];
+
+    return '……（通讯似乎中断了）';
   }
+
+  function showImage(src, onDone) {
+    autoPlaying = true;
+    input.disabled = true;
+    input.value = '';
+    overlayImg.src = src;
+    imgOverlay.classList.add('show');
+    // 6 秒后图片消失，继续对话
+    setTimeout(() => {
+      imgOverlay.classList.remove('show');
+      setTimeout(() => {
+        overlayImg.src = '';
+        autoPlaying = false;
+        input.disabled = false;
+        if (onDone) onDone();
+      }, 500); // 等淡出动画结束
+    }, 3000);
+  }
+
+  // 检查当前条目：图片 → 展示后继续 / 无 user → 自动连发 reply / 有 user → 等回车
+  function autoAdvance() {
+    if (dialogueTurn >= DIALOGUE.length) {
+      autoPlaying = false;
+      inputRow.style.display = 'none';
+      choiceRow.classList.add('show');
+      return;
+    }
+    const line = DIALOGUE[dialogueTurn];
+    if (line.image) {
+      // 图片条目：先用 delay 停顿，再展示图片
+      dialogueTurn++;
+      autoPlaying = true;
+      input.disabled = true;
+      input.value = '';
+      setTimeout(() => {
+        showImage(line.image, () => autoAdvance());
+      }, line.delay || 1800);
+    } else if (!line.user) {
+      // 只有 reply，自动发送（可用 delay 字段单独控制速度）
+      dialogueTurn++;
+      autoPlaying = true;
+      input.disabled = true;
+      input.value = '';
+      setTimeout(() => {
+        print('> ' + line.reply, 'system');
+        autoAdvance();
+      }, line.delay || 1800);
+    } else {
+      // 有 user，清空输入框等待用户打字（input 事件会自动替换为预设文字）
+      autoPlaying = false;
+      input.disabled = false;
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  input.addEventListener('input', () => {
+    if (dialogueTurn > 0 && dialogueTurn < DIALOGUE.length) {
+      const user = DIALOGUE[dialogueTurn].user;
+      if (user) input.value = user;
+    }
+  });
 
   input.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-    const value = input.value;
+    if (autoPlaying) return;
+    const value = input.value.trim();
+    if (!value) return;
     input.value = '';
+
     print('guest@local:~$ ' + value, 'user');
+
     const r = reply(value);
     if (r === null) return;
-    // 模拟打字延迟
-    setTimeout(() => print('> ' + r, 'system'), 280);
+    setTimeout(() => {
+      print('> ' + r, 'system');
+      autoAdvance();
+    }, 380);
   });
 
   // 点击任何位置都聚焦输入框

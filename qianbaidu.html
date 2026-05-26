@@ -207,6 +207,79 @@
       transition: background 0.2s;
     }
     .modal-btn:hover { background: var(--accent-hover); }
+
+    /* ── Steam 风格成就弹窗 ── */
+    .achievement-toast {
+      position: fixed;
+      top: 28px; right: 28px;
+      z-index: 10000;
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px; max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741; border-radius: 4px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 0 20px rgba(78,154,65,0.25), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0; transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.34,1.56,0.64,1), transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .achievement-toast.show { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; }
+    .ach-icon {
+      width: 64px; height: 64px; flex-shrink: 0; border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid; place-items: center;
+      box-shadow: 0 0 12px rgba(78,154,65,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative; overflow: hidden;
+    }
+    .ach-icon::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+    @keyframes iconShine { 0%,100%{opacity:0} 50%{opacity:1} }
+    .ach-emoji { font-size: 30px; line-height: 1; position: relative; z-index: 1; }
+    .ach-text { flex: 1; min-width: 0; }
+    .ach-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      color: #8fbc5a; margin-bottom: 3px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ach-label::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      background: #8fbc5a; border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse { 0%,100%{opacity:1;box-shadow:0 0 6px #8fbc5a} 50%{opacity:.6;box-shadow:0 0 2px #8fbc5a} }
+    .ach-title {
+      font-family: var(--font-display); font-weight: 700; font-size: 17px;
+      color: #e5e5e5; line-height: 1.2; margin-bottom: 3px; letter-spacing: -0.01em;
+    }
+    .ach-desc { font-size: 12.5px; color: #8f98a0; line-height: 1.4; }
+    .achievement-toast::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 3px; width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px; transform-origin: left; transform: scaleX(0);
+    }
+    .achievement-toast.show::after { animation: progressShrink 5s 0.5s linear forwards; }
+    @keyframes progressShrink { 0%{transform:scaleX(1)} 100%{transform:scaleX(0)} }
+    .ach-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 4px; }
+    .ach-particle {
+      position: absolute; width: 3px; height: 3px;
+      background: #8fbc5a; border-radius: 50%; opacity: 0;
+    }
+    .achievement-toast.show .ach-particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+    @keyframes particleFloat {
+      0%   { opacity:0.8; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(0); }
+    }
+    @media (max-width: 480px) {
+      .achievement-toast { top: 16px; right: 16px; left: 16px; min-width: 0; max-width: none; }
+    }
   </style>
 </head>
 <body>
@@ -243,6 +316,17 @@
 
   <p class="page-footer">© 2025 千百度</p>
 
+  <!-- Steam 成就弹窗 -->
+  <div class="achievement-toast" id="achToast" role="alert">
+    <div class="ach-particles" id="achParticles"></div>
+    <div class="ach-icon"><span class="ach-emoji" id="achEmoji">🏆</span></div>
+    <div class="ach-text">
+      <div class="ach-label">成就已解锁</div>
+      <div class="ach-title" id="achTitle">成就</div>
+      <div class="ach-desc" id="achDesc"></div>
+    </div>
+  </div>
+
   <!-- 找不到关键词时的弹窗 -->
   <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
@@ -252,155 +336,177 @@
   </div>
 
   <script>
-    /* ============================================================
-       千百度 — 渐进式关键词系统
+    // ═══════════════════════════════════════════════════════
+    // 两组关键词，每组找齐后弹出"西红柿更新了"跳转
+    // "有限大暗" → 仅成就，不跳转
+    // 全部找齐 → 最终成就弹窗
+    // ═══════════════════════════════════════════════════════
+    const GROUPS = [
+      {
+        keywords: ["雪地里的小画家", "旧城疫", "小石子"],
+        unlockUrl: "xhs2.html",
+      },
+      {
+        keywords: ["人", "昴星", "彩南", "上爪", "过目不忘"],
+        unlockUrl: "xhs3.html",
+      },
+    ];
 
-       Phase 0 : 始终可用
-       Phase 1 : xhs-version >= "pl" 后激活
-                 找完全部 3 个关键词 → 自动解锁 xhs2
-       Phase 2 : xhs-version >= "2" 后激活
-                 找完全部 2 个关键词 → 自动解锁 xhs3
-
-       localStorage:
-         xhs-version → "1" | "pl" | "2" | "3"
-         qbd-found   → JSON 数组,已找到的关键词
-       ============================================================ */
-
-    /* ── Phase 0: 基础关键词 (始终可用) ── */
-    var PHASE0 = {
-      "雪地里的小画家": "qbdxdldxhj.html",
-      "昴星":            "qbdmaoxing.html",
-      "人":             "qbdrenlei.html",
-      "旧城疫":          "qbdxcy.html"
+    // 仅弹成就的关键词（不计入进度，不跳转）
+    const ACHIEVEMENT_ONLY = {
+      "有限大暗": { emoji: '🌌', title: '有限大暗', desc: '你找到了隐藏的关键词' },
     };
 
-    /* ── Phase 1: xhspl 解锁后激活,找齐全部 3 个 → 解锁 xhs2 ── */
-    /* TODO: 把下面 3 个关键词和目标页替换成你要的 */
-    var PHASE1 = {
-      "关键词A占位": "pageA.html",
-      "关键词B占位": "pageB.html",
-      "关键词C占位": "pageC.html"
-    };
-    var PHASE1_UNLOCK = '2';
+    // 全部关键词找齐后的成就
+    const FINAL_ACHIEVEMENT = { emoji: '🏆', title: '搜索大师', desc: '所有关键词全部找到！' };
 
-    /* ── Phase 2: xhs2 解锁后激活,找齐全部 2 个 → 解锁 xhs3 ── */
-    /* TODO: 把下面 2 个关键词和目标页替换成你要的 */
-    var PHASE2 = {
-      "关键词D占位": "pageD.html",
-      "关键词E占位": "pageE.html"
-    };
-    var PHASE2_UNLOCK = '3';
-
-
-    /* ══════════════ 搜索逻辑 (一般不需要改) ══════════════ */
-
-    function getActiveKeywords() {
-      var version = localStorage.getItem('xhs-version') || '1';
-      var all = {};
-      var k;
-      for (k in PHASE0) { all[k] = PHASE0[k]; }
-      if (version === 'pl' || version === '2' || version === '3') {
-        for (k in PHASE1) { all[k] = PHASE1[k]; }
-      }
-      if (version === '2' || version === '3') {
-        for (k in PHASE2) { all[k] = PHASE2[k]; }
-      }
-      return all;
+    // 构建搜索用全集 + 标记每个词属于哪个组
+    const allKeywords = {};
+    const keywordGroup = {}; // key → group index
+    GROUPS.forEach((g, gi) => {
+      g.keywords.forEach(kw => {
+        allKeywords[kw.toLowerCase()] = kw;
+        keywordGroup[kw.toLowerCase()] = gi;
+      });
+    });
+    // 成就关键词也加入搜索
+    for (const k in ACHIEVEMENT_ONLY) {
+      allKeywords[k.toLowerCase()] = k;
     }
 
-    function getFound() {
-      try { return JSON.parse(localStorage.getItem('qbd-found') || '[]'); }
+    const totalKeywords = Object.keys(keywordGroup).length; // 不含成就关键词
+
+    // ── DOM ──
+    const form          = document.getElementById('searchForm');
+    const input         = document.getElementById('searchInput');
+    const modalMask     = document.getElementById('modalMask');
+    const modalTitle    = document.getElementById('modalTitle');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // ── 已解锁的组 (防重复弹窗) ──
+    function getUnlockedGroups() {
+      try { return JSON.parse(localStorage.getItem('qbd-groups-unlocked') || '[]'); }
       catch (e) { return []; }
     }
-
-    function addFound(keyword) {
-      var found = getFound();
-      if (found.indexOf(keyword) === -1) {
-        found.push(keyword);
-        localStorage.setItem('qbd-found', JSON.stringify(found));
-      }
-      return found;
+    function markGroupUnlocked(gi) {
+      const arr = getUnlockedGroups();
+      if (arr.indexOf(gi) === -1) { arr.push(gi); }
+      localStorage.setItem('qbd-groups-unlocked', JSON.stringify(arr));
     }
 
-    function checkPhaseUnlock() {
-      var version = localStorage.getItem('xhs-version') || '1';
-      var found = getFound();
-      var needed, i, allFound;
+    // ── 成就弹窗 ──
+    function showAchievement({ emoji, title, desc }) {
+      const toast     = document.getElementById('achToast');
+      const emojiEl   = document.getElementById('achEmoji');
+      const titleEl   = document.getElementById('achTitle');
+      const descEl    = document.getElementById('achDesc');
+      const particles = document.getElementById('achParticles');
 
-      if (version === 'pl') {
-        needed = Object.keys(PHASE1);
-        allFound = true;
-        for (i = 0; i < needed.length; i++) {
-          if (found.indexOf(needed[i]) === -1) { allFound = false; break; }
-        }
-        if (allFound) {
-          localStorage.setItem('xhs-version', PHASE1_UNLOCK);
-          localStorage.removeItem('qbd-found');  // 清空,为下一阶段准备
-          return PHASE1_UNLOCK;
-        }
+      emojiEl.textContent = emoji;
+      titleEl.textContent = title;
+      descEl.textContent  = desc;
+
+      particles.innerHTML = '';
+      for (let i = 0; i < 14; i++) {
+        const p = document.createElement('span');
+        p.className = 'ach-particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top  = Math.random() * 100 + '%';
+        p.style.setProperty('--dx', (Math.random() - 0.5) * 90 + 'px');
+        p.style.setProperty('--dy', (Math.random() - 0.5) * 90 + 'px');
+        p.style.animationDelay = Math.random() * 0.5 + 's';
+        particles.appendChild(p);
       }
-      if (version === '2') {
-        needed = Object.keys(PHASE2);
-        allFound = true;
-        for (i = 0; i < needed.length; i++) {
-          if (found.indexOf(needed[i]) === -1) { allFound = false; break; }
-        }
-        if (allFound) {
-          localStorage.setItem('xhs-version', PHASE2_UNLOCK);
-          localStorage.removeItem('qbd-found');
-          return PHASE2_UNLOCK;
-        }
-      }
-      return null;
+
+      toast.classList.remove('show');
+      void toast.offsetWidth;
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => toast.classList.remove('show'), 5500);
     }
 
-    var form = document.getElementById('searchForm');
-    var input = document.getElementById('searchInput');
-    var modalMask = document.getElementById('modalMask');
-    var modalCloseBtn = document.getElementById('modalCloseBtn');
+    // ── "西红柿更新了" 弹窗 ──
+    function showUpdateModal(url) {
+      modalTitle.textContent = '西红柿更新了';
+      modalCloseBtn.textContent = '去 看 看 →';
+      modalMask.classList.add('show');
+      modalCloseBtn.onclick = function () { window.location.href = url; };
+      modalMask.onclick = function (ev) {
+        if (ev.target === modalMask) { window.location.href = url; };
+      };
+    }
 
+    // ── 搜索处理 ──
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var raw = input.value.trim();
+      const raw = input.value.trim();
       if (!raw) { input.focus(); return; }
 
-      var key = raw.toLowerCase();
-      var keywords = getActiveKeywords();
-      var matchedUrl = null;
-      var matchedKeyword = null;
-      var k;
-      for (k in keywords) {
-        if (k.toLowerCase() === key) {
-          matchedUrl = keywords[k];
-          matchedKeyword = k;
-          break;
-        }
-      }
+      const key = raw.toLowerCase();
+      const matched = allKeywords[key];
 
-      if (matchedUrl) {
-        addFound(matchedKeyword);
-        var unlocked = checkPhaseUnlock();
-        if (unlocked) {
-          var pages = { '2': 'xhs2.html', '3': 'xhs3.html' };
-          window.location.href = pages[unlocked] || matchedUrl;
-        } else {
-          window.location.href = matchedUrl;
+      if (matched) {
+        // 记录已搜到
+        const found = JSON.parse(localStorage.getItem('qbd-found') || '[]');
+        if (found.indexOf(key) === -1) {
+          found.push(key);
+          localStorage.setItem('qbd-found', JSON.stringify(found));
         }
+
+        // 1. 检查是不是成就关键词
+        if (ACHIEVEMENT_ONLY[matched]) {
+          showAchievement(ACHIEVEMENT_ONLY[matched]);
+          // 如果所有关键词（含有限大暗）都找到了 → 最终成就
+          const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
+          const allDone = GROUPS.every(g =>
+            g.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1)
+          ) && achKeys.every(ak => found.indexOf(ak) !== -1);
+          if (allDone) {
+            setTimeout(() => showAchievement(FINAL_ACHIEVEMENT), 1200);
+          }
+          return;
+        }
+
+        // 2. 检查所属组是否完成
+        const gi = keywordGroup[key];
+        if (gi !== undefined) {
+          const group = GROUPS[gi];
+          const groupDone = group.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1);
+          const unlocked = getUnlockedGroups();
+
+          if (groupDone && unlocked.indexOf(gi) === -1) {
+            markGroupUnlocked(gi);
+            // 所有关键词（含有限大暗）全部找到 → 最终成就
+            const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
+            const allDone = GROUPS.every(g =>
+              g.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1)
+            ) && achKeys.every(ak => found.indexOf(ak) !== -1);
+            if (allDone) {
+              showAchievement(FINAL_ACHIEVEMENT);
+            }
+            setTimeout(() => showUpdateModal(group.unlockUrl), allDone ? 1200 : 0);
+            return;
+          }
+        }
+
+        // 3. 已搜过但组还没齐 → 静默（不弹窗）
       } else {
-        showModal();
+        // 未匹配
+        modalTitle.textContent = '你为什么要搜索这个?';
+        modalCloseBtn.textContent = '我 知 道 了';
+        modalMask.classList.add('show');
+        modalCloseBtn.onclick = hideModal;
+        modalMask.onclick = function (ev) {
+          if (ev.target === modalMask) hideModal();
+        };
       }
     });
 
-    function showModal() { modalMask.classList.add('show'); }
     function hideModal() {
       modalMask.classList.remove('show');
       input.focus();
       input.select();
     }
-    modalCloseBtn.addEventListener('click', hideModal);
-    modalMask.addEventListener('click', function (e) {
-      if (e.target === modalMask) hideModal();
-    });
+
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && modalMask.classList.contains('show')) hideModal();
     });

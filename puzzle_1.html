@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>华容道拼图</title>
+<title>苹果与篮子</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+  @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
   :root {
     --bg:     #0a1628;
@@ -73,6 +73,16 @@
   }
   .card.flipped { transform: rotateY(180deg); }
 
+  .card.fly-out {
+    animation: flyToGrid 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+    pointer-events: none;
+  }
+
+  @keyframes flyToGrid {
+    0%   { transform: rotateY(180deg) scale(1); opacity: 1; }
+    100% { transform: rotateY(180deg) scale(0.32) translate(-52%, -58%); opacity: 0.4; }
+  }
+
   .card-face {
     position: absolute;
     inset: 0;
@@ -82,9 +92,8 @@
     overflow: hidden;
   }
 
-  /* 正面：拼完后整面可点击 */
+  /* 正面：游戏区 */
   .card-front { cursor: default; }
-  .card-front.clickable { cursor: pointer; }
 
   /* 反面 */
   .card-back {
@@ -100,7 +109,7 @@
     -webkit-user-drag: none;
   }
 
-  /* ── 棋盘 ── */
+  /* ── 游戏棋盘 ── */
   .board-wrap {
     width: 100%;
     height: 100%;
@@ -115,79 +124,89 @@
       inset 0 1px 0 rgba(74,144,217,0.13);
   }
 
-  #puzzle-board {
-    display: grid;
-    grid-template-columns: repeat(3, 140px);
-    grid-template-rows: repeat(3, 140px);
-    gap: 4px;
+  #game-board {
+    width: 100%;
+    height: 100%;
     background: #040a14;
-  }
-
-  .tile {
-    width: 140px;
-    height: 140px;
     position: relative;
     overflow: hidden;
     border-radius: 2px;
-    cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
-    background: #040a14;
-  }
-  .tile:not(.empty):hover {
-    transform: scale(0.96);
-    z-index: 2;
-    box-shadow: 0 0 14px rgba(74,144,217,0.55);
-  }
-  .tile:not(.empty):active { transform: scale(0.93); }
-  .tile.empty { cursor: default; }
-
-  .tile img {
-    width: 420px;
-    height: 420px;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
   }
 
-  .tile-num {
+  /* 篮子样式 */
+  .basket {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 22px;
-    height: 22px;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #d4a373, #a98467);
+    border: 2px solid #8b5a2b;
+    border-radius: 8px 8px 16px 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #fff;
-    background: rgba(74,144,217,0.85);
-    border-radius: 50%;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-    pointer-events: none;
-    font-family: 'Noto Serif SC', serif;
-    z-index: 3;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    box-shadow: inset 0 6px 10px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.5);
+  }
+  .basket::after {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px dashed rgba(255,255,255,0.3);
+    border-radius: 4px 4px 10px 10px;
   }
 
-  @keyframes tileFlash {
-    0%   { box-shadow: inset 0 0 0 2px rgba(74,144,217,0.9); }
-    100% { box-shadow: none; }
-  }
-  .tile.just-moved { animation: tileFlash 0.35s ease forwards; }
+  #basket-top { top: 20px; left: 50%; margin-left: -35px; }
+  #basket-bottom { bottom: 20px; left: 50%; margin-left: -35px; }
+  #basket-left { left: 20px; top: 50%; margin-top: -35px; }
+  #basket-right { right: 20px; top: 50%; margin-top: -35px; }
 
-  @keyframes revealLast {
-    0%   { opacity: 0; transform: scale(0.78); }
-    65%  { transform: scale(1.06); }
-    100% { opacity: 1; transform: scale(1); }
+  /* 苹果样式 */
+  #apple {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    top: 50%; left: 50%;
+    margin-top: -30px; margin-left: -30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease;
+    z-index: 10;
   }
-  .tile.solved-reveal {
-    animation: revealLast 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+  #apple:hover {
+    transform: scale(1.1);
+  }
+  #apple:active {
+    transform: scale(0.95);
+  }
+  /* 苹果掉落动画 */
+  #apple.falling {
+    transition: all 0.6s cubic-bezier(0.5, 0, 0.5, 1);
+    top: calc(100% - 75px);
+    transform: scale(0.4) rotate(20deg);
+    opacity: 0;
   }
 
-  /* ── 底部 ── */
+  /* 游戏结束提示语 */
+  #success-msg {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--light);
+    letter-spacing: 0.2em;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  /* ── 底部交互区 ── */
   .action-area {
     height: 44px;
     display: flex;
@@ -195,41 +214,33 @@
     justify-content: center;
   }
 
-  .btn {
-    font-family: 'Ma Shan Zheng', serif;
-    font-size: 1rem;
-    letter-spacing: 0.12em;
-    padding: 9px 28px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--light);
-    cursor: pointer;
-    border-radius: 3px;
-    position: relative;
-    overflow: hidden;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.22s ease;
-    z-index: 0;
-  }
-  .btn:hover::before { transform: scaleX(1); }
-  .btn:hover { color: white; border-color: var(--accent); }
-  .btn span { position: relative; z-index: 1; }
-
-  /* 密码输入框 */
   .word-input-wrap {
     display: none;
     align-items: center;
     gap: 8px;
   }
   .word-input-wrap.show { display: flex; animation: fadeInUp 0.4s ease; }
+
+  .btn-replay {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    padding: 7px 18px;
+    border: 1px solid var(--border);
+    background: rgba(8,18,36,0.8);
+    color: var(--light);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-replay.show { display: flex; animation: fadeInUp 0.4s ease 0.2s; }
+  .btn-replay:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+  }
 
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(8px); }
@@ -248,6 +259,7 @@
     width: 180px;
     outline: none;
     transition: border-color 0.25s, box-shadow 0.25s;
+    text-align: center;
   }
   .word-input::placeholder {
     color: rgba(168,204,240,0.3);
@@ -297,57 +309,62 @@
 </head>
 <body>
 <div class="container">
-  <p class="subtitle">移动方块 · 还原图像</p>
+  <p class="subtitle">互动收集 · 还原密码</p>
 
   <div class="card-scene">
     <div class="card" id="card">
       <div class="card-face card-front" id="card-front">
         <div class="board-wrap">
-          <div id="puzzle-board"></div>
+          <div id="game-board">
+            <div id="basket-top" class="basket"></div>
+            <div id="basket-left" class="basket"></div>
+            <div id="basket-right" class="basket"></div>
+            <div id="basket-bottom" class="basket"></div>
+            <div id="apple">🍎</div>
+            <div id="success-msg">所有苹果收集完毕</div>
+          </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="" alt="背面">
+        <img id="back-img" src="images/gongyegeming.png" alt="背面">
       </div>
     </div>
   </div>
 
   <div class="action-area">
-    <button class="btn" id="shuffle-btn" onclick="shufflePuzzle()">
-      <span>重新打乱</span>
-    </button>
     <div class="word-input-wrap" id="word-wrap">
       <input class="word-input" id="word-input" type="text"
              placeholder="输入密码…" autocomplete="off" spellcheck="false">
     </div>
+    <button class="btn-replay" id="btn-replay" onclick="resetGame()">↻ 重新掉落</button>
   </div>
 
-  <p class="hint" id="main-hint">点击相邻方块移动 · 也可使用方向键</p>
-  <p id="flip-hint">点击图片可来回翻转</p>
+  <p class="hint" id="main-hint">点击苹果 它会落入哪个袋子</p>
+  <p id="flip-hint">点击图片可翻回正面</p>
 </div>
 
 <script>
   // ═══════════════════════════════════════════
-  const FRONT_IMAGE = 'images/gongyegming.png';
   const BACK_IMAGE  = 'images/mx1.png';
-  const PASSWORD    = 'trulin';          // ← 在这里改密码
+  const PASSWORD    = 'ceres';           // ← 在这里改密码（大小写均可）
   const PUZZLE_ID   = 'puzzle_1';       // ← 传给大九宫格的标识
   // ═══════════════════════════════════════════
 
-  const GRID = 3, TOTAL = GRID * GRID, EMPTY_VAL = TOTAL - 1;
-  let tiles = [], emptyPos = TOTAL - 1, solved = false;
+  // 游戏逻辑变量
+  const targetWord = ['c', 'e', 'r', 'e', 's'];
+  let currentRound = 0;
+  let isAnimating = false;
+  let gameSolved = false;
 
   window.onload = () => {
     document.getElementById('back-img').src = BACK_IMAGE;
 
-    // 正面点击 → 翻转（仅拼完后有效）
-    document.getElementById('card-front').addEventListener('click', () => {
-      if (solved) flipCard();
-    });
+    // 绑定苹果点击事件
+    document.getElementById('apple').addEventListener('click', dropApple);
 
-    // 背面点击 → 翻转（仅拼完后有效）
+    // 绑定卡片背面点击翻转事件
     document.getElementById('card-back').addEventListener('click', () => {
-      if (solved) flipCard();
+      if (gameSolved) flipCard();
     });
 
     // 密码框回车确认
@@ -355,16 +372,124 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    shufflePuzzle();
+    // 游戏初始化
+    setupRound();
   };
+
+  // ── 游戏核心逻辑 ──────────────────────────────────────────────
+  // 获取随机字母 (排除指定的字母，确保不重复)
+  function getRandomLetter(excludeArr) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    const validChars = chars.filter(c => !excludeArr.includes(c));
+    return validChars[Math.floor(Math.random() * validChars.length)];
+  }
+
+  // 设置新的一轮
+  function setupRound() {
+    if (currentRound >= 5) {
+      onGameComplete();
+      return;
+    }
+
+    const currentTarget = targetWord[currentRound];
+    document.getElementById('basket-bottom').textContent = currentTarget.toUpperCase();
+
+    // 生成三个不同且不与currentTarget相同的字母
+    const topLetter = getRandomLetter([currentTarget]);
+    const leftLetter = getRandomLetter([currentTarget, topLetter]);
+    const rightLetter = getRandomLetter([currentTarget, topLetter, leftLetter]);
+
+    document.getElementById('basket-top').textContent = topLetter.toUpperCase();
+    document.getElementById('basket-left').textContent = leftLetter.toUpperCase();
+    document.getElementById('basket-right').textContent = rightLetter.toUpperCase();
+
+    // 恢复苹果状态
+    const apple = document.getElementById('apple');
+    apple.classList.remove('falling');
+    isAnimating = false;
+  }
+
+  // 苹果掉落
+  function dropApple() {
+    if (isAnimating || currentRound >= 5) return;
+    isAnimating = true;
+    
+    const apple = document.getElementById('apple');
+    apple.classList.add('falling');
+
+    // 动画结束后进入下一轮
+    setTimeout(() => {
+      currentRound++;
+      setupRound();
+    }, 600); // 对应CSS中的0.6s动画
+  }
+
+  // 5轮结束
+  function onGameComplete() {
+    gameSolved = true;
+    
+    // 隐藏篮子和苹果
+    document.querySelectorAll('.basket').forEach(el => el.style.display = 'none');
+    document.getElementById('apple').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'flex';
+
+    // 出现密码框和重播按钮
+    document.getElementById('word-wrap').classList.add('show');
+    document.getElementById('btn-replay').classList.add('show');
+    document.getElementById('main-hint').style.opacity = '0';
+
+    setTimeout(() => {
+      document.getElementById('word-input').focus();
+    }, 400);
+  }
+
+  // ── 重新播放掉落过程 ──────────────────────────────────────
+  function resetGame() {
+    currentRound = 0;
+    gameSolved = false;
+
+    // 恢复篮子和苹果
+    document.querySelectorAll('.basket').forEach(el => el.style.display = '');
+    document.getElementById('apple').style.display = '';
+    document.getElementById('success-msg').style.display = 'none';
+
+    // 隐藏密码框和重播按钮
+    const wordWrap = document.getElementById('word-wrap');
+    wordWrap.classList.remove('show');
+    document.getElementById('btn-replay').classList.remove('show');
+    document.getElementById('main-hint').style.opacity = '';
+
+    // 重置密码输入框
+    const input = document.getElementById('word-input');
+    input.value = '';
+    input.disabled = false;
+    input.classList.remove('correct', 'wrong');
+
+    // 翻回正面
+    const card = document.getElementById('card');
+    if (card.classList.contains('flipped')) {
+      card.classList.remove('flipped');
+    }
+    document.getElementById('flip-hint').classList.remove('show');
+
+    setupRound();
+  }
 
   // ── 翻转（正反可无限来回）──────────────────────────────────────
   function flipCard() {
     const card = document.getElementById('card');
     const nowFlipped = card.classList.toggle('flipped');
-    document.getElementById('flip-hint').textContent = nowFlipped
-      ? '点击图片可翻回正面'
-      : '点击拼图可翻到背面';
+    document.getElementById('flip-hint').classList.add('show');
+
+    if (nowFlipped) {
+      document.getElementById('flip-hint').textContent = '即将返回大九宫格…';
+      card.classList.add('fly-out');
+      setTimeout(() => {
+        window.location.href = 'mxhuitu.html';
+      }, 1400); // 0.6s延迟 + 0.7s动画 + 少量余量
+    } else {
+      document.getElementById('flip-hint').textContent = '密码已解锁，再次输入或点击背面查看图片';
+    }
   }
 
   // ── 密码验证 ──────────────────────────────────────────────────
@@ -373,13 +498,13 @@
     const val = input.value.trim();
 
     if (val.toLowerCase() === PASSWORD.toLowerCase()) {
-      // 正确：翻回正面
+      // 正确：翻转卡片
       input.classList.remove('wrong');
       input.classList.add('correct');
 
       const card = document.getElementById('card');
-      if (card.classList.contains('flipped')) {
-        flipCard(); // 翻回正面
+      if (!card.classList.contains('flipped')) {
+        flipCard();
       }
 
       // 通知大九宫格这一关已解锁
@@ -397,139 +522,6 @@
       setTimeout(() => input.classList.remove('wrong'), 400);
     }
   }
-
-  // ── 打乱 ──────────────────────────────────────────────────────
-  function shufflePuzzle() {
-    solved = false;
-    document.getElementById('card').classList.remove('flipped');
-    document.getElementById('card-front').classList.remove('clickable');
-    document.getElementById('flip-hint').classList.remove('show');
-    document.getElementById('shuffle-btn').style.display = '';
-    document.getElementById('word-wrap').classList.remove('show');
-    const inp = document.getElementById('word-input');
-    inp.value = '';
-    inp.disabled = false;
-    inp.classList.remove('correct', 'wrong');
-    document.getElementById('main-hint').style.opacity = '1';
-
-    tiles = Array.from({length: TOTAL}, (_, i) => i);
-    let ep = TOTAL - 1;
-    for (let i = 0; i < 400; i++) {
-      const nb = neighbors(ep);
-      const pick = nb[Math.floor(Math.random() * nb.length)];
-      [tiles[ep], tiles[pick]] = [tiles[pick], tiles[ep]];
-      ep = pick;
-    }
-    emptyPos = ep;
-    render();
-  }
-
-  function neighbors(idx) {
-    const r = Math.floor(idx / GRID), c = idx % GRID, n = [];
-    if (r > 0)        n.push(idx - GRID);
-    if (r < GRID - 1) n.push(idx + GRID);
-    if (c > 0)        n.push(idx - 1);
-    if (c < GRID - 1) n.push(idx + 1);
-    return n;
-  }
-
-  // ── 移动 ──────────────────────────────────────────────────────
-  function moveTile(pos) {
-    if (solved || !neighbors(emptyPos).includes(pos)) return;
-    [tiles[emptyPos], tiles[pos]] = [tiles[pos], tiles[emptyPos]];
-    emptyPos = pos;
-    render(pos);
-    checkWin();
-  }
-
-  // ── 渲染 ──────────────────────────────────────────────────────
-  function render(justMoved = -1) {
-    const board = document.getElementById('puzzle-board');
-    board.innerHTML = '';
-
-    tiles.forEach((val, pos) => {
-      const el = document.createElement('div');
-      el.className = 'tile';
-
-      if (val === EMPTY_VAL) {
-        el.classList.add('empty');
-      } else {
-        const sc = val % GRID, sr = Math.floor(val / GRID);
-        const img = document.createElement('img');
-        img.src = FRONT_IMAGE;
-        img.style.marginLeft = `-${sc * 140}px`;
-        img.style.marginTop  = `-${sr * 140}px`;
-        el.appendChild(img);
-
-        const num = document.createElement('span');
-        num.className = 'tile-num';
-        num.textContent = val + 1;
-        el.appendChild(num);
-
-        el.addEventListener('click', () => moveTile(pos));
-        if (pos === justMoved) el.classList.add('just-moved');
-      }
-
-      board.appendChild(el);
-    });
-  }
-
-  // ── 胜利判断 ──────────────────────────────────────────────────
-  function checkWin() {
-    if (!tiles.every((v, i) => v === i)) return;
-    solved = true;
-    setTimeout(revealNinth, 150);
-    setTimeout(onSolved, 900);
-  }
-
-  function revealNinth() {
-    const empEl = document.querySelector('.tile.empty');
-    if (!empEl) return;
-    empEl.classList.remove('empty');
-
-    const sc = EMPTY_VAL % GRID, sr = Math.floor(EMPTY_VAL / GRID);
-    const img = document.createElement('img');
-    img.src = FRONT_IMAGE;
-    img.style.marginLeft = `-${sc * 140}px`;
-    img.style.marginTop  = `-${sr * 140}px`;
-    empEl.appendChild(img);
-
-    const num = document.createElement('span');
-    num.className = 'tile-num';
-    num.textContent = EMPTY_VAL + 1;
-    empEl.appendChild(num);
-
-    empEl.classList.add('solved-reveal');
-  }
-
-  function onSolved() {
-    // 翻到背面
-    document.getElementById('card').classList.add('flipped');
-    // 正面加 clickable 样式
-    document.getElementById('card-front').classList.add('clickable');
-
-    document.getElementById('shuffle-btn').style.display = 'none';
-    document.getElementById('word-wrap').classList.add('show');
-    document.getElementById('main-hint').style.opacity = '0';
-
-    setTimeout(() => {
-      document.getElementById('flip-hint').classList.add('show');
-      document.getElementById('word-input').focus();
-    }, 800);
-  }
-
-  // ── 键盘方向键 ────────────────────────────────────────────────
-  document.addEventListener('keydown', e => {
-    if (document.activeElement === document.getElementById('word-input')) return;
-    if (solved) return;
-    const r = Math.floor(emptyPos / GRID), c = emptyPos % GRID;
-    let t = -1;
-    if (e.key === 'ArrowUp'    && r < GRID-1) t = emptyPos + GRID;
-    if (e.key === 'ArrowDown'  && r > 0)      t = emptyPos - GRID;
-    if (e.key === 'ArrowLeft'  && c < GRID-1) t = emptyPos + 1;
-    if (e.key === 'ArrowRight' && c > 0)      t = emptyPos - 1;
-    if (t !== -1) { e.preventDefault(); moveTile(t); }
-  });
 </script>
 </body>
 </html>

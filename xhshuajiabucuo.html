@@ -1,13 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>语文书的配图是不是有问题啊</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://gs.jurieo.com/gemini/fonts-googleapis">
+  <link rel="preconnect" href="https://gs.jurieo.com/gemini/fonts-gstatic" crossorigin>
+  <link href="https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================================
@@ -55,7 +55,6 @@
       .container { padding: 20px 16px 64px; }
     }
 
-
     /* ============================================================
        1. 顶部导航栏 (Logo + 返回)
        ============================================================ */
@@ -70,11 +69,11 @@
 
     .site-logo {
       display: inline-block;
-      line-height: 0;       /* 去掉图片下方空隙 */
+      line-height: 0;
     }
 
     .site-logo img {
-      height: 90px;         /* 想多大改这里就行 */
+      height: 90px;
       width: auto;
       display: block;
     }
@@ -105,51 +104,6 @@
       transform: translateX(-2px);
     }
 
-
-    /* ============================================================
-       ★ 1.5 帖子状态横幅 (限流提示)  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       显示在 header 下方、Hero 主图上方,用软琥珀色调表达警示但不刺眼。
-       "管理员"是指向 admin.html 的超链接(可改成你想跳转的页面)
-       ============================================================ */
-    .status-banner {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: #fef7e0;
-      border: 1px solid #f4d893;
-      border-radius: var(--radius);
-      margin-bottom: 24px;
-      font-size: 13.5px;
-      color: #7c5a17;
-      line-height: 1.5;
-    }
-
-    .status-banner svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      stroke-width: 2;
-    }
-
-    .status-banner strong {
-      font-weight: 700;
-    }
-
-    .status-banner a {
-      color: #7c5a17;
-      text-decoration: underline;
-      font-weight: 600;
-      text-underline-offset: 2px;
-      transition: color 0.15s;
-    }
-
-    .status-banner a:hover {
-      color: var(--accent);
-    }
-
-
     /* ============================================================
        2. 帖子主图 (Hero)
        ============================================================ */
@@ -169,7 +123,6 @@
       max-height: 520px;
       object-fit: cover;
     }
-
 
     /* ============================================================
        3. 作者信息 (头像 + 用户ID + 时间)
@@ -196,11 +149,11 @@
 
     .avatar.sm { width: 36px; height: 36px; font-size: 14px; }
     .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;     /* 不变形,自动裁切填满 */
-    border-radius: 50%;    /* 跟着圆形头像剪 */
-    display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
     }
     .meta-text { line-height: 1.3; }
 
@@ -215,7 +168,6 @@
       color: var(--ink-faint);
       margin-top: 2px;
     }
-
 
     /* ============================================================
        4. 标题
@@ -233,7 +185,6 @@
     @media (max-width: 640px) {
       .post-title { font-size: 28px; }
     }
-
 
     /* ============================================================
        5. 正文
@@ -263,11 +214,8 @@
       font-weight: 700;
     }
 
-
     /* ============================================================
        6. 帖子 Tags
-       ────────────────────────────────────────────────────────────
-       蓝色胶囊标签,放在正文和操作栏之间。# 符号由 ::before 自动添加。
        ============================================================ */
     .post-tags {
       display: flex;
@@ -301,7 +249,6 @@
       color: #fff;
       transform: translateY(-1px);
     }
-
 
     /* ============================================================
        7. 操作栏 (点赞 / 评论数 / 分享)
@@ -368,7 +315,6 @@
       margin-left: auto;
     }
 
-
     /* ============================================================
        8. 评论区 — 标题
        ============================================================ */
@@ -388,12 +334,8 @@
       font-size: 18px;
     }
 
-
     /* ============================================================
        9. 评论区 — 输入框
-       ────────────────────────────────────────────────────────────
-       ★【上一轮改动】底部已删除"以xx身份发布"提示行,
-                      .input-foot 改为 flex-end → "发布"按钮靠右
        ============================================================ */
     .comment-input {
       display: flex;
@@ -443,11 +385,6 @@
       align-items: center;
     }
 
-    .input-hint {
-      font-size: 12px;
-      color: var(--ink-faint);
-    }
-
     .submit-btn {
       padding: 8px 18px;
       background: var(--ink);
@@ -472,7 +409,6 @@
       color: var(--ink-faint);
       cursor: not-allowed;
     }
-
 
     /* ============================================================
        10. 评论列表
@@ -587,82 +523,7 @@
     }
 
     /* ============================================================
-       11. 顶部 Toast 弹窗 (评论拦截提示)
-       ────────────────────────────────────────────────────────────
-       触发场景:用户点"发布"评论时
-       行为:从屏幕顶部滑下,显示"你不想留下任何评论",
-             2.6 秒后自动收回(也可点击立即关闭)
-       配套:.comment-input.shake → 输入框左右抖一下作为反馈
-       ============================================================ */
-    .toast {
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translate(-50%, -100%);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 22px 14px 18px;
-      margin-top: 18px;
-      background: var(--ink);
-      color: #fff;
-      border-radius: 999px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 14.5px;
-      letter-spacing: 0.005em;
-      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.15);
-      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  opacity 0.3s ease;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
-      max-width: calc(100vw - 32px);
-    }
-
-    .toast.show {
-      transform: translate(-50%, 0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .toast .toast-dot {
-      width: 8px; height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      flex-shrink: 0;
-      animation: pulse 1.6s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.5; transform: scale(0.85); }
-    }
-
-    @media (max-width: 480px) {
-      .toast {
-        font-size: 13px;
-        padding: 12px 18px 12px 14px;
-        white-space: normal;
-        text-align: center;
-      }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-4px); }
-      40%, 80% { transform: translateX(4px); }
-    }
-
-    .comment-input.shake {
-      animation: shake 0.4s ease;
-      border-color: var(--accent) !important;
-    }
-
-
-    /* ============================================================
-       12. 头像渐变色变体 (av-1 ~ av-6)
+       11. 头像渐变色变体 (av-1 ~ av-6)
        ============================================================ */
     .av-1 { background: linear-gradient(135deg, #e33932, #c2241d); }
     .av-2 { background: linear-gradient(135deg, #2d8a87, #1f6663); }
@@ -670,19 +531,223 @@
     .av-4 { background: linear-gradient(135deg, #8e4a7e, #6f3760); }
     .av-5 { background: linear-gradient(135deg, #6b8e5a, #4f6d40); }
     .av-6 { background: linear-gradient(135deg, #c97b3a, #a55e22); }
+
+    /* ============================================================
+       12. 撕纸效果 · 问卷横幅
+       ============================================================ */
+    .tear-section {
+      position: relative;
+      margin: 56px -24px -96px;
+      height: 260px;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    @media (max-width: 640px) {
+      .tear-section { margin: 40px -16px -64px; height: 220px; }
+    }
+
+    /* ── 底层：diaochawenjuan 风格横幅 ── */
+    .tear-banner {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, #4a0080 0%, transparent 45%),
+        radial-gradient(circle at 80% 70%, #800040 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, #1a0033 0%, #000010 80%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      z-index: 1;
+    }
+    .tear-banner::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      width: 200%; height: 200%;
+      transform: translate(-50%, -50%);
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255,215,0,.03) 0deg 6deg,
+        transparent 6deg 12deg
+      );
+      animation: tearSpin 20s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes tearSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    .tear-marquee {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,.5);
+      white-space: nowrap; overflow: hidden;
+      animation: tearMarquee 8s linear infinite;
+      margin-bottom: 6px;
+    }
+    .tear-marquee span { margin: 0 16px; }
+    @keyframes tearMarquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .tear-title {
+      font-family: var(--font-display);
+      font-weight: 900; font-size: clamp(28px, 6vw, 48px);
+      letter-spacing: 8px;
+      background: linear-gradient(180deg, #fffacd, #ffd700, #ff8c00);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 12px rgba(255,215,0,.7));
+      z-index: 1;
+    }
+
+    .tear-sub {
+      font-size: 13px; letter-spacing: 4px;
+      color: rgba(255,255,255,.55);
+      z-index: 1;
+    }
+
+    .tear-arrow-wrap {
+      z-index: 1;
+      animation: tearBounce 1s ease-in-out infinite;
+    }
+    @keyframes tearBounce {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-6px); }
+    }
+    .tear-arrow {
+      display: inline-block; padding: 6px 20px; border-radius: 100px;
+      background: rgba(255,0,128,.75);
+      color: #fff; font-weight: 700; font-size: 13px;
+      letter-spacing: 2px;
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 16px rgba(255,0,128,.5);
+    }
+
+    /* 角落装饰 */
+    .tear-corner {
+      position: absolute; width: 36px; height: 36px;
+      border: 2px solid rgba(255,215,0,.4); z-index: 2;
+      pointer-events: none;
+    }
+    .tear-corner.tl { top:10px;  left:10px;  border-right:0; border-bottom:0; }
+    .tear-corner.tr { top:10px;  right:10px; border-left:0;  border-bottom:0; }
+    .tear-corner.bl { bottom:10px; left:10px;  border-right:0; border-top:0;   }
+    .tear-corner.br { bottom:10px; right:10px; border-left:0;  border-top:0;   }
+
+    /* ── 上层：被撕的纸 ── */
+    .tear-paper {
+      position: absolute; inset: 0; z-index: 3;
+      background: var(--bg);
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tear-paper.peeled {
+      transform: translateY(105%);
+    }
+
+    /* 锯齿状撕边 (下方) */
+    .tear-jagged {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 14px;
+      background: var(--bg);
+      transform: translateY(50%);
+      -webkit-mask-image:
+        repeating-linear-gradient(
+          135deg,
+          transparent 0px, transparent 7px,
+          black 7px, black 10px
+        );
+      mask-image:
+        repeating-linear-gradient(
+          135deg,
+          transparent 0px, transparent 7px,
+          black 7px, black 10px
+        );
+    }
+
+    /* 纸上提示文字 */
+    .tear-paper::before {
+      content: '向下撕开';
+      position: absolute; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-body);
+      font-size: 13px; color: var(--ink-faint);
+      letter-spacing: 2px;
+      animation: tearHint 2s ease-in-out infinite;
+    }
+    @keyframes tearHint {
+      0%,100% { opacity: .4; }
+      50%     { opacity: 1; }
+    }
+
+    /* ── Steam 成就弹窗 ── */
+    .achievement-toast {
+      position: fixed; top: 28px; right: 28px; z-index: 10000;
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 22px 16px 16px; min-width: 340px; max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741; border-radius: 4px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 0 20px rgba(78,154,65,0.25), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0; transform: translateX(120%) scale(0.95); pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.34,1.56,0.64,1), transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .achievement-toast.show { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; }
+    .ach-icon {
+      width: 64px; height: 64px; flex-shrink: 0; border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50; display: grid; place-items: center;
+      box-shadow: 0 0 12px rgba(78,154,65,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative; overflow: hidden;
+    }
+    .ach-icon::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+    @keyframes iconShine { 0%,100%{opacity:0} 50%{opacity:1} }
+    .ach-emoji { font-size: 30px; line-height: 1; position: relative; z-index: 1; }
+    .ach-text { flex: 1; min-width: 0; }
+    .ach-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      color: #8fbc5a; margin-bottom: 3px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ach-label::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      background: #8fbc5a; border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a; animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse { 0%,100%{opacity:1;box-shadow:0 0 6px #8fbc5a} 50%{opacity:.6;box-shadow:0 0 2px #8fbc5a} }
+    .ach-title {
+      font-family: var(--font-display); font-weight: 700; font-size: 17px;
+      color: #e5e5e5; line-height: 1.2; margin-bottom: 3px; letter-spacing: -0.01em;
+    }
+    .ach-desc { font-size: 12.5px; color: #8f98a0; line-height: 1.4; }
+    .achievement-toast::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 3px; width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px; transform-origin: left; transform: scaleX(0);
+    }
+    .achievement-toast.show::after { animation: progressShrink 5s 0.5s linear forwards; }
+    @keyframes progressShrink { 0%{transform:scaleX(1)} 100%{transform:scaleX(0)} }
+    .ach-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 4px; }
+    .ach-particle {
+      position: absolute; width: 3px; height: 3px;
+      background: #8fbc5a; border-radius: 50%; opacity: 0;
+    }
+    .achievement-toast.show .ach-particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+    @keyframes particleFloat {
+      0%   { opacity:0.8; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(0); }
+    }
+    @media (max-width: 480px) {
+      .achievement-toast { top: 16px; right: 16px; left: 16px; min-width: 0; max-width: none; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 顶部 Toast 弹窗 (默认隐藏) -->
-  <div class="toast" id="toast" role="status" aria-live="polite">
-    <span class="toast-dot"></span>
-    <span class="toast-text">你不想留下任何评论</span>
-  </div>
-
   <div class="container">
 
-    <!-- ═══════════ 1. 顶部导航栏 ═══════════ -->
     <header>
       <a href="xhs1.html" class="site-logo">
         <img src="images/tomatologo.png">
@@ -690,51 +755,33 @@
       <a href="xhs1.html" class="back-link">← 返回列表</a>
     </header>
 
-    <!-- ═══════════ ★ 1.5 帖子状态横幅 ═══════════
-         【最近改动 — 新增】"管理员"链接到 admin.html,
-         你可以把 href 改成实际的申诉/管理页面路径 -->
-    <div class="status-banner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/>
-        <line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-      <span>贴子状态:<strong>限流</strong> 如需申诉可向<a href="xhsglylb.html">管理员</a>反应</span>
-    </div>
-
-    <!-- ═══════════ 2. 帖子主图 ═══════════ -->
     <div class="hero">
-      <img src="images/huajiaphoto.png" alt="毛米">
+      <img src="images/huajiayuanwen.png" alt="毛米">
     </div>
 
-    <!-- ═══════════ 3. 作者信息 ═══════════ -->
     <div class="post-meta">
-    <div class="avatar">
-        <img src="images/coco.png" alt="头像">
-    </div>
-    <div class="meta-text">
-        <div class="user-id">@肖佑袅 (你)</div>
-        <div class="meta-sub">3 小时前 · 阅读 73</div>
-    </div>
+      <div class="avatar">
+          <img src="images/coco.png" alt="头像">
+      </div>
+      <div class="meta-text">
+          <div class="user-id">@肖佑袅 (你)</div>
+          <div class="meta-sub">3 小时前 · 阅读 73</div>
+      </div>
     </div>
 
-    <!-- ═══════════ 4. 标题 ═══════════ -->
-    <h1 class="post-title">语文书的配图是不是有问题啊</h1>
+    <h1 class="post-title">雪地上的小画家这篇课文真的不错</h1>
 
-    <!-- ═══════════ 5. 正文 ═══════════ -->
     <div class="post-body">
-      <p>我是一名小学语文老师 昨晚在备课的时候看到一篇课文的插图有点奇怪 出现了从来没见过的脚印</p>
-      <p>因为觉得太奇怪了所以当即拍了照 结果今天早上跟同事说起这件事之后 那串脚印就不见了！</p>
-      <p>同事现在说是我用ai在逗她玩，难道这是什么曼德拉效应吗</p>
+      <p>我是一名小学语文老师，昨晚在备课的时候又重温了一下雪地里的小画家这篇课文</p>
+      <p>真是太有意思了，短短几行写出了人与自然和谐共生 同时又富有童趣</p>
+
     </div>
 
-    <!-- ═══════════ 6. Tags ═══════════ -->
     <div class="post-tags">
       <span class="tag">语文书</span>
-      <span class="tag">灵异</span>
+      <span class="tag">教师</span>
     </div>
 
-    <!-- ═══════════ 7. 操作栏 (点赞 / 评论 / 分享) ═══════════ -->
     <div class="post-actions">
       <button class="action-btn" id="likeBtn" aria-pressed="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -750,12 +797,10 @@
       </button>
     </div>
 
-    <!-- ═══════════ 8. 评论区标题 ═══════════ -->
     <h2 class="comments-title">
       评论 <span class="num" id="commentNumLabel">4</span>
     </h2>
 
-    <!-- ═══════════ 9. 评论输入框 ═══════════ -->
     <div class="comment-input">
       <div class="avatar sm av-3">你</div>
       <div class="input-wrap">
@@ -766,10 +811,27 @@
       </div>
     </div>
 
-    <!-- ═══════════ ★ 10. 评论列表 ═══════════
-         【最近改动】替换了之前的"评论加载失败"占位 UI,
-         评论由 JS 中的 seedComments 数组渲染 -->
     <ul class="comment-list" id="commentList"></ul>
+
+    <!-- ═══════════ 撕纸效果 · 问卷横幅 ═══════════ -->
+    <div class="tear-section" id="tearSection">
+      <div class="tear-banner">
+        <div class="tear-marquee">
+          <span>★ 重磅问卷 ★</span><span>万众期待 · 不填后悔</span>
+          <span>★ 历史性时刻 ★</span><span>你的意见改变世界</span>
+        </div>
+        <div class="tear-title">请 填 写 问 卷</div>
+        <div class="tear-sub">你 的 意 见 最 重 要</div>
+        <div class="tear-arrow-wrap">
+          <span class="tear-arrow">↓ 点击进入 ↓</span>
+        </div>
+        <div class="tear-corner tl"></div><div class="tear-corner tr"></div>
+        <div class="tear-corner bl"></div><div class="tear-corner br"></div>
+      </div>
+      <div class="tear-paper" id="tearPaper">
+        <div class="tear-jagged"></div>
+      </div>
+    </div>
 
   </div>
 
@@ -780,60 +842,30 @@
     const HEART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const REPLY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5M4 12h11a5 5 0 0 1 5 5v3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-
     /* ============================================================
-       ★ 种子评论数据  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       4 条契合本帖主题(灵异/曼德拉效应)的评论。
-       每条字段:userId / avatar(av-X 头像色) / initial(头像首字母) /
-                 time(时间) / text(内容) / likes(点赞数)
+       种子评论数据
        ============================================================ */
     const seedComments = [
-      {
-        userId: '@一般路过大海鸥',
-        avatar: 'av-2',
-        initial: 'Y',
-        time: '2 小时前',
-        text: '看之前：记性差嘴硬则曼德拉 看之后：不是你这个怎么真的不一样啊',
-        likes: 3
-      },
+
       {
         userId: '@风清',
         avatar: 'av-4',
         initial: 'F',
         time: '1 小时前',
-        text: '铁柱虽然我不知道但我能为你摇来一堆应声虫',
+        text: '我也记得这篇课文！现在原来还在呀',
         likes: 2,
-        replies: [
-          {
-            userId: '@风清',
-            replyTo: '@风清',
-            avatar: 'av-1',
-            initial: 'F',
-            time: '45 分钟前',
-            text: '铁柱啊我帮不了你了...你的帖子好像被限了；；',
-            likes: 0
-          }
-        ]
+
       },
-      {
-        userId: '@zreebe',
-        avatar: 'av-5',
-        initial: 'Z',
-        time: '52 分钟前',
-        text: '互联网发达后大家确实分享欲旺盛...',
-        likes: 1
-      },
+
       {
         userId: '@力大无穷',
         avatar: 'av-5',
         initial: 'L',
         time: '2 分钟前',
-        text: '怎么没有一个人真的回答贴主问题啊...这脚印确实不对劲吧（如果贴主不是真的拿AI开玩笑的话）',
+        text: '我也是在这篇课文知道青蛙冬眠的',
         likes: 1
       },
     ];
-
 
     /* ============================================================
        1. 评论渲染函数
@@ -861,7 +893,6 @@
           </div>
         </div>
       `;
-      // Set text safely (with optional "回复 @xxx" prefix for replies)
       const textEl = li.querySelector('.comment-text');
       if (c.replyTo) {
         const replyMark = document.createElement('span');
@@ -873,7 +904,6 @@
         textEl.textContent = c.text;
       }
  
-      // Render nested replies if this comment has any
       if (Array.isArray(c.replies) && c.replies.length > 0) {
         const repliesUl = document.createElement('ul');
         repliesUl.className = 'comment-replies';
@@ -889,7 +919,6 @@
       return li;
     }
  
-    // 单独渲染一条回复 (跟主评论结构相同,只是不再递归嵌套)
     function renderReplyItem(r) {
       const li = document.createElement('li');
       li.className = 'comment';
@@ -926,14 +955,13 @@
 
     seedComments.forEach(c => renderComment(c));
 
-
     /* ============================================================
-       2. 帖子主点赞按钮 (爱心图标切换 + 计数 ±1)
+       2. 帖子主点赞按钮
        ============================================================ */
     const likeBtn = document.getElementById('likeBtn');
     const likeCount = document.getElementById('likeCount');
     let postLiked = false;
-    let postLikes = 128;
+    let postLikes = 13; // 修复了初始同步显示值的问题，使逻辑中的数字和HTML初始化一致
 
     likeBtn.addEventListener('click', () => {
       postLiked = !postLiked;
@@ -943,9 +971,8 @@
       likeBtn.setAttribute('aria-pressed', postLiked);
     });
 
-
     /* ============================================================
-       3. 评论点赞 (事件委托 — 给所有 .like-comment 按钮)
+       3. 评论点赞
        ============================================================ */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.like-comment');
@@ -957,7 +984,6 @@
       btn.querySelector('.lc').textContent = n;
       btn.setAttribute('aria-pressed', isLiked);
     });
-
 
     /* ============================================================
        4. 评论输入框 — 自动撑高 + 发布按钮启用/禁用
@@ -974,56 +1000,39 @@
       submitBtn.disabled = input.value.trim().length === 0;
     });
 
-
     /* ============================================================
-       5. 提交评论 (拦截 → 触发顶部弹窗)
-       ────────────────────────────────────────────────────────────
-       行为:点"发布"不真发送,而是:
-              ① 调用 showToast() 显示顶部弹窗
-              ② 给输入框加 .shake 类做抖动反馈
+       5. 提交评论 (真正将评论发布至列表并同步更新数字)
        ============================================================ */
     function submit() {
       const text = input.value.trim();
       if (!text) return;
 
-      // Block submission — show top toast instead
-      showToast();
+      // 1. 构造新的评论数据对象
+      const newComment = {
+        userId: '@肖佑袅 (你)',
+        avatar: 'av-3',
+        initial: '你',
+        time: '刚刚',
+        text: text,
+        likes: 0
+      };
 
-      // Visual feedback on the input box
-      const inputBox = document.querySelector('.comment-input');
-      inputBox.classList.remove('shake');
-      // Force reflow so animation can replay
-      void inputBox.offsetWidth;
-      inputBox.classList.add('shake');
+      // 2. 渲染并插入到评论列表顶部
+      renderComment(newComment, true);
+
+      // 3. 更新评论计数器
+      commentTotal++;
+      commentNumLabel.textContent = commentTotal;
+      commentTopCount.textContent = commentTotal;
+
+      // 4. 清空输入框并重置发布按钮状态
+      input.value = '';
+      input.style.height = 'auto';
+      submitBtn.disabled = true;
     }
 
-
     /* ============================================================
-       6. Toast 弹窗显隐控制
-       ────────────────────────────────────────────────────────────
-       showToast()  → 加 .show 类显示,2.6 秒后自动收回
-       点击 toast   → 立即关闭(不用等)
-       ============================================================ */
-    const toast = document.getElementById('toast');
-    let toastTimer = null;
-
-    function showToast() {
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2600);
-    }
-
-    // Click toast to dismiss early
-    toast.addEventListener('click', () => {
-      toast.classList.remove('show');
-      clearTimeout(toastTimer);
-    });
-
-
-    /* ============================================================
-       7. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
+       6. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
        ============================================================ */
     submitBtn.addEventListener('click', submit);
 
@@ -1033,7 +1042,92 @@
         submit();
       }
     });
+
+    /* ============================================================
+       7. 撕纸效果 — 交互与跳转
+       ============================================================ */
+    (function() {
+      const section = document.getElementById('tearSection');
+      const paper = document.getElementById('tearPaper');
+      const banner = section.querySelector('.tear-banner');
+      let peeled = false;
+
+      function doPeel() {
+        if (peeled) return;
+        peeled = true;
+        paper.classList.add('peeled');
+      }
+
+      // 点击纸层 → 撕开（不跳转）
+      paper.addEventListener('click', doPeel);
+
+      // 撕开后点击横幅 → 跳转
+      banner.addEventListener('click', () => {
+        if (!peeled) return;
+        window.location.href = 'diaochawenjuan.html';
+      });
+    })();
+
+    /* ── 阅读全部帖子成就 ── */
+    (function() {
+      var ACH_KEY = 'xhs-allposts-ach-shown';
+      if (localStorage.getItem(ACH_KEY) === '1') return;
+
+      var NEED = [
+        "xhsyingwu","xhstroisbody","xhsjiankang","xhsyiqing","xhshuajia","xhsyubian",
+        "xhsfumao","xhschongyan","xhsxunyu","xhsshangzhua",
+        "xhsbwbj","xhsmbc","xhswangle",
+        "xhscasetubu","xhscasexiaban","xhscaseyouyong","xhscasexiangxia"
+      ];
+
+      var visited = [];
+      try { visited = JSON.parse(localStorage.getItem('xhs-pages-visited') || '[]'); }
+      catch(e) {}
+
+      var allDone = NEED.every(function(p) { return visited.indexOf(p) !== -1; });
+      if (!allDone) return;
+
+      localStorage.setItem(ACH_KEY, '1');
+
+      var toast     = document.getElementById('achToast');
+      var emojiEl   = document.getElementById('achEmoji');
+      var titleEl   = document.getElementById('achTitle');
+      var descEl    = document.getElementById('achDesc');
+      var particles = document.getElementById('achParticles');
+
+      emojiEl.textContent = '📖';
+      titleEl.textContent = '西红柿十级学者';
+      descEl.textContent  = '你看完了西红柿首页的所有帖子';
+
+      particles.innerHTML = '';
+      for (var i = 0; i < 14; i++) {
+        var p = document.createElement('span');
+        p.className = 'ach-particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top  = Math.random() * 100 + '%';
+        p.style.setProperty('--dx', (Math.random() - 0.5) * 90 + 'px');
+        p.style.setProperty('--dy', (Math.random() - 0.5) * 90 + 'px');
+        p.style.animationDelay = Math.random() * 0.5 + 's';
+        particles.appendChild(p);
+      }
+
+      toast.classList.remove('show');
+      void toast.offsetWidth;
+      requestAnimationFrame(function() { toast.classList.add('show'); });
+      setTimeout(function() { toast.classList.remove('show'); }, 5500);
+    })();
   </script>
+<!-- Steam 成就弹窗 -->
+<div class="achievement-toast" id="achToast" role="alert">
+  <div class="ach-particles" id="achParticles"></div>
+  <div class="ach-icon"><span class="ach-emoji" id="achEmoji">📖</span></div>
+  <div class="ach-text">
+    <div class="ach-label">成就已解锁</div>
+    <div class="ach-title" id="achTitle">西红柿十级学者</div>
+    <div class="ach-desc" id="achDesc">你看完了西红柿首页的所有帖子</div>
+  </div>
+</div>
+
 <script src="nav.js"></script>
 </body>
 </html>

@@ -401,6 +401,121 @@
       border-color: var(--ink);
       color: var(--ink);
     }
+
+    /* ── Steam 风格成就弹窗 ── */
+    .achievement-toast {
+      position: fixed;
+      top: 28px;
+      right: 28px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741;
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 0 20px rgba(78, 154, 65, 0.25),
+        0 8px 32px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition:
+        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .achievement-toast.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+    .achievement-icon {
+      width: 64px; height: 64px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid; place-items: center;
+      box-shadow: 0 0 12px rgba(78,154,65,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+      position: relative; overflow: hidden;
+    }
+    .achievement-icon::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
+    }
+    @keyframes iconShine { 0%,100%{opacity:0;} 50%{opacity:1;} }
+    .achievement-icon .icon-emoji {
+      font-size: 30px; line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(180,220,100,0.55));
+      position: relative; z-index: 1;
+    }
+    .achievement-text { flex: 1; min-width: 0; }
+    .achievement-label {
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: #8fbc5a; margin-bottom: 3px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .achievement-label::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px;
+      background: #8fbc5a; border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse { 0%,100%{opacity:1;box-shadow:0 0 6px #8fbc5a;} 50%{opacity:.6;box-shadow:0 0 2px #8fbc5a;} }
+    .achievement-title {
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 17px;
+      color: #e5e5e5; line-height: 1.2;
+      margin-bottom: 3px; letter-spacing: -0.01em;
+    }
+    .achievement-desc {
+      font-size: 12.5px; color: #8f98a0; line-height: 1.4;
+    }
+    .achievement-toast::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      height: 3px; width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px;
+      transform-origin: left; transform: scaleX(0);
+    }
+    .achievement-toast.show::after {
+      animation: progressShrink 5s 0.5s linear forwards;
+    }
+    @keyframes progressShrink { 0%{transform:scaleX(1);} 100%{transform:scaleX(0);} }
+    .achievement-particles {
+      position: absolute; inset: 0;
+      pointer-events: none; overflow: hidden;
+      border-radius: 4px;
+    }
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: #8fbc5a; border-radius: 50%;
+      opacity: 0;
+    }
+    .achievement-toast.show .particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+    @keyframes particleFloat {
+      0%   { opacity:0.8; transform:translate(0,0) scale(1); }
+      100% { opacity:0;   transform:translate(var(--dx),var(--dy)) scale(0); }
+    }
+    @media (max-width: 480px) {
+      .achievement-toast {
+        top: 16px; right: 16px; left: 16px;
+        min-width: 0; max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -548,6 +663,19 @@
 
   </div>
 
+  <!-- Steam 风格成就弹窗 -->
+  <div class="achievement-toast" id="achievementToast" role="alert">
+    <div class="achievement-particles" id="achievementParticles"></div>
+    <div class="achievement-icon">
+      <span class="icon-emoji" id="achievementEmoji">💦</span>
+    </div>
+    <div class="achievement-text">
+      <div class="achievement-label">成就已解锁</div>
+      <div class="achievement-title" id="achievementTitle">还得谢谢咱</div>
+      <div class="achievement-desc"  id="achievementDesc">你按下了请假按钮</div>
+    </div>
+  </div>
+
   <!-- 请假弹窗 -->
   <div class="leave-modal-mask" id="leaveMask" style="display:none;" role="dialog" aria-modal="true">
     <div class="leave-modal">
@@ -562,7 +690,40 @@
   const leaveMask = document.getElementById('leaveMask');
   const leaveClose = document.getElementById('leaveClose');
 
-  leaveCard.addEventListener('click', () => { leaveMask.style.display = 'flex'; });
+  /* ── Steam 成就弹窗 ── */
+  function showAchievement({ emoji = '💦', title = '成就解锁', desc = '' } = {}) {
+    const toast     = document.getElementById('achievementToast');
+    const emojiEl   = document.getElementById('achievementEmoji');
+    const titleEl   = document.getElementById('achievementTitle');
+    const descEl    = document.getElementById('achievementDesc');
+    const particles = document.getElementById('achievementParticles');
+
+    emojiEl.textContent = emoji;
+    titleEl.textContent = title;
+    descEl.textContent  = desc;
+
+    particles.innerHTML = '';
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('span');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top  = Math.random() * 100 + '%';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 90 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 90 + 'px');
+      p.style.animationDelay = Math.random() * 0.5 + 's';
+      particles.appendChild(p);
+    }
+
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => toast.classList.remove('show'), 5500);
+  }
+
+  leaveCard.addEventListener('click', () => {
+    showAchievement({ emoji: '💦', title: '全勤终结者', desc: '你按下了请假按钮' });
+    leaveMask.style.display = 'flex';
+  });
   leaveClose.addEventListener('click', () => { leaveMask.style.display = 'none'; });
   leaveMask.addEventListener('click', (e) => { if (e.target === leaveMask) leaveMask.style.display = 'none'; });
   document.addEventListener('keydown', (e) => {

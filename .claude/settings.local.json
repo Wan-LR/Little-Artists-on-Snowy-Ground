@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(Get-Content \"e:\\\\painting\\\\puzzle_1.html\" -Raw\\).Substring\\(11029, 130\\) -replace \"`t\", \"[TAB]\")",
+      "PowerShell($content = Get-Content \"e:\\\\painting\\\\puzzle_1.html\" -Raw; $lines = $content -split \"`n\"; $lines[206..212] | ForEach-Object { [System.Text.Encoding]::UTF8.GetBytes\\($_\\) | ForEach-Object { '{0:X2}' -f $_ }; \"\" })"
+    ]
+  }
+}

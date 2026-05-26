@@ -375,6 +375,46 @@
   }
   .opt-text { font-size: 16px; font-weight: 500; letter-spacing: .5px; color: rgba(255,255,255,.9); }
 
+  /* Q3 D 选项闪烁后消失 */
+  .q-opt.flash-d {
+    animation: flashDisappear 0.3s ease-in-out 3;
+  }
+  .q-opt.flash-d.removed {
+    animation: fadeOut 0.4s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes flashDisappear {
+    0%,100% { opacity: 1; }
+    50%     { opacity: 0.2; }
+  }
+  @keyframes fadeOut {
+    to { opacity: 0; transform: scale(0.9); pointer-events: none; }
+  }
+
+  /* 成就积分展示 */
+  .achieve-scores {
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 80px;
+  }
+  .achieve-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,215,0,.15);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .achieve-row .achieve-name { color: rgba(255,255,255,.8); }
+  .achieve-row .achieve-pts  { color: #ffd700; font-weight: 700; }
+  .achieve-row.locked .achieve-name { color: rgba(255,255,255,.3); }
+  .achieve-row.locked .achieve-pts  { color: rgba(255,255,255,.2); }
+  .achieve-total {
+    text-align: right; font-size: 18px; font-weight: 900;
+    color: #ffd700; margin-top: 6px;
+    text-shadow: 0 0 8px rgba(255,215,0,.4);
+  }
+  .achieve-empty { color: rgba(255,255,255,.3); text-align: center; }
+
   /* 文本输入题 */
   .q-textarea {
     width: 100%;
@@ -422,6 +462,59 @@
     font-size: 12px; padding: 10px 20px;
   }
   .q-prev:hover { border-color: #ffd700 !important; color: #ffd700; }
+
+  /* ─── 低分弹窗 ─── */
+  .lowscore-mask {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.82);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .lowscore-mask.show { display: flex; }
+  .lowscore-card {
+    background: linear-gradient(135deg, #1a0033, #0a0014);
+    border: 2px solid rgba(255,215,0,.3);
+    border-radius: 18px;
+    padding: 36px 28px 28px;
+    max-width: 400px; width: 100%;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255,215,0,.2);
+  }
+  .lowscore-title {
+    font-size: 28px; font-weight: 900;
+    color: #ffd700; margin-bottom: 16px;
+    text-shadow: 0 0 12px rgba(255,215,0,.5);
+    transition: opacity 0.3s;
+  }
+  .lowscore-input-wrap {
+    display: none; flex-direction: column; gap: 12px;
+  }
+  .lowscore-input-wrap.show { display: flex; }
+  .lowscore-input-wrap .prompt {
+    font-size: 14px; color: rgba(255,255,255,.7);
+    letter-spacing: 1px;
+  }
+  .lowscore-input {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,215,0,.3);
+    border-radius: 8px; color: #fff;
+    font-family: inherit; font-size: 16px;
+    text-align: center; outline: none;
+    letter-spacing: 2px;
+  }
+  .lowscore-input:focus { border-color: #ffd700; }
+  .lowscore-input.wrong { border-color: #ff0080; animation: shake .4s ease; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+  }
+  .lowscore-btn {
+    width: 100%; padding: 10px; border: none; border-radius: 8px;
+    background: linear-gradient(135deg, #ff0080, #ff4500);
+    color: #fff; font-family: inherit; font-weight: 700;
+    font-size: 14px; letter-spacing: 2px; cursor: pointer;
+  }
+  .lowscore-btn:hover { box-shadow: 0 0 20px rgba(255,0,128,.5); }
 
   /* ────────────────────────────────────────
      SCREEN FINAL — 感谢页
@@ -555,12 +648,12 @@
   <div class="q-wrap">
     <div class="q-progress-bar"><div class="q-progress-fill" style="width:20%"></div></div>
     <span class="q-badge">★ 第 1 题 / 共 4 题 ★</span>
-    <div class="q-title">你是怎么来到这里的？</div>
+    <div class="q-title">刚才的首页主人叫什么名字？</div>
     <div class="q-options">
-      <div class="q-opt" data-q="1" data-v="A"><span class="opt-letter">A</span><span class="opt-text">被朋友强行发来的链接</span></div>
-      <div class="q-opt" data-q="1" data-v="B"><span class="opt-letter">B</span><span class="opt-text">自己主动找来的，我很厉害</span></div>
-      <div class="q-opt" data-q="1" data-v="C"><span class="opt-letter">C</span><span class="opt-text">不小心点进来的，但不打算离开</span></div>
-      <div class="q-opt" data-q="1" data-v="D"><span class="opt-letter">D</span><span class="opt-text">命中注定，天意如此</span></div>
+      <div class="q-opt" data-q="1" data-v="A"><span class="opt-letter">A</span><span class="opt-text">肖佑袅</span></div>
+      <div class="q-opt" data-q="1" data-v="B"><span class="opt-letter">B</span><span class="opt-text">肖右袅</span></div>
+      <div class="q-opt" data-q="1" data-v="C"><span class="opt-letter">C</span><span class="opt-text">萧佑鸟</span></div>
+      <div class="q-opt" data-q="1" data-v="D"><span class="opt-letter">D</span><span class="opt-text">萧佑袅</span></div>
     </div>
     <div class="q-foot">
       <span class="q-counter">进度 20%</span>
@@ -576,12 +669,12 @@
   <div class="q-wrap">
     <div class="q-progress-bar"><div class="q-progress-fill" style="width:40%"></div></div>
     <span class="q-badge">★ 第 2 题 / 共 4 题 ★</span>
-    <div class="q-title">看到首页那些箭头的第一反应？</div>
+    <div class="q-title">蠕虫网站的网址是：</div>
     <div class="q-options">
-      <div class="q-opt" data-q="2" data-v="A"><span class="opt-letter">A</span><span class="opt-text">太壮观了，直接震撼</span></div>
-      <div class="q-opt" data-q="2" data-v="B"><span class="opt-letter">B</span><span class="opt-text">笑到肚子疼，无法呼吸</span></div>
-      <div class="q-opt" data-q="2" data-v="C"><span class="opt-letter">C</span><span class="opt-text">有点烦但还是点了，中计了</span></div>
-      <div class="q-opt" data-q="2" data-v="D"><span class="opt-letter">D</span><span class="opt-text">我就知道会这样，早有预料</span></div>
+      <div class="q-opt" data-q="2" data-v="A"><span class="opt-letter">A</span><span class="opt-text">whereesworm</span></div>
+      <div class="q-opt" data-q="2" data-v="B"><span class="opt-letter">B</span><span class="opt-text">wereisworm</span></div>
+      <div class="q-opt" data-q="2" data-v="C"><span class="opt-letter">C</span><span class="opt-text">whereisworm</span></div>
+      <div class="q-opt" data-q="2" data-v="D"><span class="opt-letter">D</span><span class="opt-text">whereiswoom</span></div>
     </div>
     <div class="q-foot">
       <button class="q-prev" data-prev="s1">← 上一题</button>
@@ -597,14 +690,15 @@
   <div class="q-wrap">
     <div class="q-progress-bar"><div class="q-progress-fill" style="width:60%"></div></div>
     <span class="q-badge">★ 第 3 题 / 共 4 题 ★</span>
-    <div class="q-title">填到这里了，你觉得这份问卷如何？</div>
+    <div class="q-title">大部分昴星人相信着</div>
     <div class="q-options">
-      <div class="q-opt" data-q="3" data-v="A"><span class="opt-letter">A</span><span class="opt-text">⭐⭐⭐⭐⭐ 满分！建议封神</span></div>
-      <div class="q-opt" data-q="3" data-v="B"><span class="opt-letter">B</span><span class="opt-text">⭐⭐⭐⭐ 很好，还差一颗星</span></div>
-      <div class="q-opt" data-q="3" data-v="C"><span class="opt-letter">C</span><span class="opt-text">⭐⭐⭐ 还行，但可以更夸张</span></div>
-      <div class="q-opt" data-q="3" data-v="D"><span class="opt-letter">D</span><span class="opt-text">这就是艺术，不接受反驳</span></div>
+      <div class="q-opt" data-q="3" data-v="A"><span class="opt-letter">A</span><span class="opt-text">天文学</span></div>
+      <div class="q-opt" data-q="3" data-v="B"><span class="opt-letter">B</span><span class="opt-text">蠕虫网站</span></div>
+      <div class="q-opt" data-q="3" data-v="C"><span class="opt-letter">C</span><span class="opt-text">科学</span></div>
+      <div class="q-opt" data-q="3" data-v="D" id="optD"><span class="opt-letter">D</span><span class="opt-text">超脑</span></div>
     </div>
     <div class="q-foot">
+      <span class="q-counter">进度 60%</span>
       <button class="q-prev" data-prev="s2">← 上一题</button>
       <button class="q-next" data-next="s4">下一题 →</button>
     </div>
@@ -612,36 +706,34 @@
 </div>
 
 <!-- ════════════════════════════
-     SCREEN 4 — Q4 文本
+     SCREEN 4 — Q4 成就计分
 ════════════════════════════ -->
 <div class="screen" id="s4">
   <div class="q-wrap">
-    <div class="q-progress-bar"><div class="q-progress-fill" style="width:85%"></div></div>
+    <div class="q-progress-bar"><div class="q-progress-fill" style="width:80%"></div></div>
     <span class="q-badge">★ 第 4 题 / 共 4 题 ★</span>
-    <div class="q-title">最后！用一句话描述一下你此刻的心情</div>
-    <textarea class="q-textarea" id="freeText" placeholder="在这里写下你的感受……（可以很夸张，鼓励夸张）"></textarea>
+    <div class="q-title">成就积分</div>
+    <div class="achieve-scores" id="achieveScores">
+      <p class="achieve-empty">正在检测已解锁的成就…</p>
+    </div>
     <div class="q-foot">
       <button class="q-prev" data-prev="s3">← 上一题</button>
-      <button class="q-next" id="submitBtn" data-next="sfinal">提交问卷 ★</button>
+      <button class="q-next" data-next="sfinal">查看总分 →</button>
     </div>
   </div>
 </div>
 
 <!-- ════════════════════════════
-     SCREEN FINAL — 感谢页
+     SCREEN FINAL — 总分页
 ════════════════════════════ -->
 <div class="screen" id="sfinal">
   <div class="final-boom">🎊</div>
-  <div class="final-title">感谢填写！</div>
-  <p class="final-sub">
-    你的意见已收到<br>
-    历史将铭记这一刻<br>
-    <span style="font-size:13px;opacity:.6;letter-spacing:1px;">感谢参与 · 填完了真厉害</span>
+  <div class="final-title">总分</div>
+  <p class="final-sub" id="finalScoreText">
+    计算中…
   </p>
-  <div class="final-tags">
+  <div class="final-tags" id="finalTags">
     <span class="final-tag">★ 问卷完成 ★</span>
-    <span class="final-tag">★ 功德圆满 ★</span>
-    <span class="final-tag">★ 倾力感谢 ★</span>
   </div>
 </div>
 
@@ -664,49 +756,196 @@
     sc.appendChild(s);
   }
 
-  /* ── 页面切换 ── */
+  // ── 计分 ──
+  let scoreQ1 = 0, scoreQ2 = 0, scoreQ3 = 0, scoreQ4 = 0;
+
+  let q3FlashTimer = null;
+
+  // ── 页面切换 ──
   function showScreen(id) {
+    // 清除 Q3 闪烁定时器
+    if (q3FlashTimer) { clearInterval(q3FlashTimer); q3FlashTimer = null; }
+
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     el.classList.add('active');
-    // 重新触发动画
     el.querySelectorAll('.q-wrap').forEach(w => {
       w.style.animation = 'none';
       requestAnimationFrame(() => { w.style.animation = ''; });
     });
     window.scrollTo(0, 0);
+
+    // Q3: D选项闪烁1.5秒后消失
+    if (id === 's3') {
+      const optD = document.getElementById('optD');
+      optD.style.opacity = '1';
+      optD.style.pointerEvents = '';
+      // 闪烁: 每300ms切换
+      let visible = true;
+      q3FlashTimer = setInterval(() => {
+        visible = !visible;
+        optD.style.opacity = visible ? '1' : '0.15';
+      }, 300);
+      // 1.5s后消失
+      setTimeout(() => {
+        clearInterval(q3FlashTimer);
+        q3FlashTimer = null;
+        optD.style.transition = 'opacity 0.4s, transform 0.4s';
+        optD.style.opacity = '0';
+        optD.style.transform = 'scale(0.9)';
+        optD.style.pointerEvents = 'none';
+      }, 1500);
+    }
+
+    // Q4: 计算成就积分
+    if (id === 's4') calcAchieveScore();
+
+    // 最终页: 显示总分
+    if (id === 'sfinal') showFinalScore();
   }
 
-  /* ── 首页开始按钮 ── */
+  // ── 首页开始按钮 ──
   document.getElementById('startBtn').addEventListener('click', () => {
     const f = document.getElementById('flash');
     f.style.opacity = '1';
-    setTimeout(() => {
-      f.style.opacity = '0';
-      showScreen('s1');
-    }, 260);
+    setTimeout(() => { f.style.opacity = '0'; showScreen('s1'); }, 260);
   });
 
-  /* ── 选项点击 ── */
+  // ── 选项点击 ──
   document.querySelectorAll('.q-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       const q = opt.dataset.q;
       document.querySelectorAll(`.q-opt[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
       opt.classList.add('selected');
+
+      // Q1: A=10分
+      if (q === '1' && opt.dataset.v === 'A') scoreQ1 = 10;
+      else if (q === '1') scoreQ1 = 0;
+
+      // Q2: C=5分，其余0分
+      if (q === '2' && opt.dataset.v === 'C') scoreQ2 = 5;
+      else if (q === '2') scoreQ2 = 0;
+
+      // Q3: 不计分
+      if (q === '3') scoreQ3 = 0;
     });
   });
 
-  /* ── 下一题 / 上一题 ── */
+  // ── 下一题 / 上一题 ──
   document.querySelectorAll('.q-next').forEach(btn => {
-    btn.addEventListener('click', () => {
-      showScreen(btn.dataset.next);
-    });
+    btn.addEventListener('click', () => showScreen(btn.dataset.next));
   });
   document.querySelectorAll('.q-prev').forEach(btn => {
-    btn.addEventListener('click', () => {
-      showScreen(btn.dataset.prev);
-    });
+    btn.addEventListener('click', () => showScreen(btn.dataset.prev));
   });
+
+  // ── Q4: 成就计分 ──
+  function calcAchieveScore() {
+    const achievements = [
+      { key: 'xhs-allposts-ach-shown', name: '西红柿十级学者', pts: 15 },
+      { key: 'xhs-cases-ach-shown',    name: '工单清道夫',     pts: 10 },
+      { key: 'ji-modal-shown',         name: '三小知识全部学完', pts: 10 },
+      { key: 'qbd-has-youxiandaan',   name: '有限大暗',       pts: 5 },
+      { key: 'qbd-search-master',      name: '搜索大师',       pts: 10 },
+    ];
+
+    // 检查有限大暗
+    let found = [];
+    try { found = JSON.parse(localStorage.getItem('qbd-found') || '[]'); } catch(e) {}
+    if (found.indexOf('有限大暗') !== -1) localStorage.setItem('qbd-has-youxiandaan', '1');
+
+    // 检查搜索大师 (两组都解锁)
+    let groups = [];
+    try { groups = JSON.parse(localStorage.getItem('qbd-groups-unlocked') || '[]'); } catch(e) {}
+    if (groups.length >= 2) localStorage.setItem('qbd-search-master', '1');
+
+    scoreQ4 = 0;
+    let html = '';
+    achievements.forEach(a => {
+      const unlocked = localStorage.getItem(a.key) === '1';
+      if (unlocked) scoreQ4 += a.pts;
+      html += `<div class="achieve-row${unlocked ? '' : ' locked'}">
+        <span class="achieve-name">${unlocked ? '✓' : '—'} ${a.name}</span>
+        <span class="achieve-pts">${unlocked ? '+' + a.pts : '0'}</span>
+      </div>`;
+    });
+    html += `<div class="achieve-total">成就积分: ${scoreQ4}</div>`;
+    document.getElementById('achieveScores').innerHTML = html;
+  }
+
+  // ── 最终总分 ──
+  const NEXT_PAGE = 'xhs4.html';  // ← 跳转目标
+
+  function showFinalScore() {
+    const total = scoreQ1 + scoreQ2 + scoreQ3 + scoreQ4;
+    document.getElementById('finalScoreText').innerHTML =
+      `Q1 姓名题: ${scoreQ1} 分<br>` +
+      `Q2 网址题: ${scoreQ2} 分<br>` +
+      `Q3 信仰题: ${scoreQ3} 分<br>` +
+      `Q4 成就积分: ${scoreQ4} 分<br>` +
+      `<span style="font-size:20px;color:#ffd700;">总分: ${total} 分</span>`;
+    document.getElementById('finalTags').innerHTML =
+      `<span class="final-tag">★ ${total} 分 ★</span>`;
+
+    if (total >= 45) {
+      // >=45分: 5秒后跳转
+      setTimeout(() => { window.location.href = NEXT_PAGE; }, 5000);
+    } else {
+      // <45分: 弹窗交替文字, 5秒后显示输入框
+      setTimeout(() => {
+        const mask = document.getElementById('lowMask');
+        const title = document.getElementById('lowTitle');
+        const wrap = document.getElementById('lowInputWrap');
+        const input = document.getElementById('lowInput');
+        const btn = document.getElementById('lowBtn');
+        mask.classList.add('show');
+
+        // 交替 "感谢游玩！" 和 "你很安全"
+        const phrases = ['感谢游玩！', '你很安全'];
+        let idx = 0;
+        const altTimer = setInterval(() => {
+          idx = (idx + 1) % 2;
+          title.textContent = phrases[idx];
+        }, 800);
+
+        // 5秒后显示输入框
+        setTimeout(() => {
+          clearInterval(altTimer);
+          title.textContent = '你想继续吗？';
+          wrap.classList.add('show');
+          input.focus();
+
+          function checkAnswer() {
+            const val = input.value.trim();
+            if (val === '昴星') {
+              window.location.href = NEXT_PAGE;
+            } else {
+              input.classList.add('wrong');
+              input.value = '';
+              setTimeout(() => input.classList.remove('wrong'), 400);
+            }
+          }
+          btn.addEventListener('click', checkAnswer);
+          input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') checkAnswer();
+          });
+        }, 5000);
+      }, 600);
+    }
+  }
 </script>
+
+<!-- 低分弹窗 -->
+<div class="lowscore-mask" id="lowMask">
+  <div class="lowscore-card">
+    <div class="lowscore-title" id="lowTitle">感谢游玩！</div>
+    <div class="lowscore-input-wrap" id="lowInputWrap">
+      <p class="prompt">如果你想继续…刚才的星球叫什么？</p>
+      <input class="lowscore-input" id="lowInput" placeholder="输入星球名…" autocomplete="off">
+      <button class="lowscore-btn" id="lowBtn">确认</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

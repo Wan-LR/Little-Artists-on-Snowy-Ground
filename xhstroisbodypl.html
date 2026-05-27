@@ -732,7 +732,7 @@
         avatar: 'av-2',
         initial: 'Z',
         time: '7 小时前',
-        text: '贴主要不要加入我创建的仨体交流群呀👍',
+        text: '后面有写***月球***上的事情，更是脑洞大开',
         likes: 23,
         replies: [
           {
@@ -741,7 +741,7 @@
             avatar: 'av-1',
             initial: 'F',
             time: '6 小时前',
-            text: '好！嘶嘶嘶 🐍',
+            text: '月亮啊！那真的很有创意了',
             likes: 5
           },
          ]
@@ -774,6 +774,36 @@
        ============================================================ */
     const commentList = document.getElementById('commentList');
 
+    /* ── 行内格式化: **粗** *斜* ***粗斜*** ── */
+    function appendFormatted(parent, text) {
+      const regex = /\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+      let last = 0, m;
+      while ((m = regex.exec(text)) !== null) {
+        if (m.index > last) {
+          parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+        }
+        if (m[1]) {
+          const s = document.createElement('strong');
+          const e = document.createElement('em');
+          e.textContent = m[1];
+          s.appendChild(e);
+          parent.appendChild(s);
+        } else if (m[2]) {
+          const s = document.createElement('strong');
+          s.textContent = m[2];
+          parent.appendChild(s);
+        } else if (m[3]) {
+          const e = document.createElement('em');
+          e.textContent = m[3];
+          parent.appendChild(e);
+        }
+        last = m.index + m[0].length;
+      }
+      if (last < text.length) {
+        parent.appendChild(document.createTextNode(text.slice(last)));
+      }
+    }
+
     function renderComment(c, prepend = false) {
       const li = document.createElement('li');
       li.className = 'comment';
@@ -803,9 +833,9 @@
         replyMark.className = 'reply-to';
         replyMark.textContent = '回复 ' + c.replyTo + ':';
         textEl.appendChild(replyMark);
-        textEl.appendChild(document.createTextNode(c.text));
+        appendFormatted(textEl, c.text);
       } else {
-        textEl.textContent = c.text;
+        appendFormatted(textEl, c.text);
       }
 
       // 如果该评论有嵌套回复,渲染它们
@@ -852,9 +882,9 @@
         replyMark.className = 'reply-to';
         replyMark.textContent = '回复 ' + r.replyTo + ':';
         textEl.appendChild(replyMark);
-        textEl.appendChild(document.createTextNode(r.text));
+        appendFormatted(textEl, r.text);
       } else {
-        textEl.textContent = r.text;
+        appendFormatted(textEl, r.text);
       }
       return li;
     }

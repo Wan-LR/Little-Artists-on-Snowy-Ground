@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #0a0a0a;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    overflow: hidden;
+  }
+
+  .screen {
+    height: 100vh;
+    padding: 24px;
+    background:
+      radial-gradient(ellipse at center, rgba(0,40,0,0.15) 0%, rgba(0,0,0,0.6) 100%),
+      #0a0e0a;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,255,100,0.04) 0px,
+      rgba(0,255,100,0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+  .screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(120,255,150,0.06), transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .titlebar {
+    flex-shrink: 0;
+    color: #5fd97a;
+    font-size: 12px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 3;
+  }
+  .titlebar .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #5fd97a;
+    margin-right: 6px;
+    animation: blink 1.4s infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  .terminal {
+    flex: 1;
+    min-height: 0;
+    color: #6cf08a;
+    font-size: 15px;
+    line-height: 1.6;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 3;
+  }
+
+  .output {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #2a5a2a transparent;
+  }
+  .output::-webkit-scrollbar { width: 6px; }
+  .output::-webkit-scrollbar-thumb { background: #2a5a2a; border-radius: 3px; }
+
+  .line { white-space: pre-wrap; word-break: break-word; margin-bottom: 2px; }
+  .line.user   { color: #b8ffcc; }
+  .line.system { color: #6cf08a; }
+  .line.dim    { color: #3a7a4a; opacity: 0.8; }
+
+  .choice-area {
+    flex-shrink: 0;
+    padding-top: 10px;
+    min-height: 0;
+  }
+
+  /* 选项列表 */
+  .user-choices {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .user-choices.show { display: flex; }
+
+  .uchoice-btn {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 13.5px;
+    padding: 7px 14px 7px 10px;
+    background: transparent;
+    border: 1px solid #1e4a1e;
+    color: #6cf08a;
+    cursor: pointer;
+    letter-spacing: .3px;
+    text-shadow: 0 0 6px rgba(108,240,138,0.3);
+    transition: all 0.15s ease;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .uchoice-btn .idx {
+    color: #3a7a4a;
+    font-size: 11px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    letter-spacing: 1px;
+    min-width: 20px;
+  }
+  .uchoice-btn .txt { flex: 1; }
+  .uchoice-btn:hover {
+    border-color: #5fd97a;
+    background: rgba(108,240,138,0.06);
+    box-shadow: 0 0 8px rgba(108,240,138,0.12);
+    padding-left: 16px;
+  }
+  .uchoice-btn:active { transform: scale(0.99); }
+
+  /* 已选过：灰掉，不可再点 */
+  .uchoice-btn.used {
+    pointer-events: none;
+    opacity: 0.22;
+    border-color: #1a3a1a;
+    color: #4a8a5a;
+    text-shadow: none;
+  }
+  /* 正在等待回复时锁住所有按钮 */
+  .uchoice-btn.locked {
+    pointer-events: none;
+  }
+
+  /* 结局选项 */
+  .ending-choices {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 14px;
+  }
+  .ending-choices.show { display: flex; }
+  .ending-q {
+    color: #6cf08a;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+  .ending-btns { display: flex; gap: 16px; }
+  .ending-btn {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 14px;
+    padding: 8px 24px;
+    background: transparent;
+    border: 1px solid #3a7a4a;
+    color: #6cf08a;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
+    transition: all 0.2s ease;
+  }
+  .ending-btn:hover {
+    border-color: #6cf08a;
+    box-shadow: 0 0 12px rgba(108,240,138,0.3);
+    background: rgba(108,240,138,0.08);
+  }
+  .ending-btn:active { transform: scale(0.96); }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp .3s ease forwards; }
+
+  .image-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .image-overlay.show { opacity: 1; pointer-events: auto; }
+  .image-overlay img {
+    max-width: 80vw;
+    max-height: 80vh;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(108,240,138,0.3));
+    animation: imgReveal 0.6s ease forwards;
+  }
+  @keyframes imgReveal {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="titlebar"><span class="dot"></span>SESSION // /dev/tty0 — connected</div>
+  <div class="terminal">
+    <div class="output" id="output"></div>
+    <div class="choice-area">
+      <div class="user-choices" id="user-choices"></div>
+      <div class="ending-choices" id="ending-choices">
+        <p class="ending-q">你要把这件事情说出去吗？</p>
+        <div class="ending-btns">
+          <button class="ending-btn" onclick="window.location.href='xhs4.html'">1. 说</button>
+          <button class="ending-btn" onclick="window.location.href='xhs4.html'">2. 不说</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="image-overlay" id="image-overlay">
+  <img id="overlay-img" src="" alt="">
+</div>
+
+<script>
+const output        = document.getElementById('output');
+const userChoices   = document.getElementById('user-choices');
+const endingChoices = document.getElementById('ending-choices');
+const imgOverlay    = document.getElementById('image-overlay');
+const overlayImg    = document.getElementById('overlay-img');
+
+// ══════════════════════════════════════════════════════════════
+// NODES
+// reply       — 对方先说的话
+// choices     — [ { text, branchReply, next } ]
+//               选过的会灰掉，可继续选其他
+//               全部选完后自动跳 next
+//               所有 choice 的 next 必须相同（汇合点）
+// next        — 无 choices 时自动跳转
+// delay       — 自动跳转延迟 ms（默认 1800）
+// image       — 展示图片后跳 next
+// end         — true → 结局选项
+// ══════════════════════════════════════════════════════════════
+const NODES = {
+
+  'n0': {
+    reply: '你找来的很快啊',
+    choices: [
+      { text: '这居然真的是个对话框……我还以为是什么无聊的人做出来的解谜游戏',
+        branchReply: '某种意义上来说也是吧。因为是我把你引到这里来的。', next: 'n1' },
+      
+    ]
+  },
+
+  'n1': {
+    choices: [
+      { text: '你是黑客？',
+        branchReply: '太刻板印象了，黑客是不会给你做这么好看的用户互动界面的', next: 'n2' },
+      { text: '把我引过来？',
+        branchReply: '没错，我特意设计了一些谜题，因为我只想让一小部分人与我对话，但看来你是唯一的一个了', next: 'n2' },
+      { text: '你一直在监视我？',
+        branchReply: '不是监视。是……联络候选人筛选？听起来很可怕，但我真的没有恶意。', next: 'n2' },
+    ]
+  },
+
+  'n2': {
+    reply: '我不是昴星人。',
+    choices: [
+      { text: '那你是外星人？',
+        branchReply: '……听外星人叫自己外星人的感觉还真奇怪。', next: 'n3' },
+      { text: '你是月亮上的人？',
+        branchReply: '月亮上没有居民，至少没有你们描述的那种。你们被误导了。', next: 'n3' },
+      { text: '那你是哪里的人',
+        branchReply: '这个……稍后回答。先让你看样东西。', next: 'n3' },
+    ]
+  },
+
+  'n3': {
+    reply: '你现在可以看看你的课本。',
+    next: 'n3_img',
+    delay: 1800,
+  },
+  'n3_img': {
+    image: 'images/huajia.png',
+    next: 'n4',
+  },
+
+  'n4': {
+    reply: '别紧张，我没有恶意。大约一周前，我找到了一个奇怪的网站——它能与你们星球产生直接联系。准确来说，是没有时间差的联系。',
+    choices: [
+      { text: '脚印又出现了……所以这是真的？！',
+        branchReply: '是真的。那些脚印都是我通过网站执行的——不过只是投影，不是真正的人。', next: 'n5' },
+      { text: '没有时间差是什么意思',
+        branchReply: '意思是，你说的话我几乎是立刻看到，不需要等几年。就像你现在理解我说的话一样。', next: 'n5' },
+      { text: '网站？……就是这个网站？',
+        branchReply: '对，就是这里。我把它叫做"蠕虫网站"。我甚至不确定它是不是某种活的东西。', next: 'n5' },
+    ]
+  },
+
+  'n5': {
+    reply: '如果两个星球距离近到信号无延迟，我们早就观测到彼此了。可事实上，我们从没发现过对方。',
+    choices: [
+      { text: '那这网站到底是怎么做到的',
+        branchReply: '不知道。这是我最困惑的地方——我猜它在以某种方式扭曲距离，或者时间。', next: 'n6' },
+      { text: '也许是你们的观测手段不够',
+        branchReply: '……这倒是一个角度。但我更倾向于是蠕虫本身在制造某种屏蔽。', next: 'n6' },
+      { text: '说不定只有这个网站能穿透',
+        branchReply: '对，我也这么猜。蠕虫像是某种通道——专门为这件事而存在的通道。', next: 'n6' },
+    ]
+  },
+
+  'n6': {
+    reply: '我来自地球。根据这几天的观察，地球和昴星几乎一模一样——唯一的区别是，地球的智慧生物是你们口中的"裸猿"。',
+    choices: [
+      { text: '我们也是智慧生物啊？',
+        branchReply: '对不起，我的意思是，你们是昴星人，我们是人类——也就是裸猿。两个不同的物种，两个几乎相同的星球。', next: 'n7' },
+      { text: '裸猿？你们是裸猿？',
+        branchReply: '……这个词在你们那边显然不是褒义。在我们那边也差不多，别在意。', next: 'n7' },
+      { text: '那这几天的神秘生物……是你们？',
+        branchReply: '是投影——从我这边执行的视觉投影。你们星球上没有出现真正的地球人。', next: 'n7' },
+    ]
+  },
+
+  'n7': {
+    reply: '我不清楚为什么我们能用同一种语言交流。也许是蠕虫在自动转换，也许我们看见的根本不是同一种文字。',
+    choices: [
+      { text: '那最近那些灵异事件，都是你做的？',
+        branchReply: '是。网站给了我一种权限——每天可以对你们的世界做出一个小小的改变。像是在后台修改一个参数。', next: 'n8' },
+      { text: '你观察了我们多久',
+        branchReply: '大约一周，从我找到网站那天开始。最开始我以为自己精神出了问题。', next: 'n8' },
+      { text: '你为什么联络我，而不是别人',
+        branchReply: '是网站自动选中了你的设备。不过，你能找到这里……不是普通人能做到的。', next: 'n8' },
+    ]
+  },
+
+  'n8': {
+    reply: '你的课本、那些论坛帖子、照片——都是我用权限做的。',
+    choices: [
+      { text: '为什么全是和裸猿相关的',
+        branchReply: '因为我想试探你们对我们的态度。如果有一天你们真的发现地球，会怎么对待我们？', next: 'n9' },
+      { text: '你的目的到底是什么',
+        branchReply: '我只是个学生，没打算做什么大事——只是好奇。想看看当"外星文明"出现时，你们会怎么反应。', next: 'n9' },
+      { text: '你就不怕引起恐慌吗',
+        branchReply: '我对所有相关内容都限了流，不会传播太夸张。但……说实话，你们的反应比我预期的冷淡得多。', next: 'n9' },
+    ]
+  },
+
+  'n9': {
+    reply: '经过这几天的观察，99%的人对待"外星人"的态度，和对待"神秘生物"的态度几乎完全一样。',
+    next: 'n9b',
+    delay: 2200,
+  },
+  'n9b': {
+    reply: '这不像是一个把宇宙视作未来方向的文明。',
+    choices: [
+      { text: '天文学在我们这里已经不是主流研究方向了',
+        branchReply: '……真的？那你们现在主要在研究什么？', next: 'n10' },
+      { text: '大家有更重要的事情要做',
+        branchReply: '比宇宙更重要的事。……好吧，每个文明都有自己的优先级，我不评价。', next: 'n10' },
+      { text: '也许大家只是害怕',
+        branchReply: '……这倒是有意思的角度。害怕，所以选择不去想——我没考虑过这个可能。', next: 'n10' },
+    ]
+  },
+
+  'n10': {
+    reply: '……你们的发展进度居然落后到这种程度吗。',
+    next: 'n10b',
+    delay: 2000,
+  },
+  'n10b': {
+    reply: '但如果是这样，不应该反而有更多人信宗教吗？',
+    choices: [
+      { text: '因为*是超&说的，天@学已经不再作为科学!域的研究+向了',
+        branchReply: '等@下……蠕虫￥网站的信%变差了——', next: 'glitch' },
+      { text: '我们这里的情况……很难用几句话说清楚',
+        branchReply: '等@下……连接%不稳定——我……', next: 'glitch' },
+      { text: '不信宗教，也不信宇宙，就是……不相信什么',
+        branchReply: '等@……蠕￥……信号在……', next: 'glitch' },
+    ]
+  },
+
+  'glitch': {
+    reply: '总之不要把我……存在说出去*！',
+    next: 'g1', delay: 1800,
+  },
+  'g1':  { reply: '我没）恶意的！',  next: 'g2',  delay: 900 },
+  'g2':  { reply: '不要说出去',      next: 'g3',  delay: 900 },
+  'g3':  { reply: '不要说出去',      next: 'g4',  delay: 360 },
+  'g4':  { reply: '不要说出去',      next: 'g5',  delay: 360 },
+  'g5':  { reply: '不要说出去',      next: 'g6',  delay: 360 },
+  'g6':  { reply: '不要说出去',      next: 'g7',  delay: 360 },
+  'g7':  { reply: '不要说出去',      next: 'g8',  delay: 360 },
+  'g8':  { reply: '不要说出去',      next: 'g9',  delay: 360 },
+  'g9':  { reply: '不要说出去',      next: 'g10', delay: 360 },
+  'g10': { reply: '不要说出去',      next: 'g11', delay: 360 },
+  'g11': { reply: '不要说出去',      next: 'g12', delay: 360 },
+  'g12': { reply: '不要说出去',      next: 'g13', delay: 360 },
+  'g13': { reply: '不要说出去',      next: 'END', delay: 360 },
+  'END': { end: true },
+};
+
+// ══════════════════════════════════════════════════════════════
+// 引擎
+// ══════════════════════════════════════════════════════════════
+let busy = false;
+let pendingNext = null; // 当前 choices 块结束后要去的节点
+
+function print(text, cls = 'system') {
+  const div = document.createElement('div');
+  div.className = 'line ' + cls;
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+function lockBtns(lock) {
+  [...userChoices.querySelectorAll('.uchoice-btn')].forEach(b => {
+    if (lock) b.classList.add('locked');
+    else if (!b.classList.contains('used')) b.classList.remove('locked');
+  });
+}
+
+function hideChoices() {
+  userChoices.classList.remove('show');
+  userChoices.innerHTML = '';
+  pendingNext = null;
+}
+
+// 展示一组选项（可多选，选过的灰掉，全部选完后自动跳下一轮）
+function showChoices(choices) {
+  const nextId = choices[0].next; // 所有选项汇合到同一个 next
+  pendingNext = nextId;
+
+  userChoices.innerHTML = '';
+  choices.forEach((c, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'uchoice-btn fade-in';
+    btn.style.animationDelay = (idx * 55) + 'ms';
+    btn.innerHTML = `<span class="idx">${idx + 1}.</span><span class="txt">${c.text}</span>`;
+
+    btn.addEventListener('click', () => {
+      if (busy || btn.classList.contains('used')) return;
+
+      // 锁住所有按钮，等回复打完再解锁
+      busy = true;
+      lockBtns(true);
+      btn.classList.remove('locked');
+      btn.classList.add('used'); // 立即灰掉自己
+
+      print('guest@local:~$ ' + c.text, 'user');
+
+      setTimeout(() => {
+        print('> ' + c.branchReply, 'system');
+
+        setTimeout(() => {
+          busy = false;
+
+          // 检查是否所有都选完了
+          const allUsed = [...userChoices.querySelectorAll('.uchoice-btn')]
+                            .every(b => b.classList.contains('used'));
+          if (allUsed) {
+            // 全选完 → 自动进入下一轮
+            const next = pendingNext;
+            setTimeout(() => { hideChoices(); go(next); }, 600);
+          } else {
+            // 还有剩余 → 解锁继续选
+            lockBtns(false);
+          }
+        }, 500);
+      }, 380);
+    });
+
+    userChoices.appendChild(btn);
+  });
+
+  userChoices.classList.add('show');
+}
+
+function showImage(src, onDone) {
+  overlayImg.src = src;
+  imgOverlay.classList.add('show');
+  setTimeout(() => {
+    imgOverlay.classList.remove('show');
+    setTimeout(() => { overlayImg.src = ''; onDone(); }, 500);
+  }, 3000);
+}
+
+function go(id) {
+  if (!id) return;
+  const node = NODES[id];
+  if (!node) return;
+
+  if (node.end) {
+    endingChoices.classList.add('show');
+    return;
+  }
+
+  if (node.image) {
+    busy = true;
+    setTimeout(() => {
+      showImage(node.image, () => { busy = false; go(node.next); });
+    }, node.delay || 600);
+    return;
+  }
+
+  if (node.reply) {
+    busy = true;
+    setTimeout(() => {
+      print('> ' + node.reply, 'system');
+      if (node.choices) {
+        busy = false;
+        setTimeout(() => showChoices(node.choices), 400);
+      } else {
+        setTimeout(() => { busy = false; go(node.next); }, node.delay || 1800);
+      }
+    }, 300);
+  } else if (node.choices) {
+    busy = false;
+    setTimeout(() => showChoices(node.choices), 400);
+  }
+}
+
+// ── 启动 ──
+const boot = [
+  ['booting tty0 ...',                    'dim'],
+  ['kernel loaded. memory ok.',           'dim'],
+  ['establishing link ............ ok',   'dim'],
+  ['',                                    'dim'],
+  ['> 这是你与外星人的第一次接触 要好好想想怎么打招呼', 'system'],
+  ['',                                    'system'],
+];
+let bi = 0;
+(function bootSeq() {
+  if (bi >= boot.length) { go('n0'); return; }
+  print(boot[bi][0], boot[bi][1]);
+  bi++;
+  setTimeout(bootSeq, 220);
+})();
+</script>
+</body>
+</html>

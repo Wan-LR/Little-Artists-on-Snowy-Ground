@@ -54,22 +54,6 @@
     .top-logo:hover { opacity: .7; }
     .top-logo img { height: 38px; display: block; }
 
-    .top-search { flex: 1; max-width: 440px; position: relative; }
-    .ts-wrap {
-      position: relative; background: var(--surface);
-      border: 1px solid var(--line); border-radius: 999px;
-      transition: border-color .25s, box-shadow .25s;
-    }
-    .ts-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(50,82,227,.10); }
-    .ts-wrap svg.si { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ink-faint); pointer-events: none; }
-    .ts-wrap:focus-within svg.si { color: var(--accent); }
-    .ts-input { width: 100%; height: 40px; padding: 0 44px 0 38px; background: transparent; border: none; border-radius: 999px; font-family: var(--font-body); font-size: 14px; color: var(--ink); }
-    .ts-input::placeholder { color: var(--ink-faint); }
-    .ts-input:focus { outline: none; }
-    .ts-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--accent); color: #fff; cursor: pointer; display: grid; place-items: center; transition: background .2s; }
-    .ts-btn:hover { background: var(--accent-hover); }
-    .ts-btn svg { width: 13px; height: 13px; }
-
     /* ── 主体布局(两列:正文 + 侧栏) ── */
     .layout {
       max-width: 980px;
@@ -234,13 +218,6 @@
     <div class="top-logo" onclick="window.location.href='qianbaidu.html'" title="返回首页">
       <img src="images/qianbaidu.png" alt="千百度">
     </div>
-    <form class="top-search" id="topSearchForm" novalidate>
-      <div class="ts-wrap">
-        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="ts-input" id="topSearchInput" placeholder="搜一下…" autocomplete="off">
-        <button type="submit" class="ts-btn" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-      </div>
-    </form>
   </header>
 
   <!-- 两栏布局 -->
@@ -256,10 +233,9 @@
         <p class="hero-oneliner">目前宇宙中已知唯一存在生命的天体</p>
       </div>
 
-      <section class="section">
-        <h2 class="section-title">概述</h2>
-        <p>昴星是<strong><em>人</em></strong>类目前唯一能依赖栖息的星球，人类自有信史以来就在不断积极探索和研究昴星上其它区域，并且开采各种新的自然资源为己所用，自二十世纪中后期甚至已经开始不断尝试离开昴星去探索其它地外天体。</p>
-      </section>
+
+        <p>昴星是<strong><em>人</em></strong>类目前唯一能依赖栖息的星球，人类自有信史以来就在不断积极探索和研究昴星上其它区域，并且开采各种新的自然资源为己所用，而昴星资源对于人类来说十分富裕，无需再对其他天体星球进行探索开发。</p>
+
 
     </main>
 
@@ -288,17 +264,6 @@
 
   <footer class="page-footer">© 2025 千百度 · 千百度百科 · 内容绝对不一定正确</footer>
 
-  <script>
-    const KEYWORDS_B64 = 'eyLopb/nuqLmn78iOiAieGhzMS5odG1sIiwgIueVquiMhCI6ICJ4aHMxLmh0bWwiLCAi5ZGY5belIjogImxvZ2luLmh0bWwifQ==';
-    let KEYWORDS = {};
-    try { const r = atob(KEYWORDS_B64); const b = Uint8Array.from(r, c => c.charCodeAt(0)); KEYWORDS = JSON.parse(new TextDecoder('utf-8').decode(b)); } catch(e) {}
-    document.getElementById('topSearchForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const q = document.getElementById('topSearchInput').value.trim().toLowerCase();
-      if (!q) return;
-      for (const [k, url] of Object.entries(KEYWORDS)) { if (k.toLowerCase() === q) { window.location.href = url; return; } }
-      window.location.href = 'qianbaidu.html';
-    });
-  </script>
+    <script src="nav.js"></script>
 </body>
 </html>

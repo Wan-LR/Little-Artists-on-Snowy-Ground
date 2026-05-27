@@ -92,9 +92,7 @@
   }
 
   /* 未解锁 */
-  .cell.locked {
-    cursor: pointer;
-  }
+  .cell.locked { cursor: pointer; }
   .cell.locked:hover {
     transform: scale(0.96);
     box-shadow: 0 0 14px rgba(74,144,217,0.4);
@@ -112,9 +110,7 @@
     gap: 8px;
     pointer-events: none;
   }
-  .lock-svg {
-    opacity: 0.2;
-  }
+  .lock-svg { opacity: 0.2; }
   .cell-num {
     font-family: 'Ma Shan Zheng', serif;
     font-size: 1.1rem;
@@ -123,9 +119,7 @@
   }
 
   /* 已解锁 */
-  .cell.unlocked {
-    cursor: pointer;
-  }
+  .cell.unlocked { cursor: pointer; }
   .cell.unlocked:hover {
     transform: scale(0.97);
     z-index: 2;
@@ -147,7 +141,7 @@
   }
   .cell-img.loaded { opacity: 1; }
 
-  /* 解锁动画 */
+  /* 解锁动画（一般情况，从普通解锁状态切换） */
   @keyframes unlockReveal {
     0%   { opacity: 0; transform: scale(0.8); filter: blur(6px); }
     60%  { transform: scale(1.04); filter: blur(0); }
@@ -220,6 +214,28 @@
     text-align: center;
   }
   #complete-msg.show { opacity: 1; }
+
+  /* ── 飞入九宫格的图片（从子页返回时使用） ── */
+  #fly-in-img {
+    position: fixed;
+    z-index: 999;
+    pointer-events: none;
+    object-fit: cover;
+    border-radius: 2px;
+    display: none;
+    box-shadow: 0 0 36px rgba(74,144,217,0.7);
+    will-change: top, left, width, height, transform, opacity;
+  }
+  #fly-in-img.flying {
+    display: block;
+    transition:
+      top 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+      left 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+      height 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.85s ease,
+      opacity 0.3s ease 0.7s;
+  }
 </style>
 </head>
 <body>
@@ -238,23 +254,23 @@
   <p id="complete-msg">全部解锁！</p>
 </div>
 
+<!-- 用于"图片飞回第 N 格"动画 -->
+<img id="fly-in-img" alt="">
+
 <script>
   // ═══════════════════════════════════════════════════════════════
-  // 9 个格子的配置，按顺序填写
-  // image: 拼完后正面图片路径
-  // url:   对应的华容道 HTML 文件路径
-  // id:    与华容道页面里 PUZZLE_ID 保持一致
+  // 9 个格子的配置
   // ═══════════════════════════════════════════════════════════════
   const PUZZLES = [
-    { id: 'puzzle_1', image: 'images/gongyegming.png', url: 'puzzle_1.html' },
-    { id: 'puzzle_2', image: 'images/p2.png',          url: 'puzzle_2.html' },
-    { id: 'puzzle_3', image: 'images/p3.png',          url: 'puzzle_3.html' },
-    { id: 'puzzle_4', image: 'images/p4.png',          url: 'puzzle_4.html' },
-    { id: 'puzzle_5', image: 'images/p5.png',          url: 'puzzle_5.html' },
-    { id: 'puzzle_6', image: 'images/p6.png',          url: 'puzzle_6.html' },
-    { id: 'puzzle_7', image: 'images/p7.png',          url: 'puzzle_7.html' },
-    { id: 'puzzle_8', image: 'images/p8.png',          url: 'puzzle_8.html' },
-    { id: 'puzzle_9', image: 'images/p9.png',          url: 'puzzle_9.html' },
+    { id: 'puzzle_1', image: 'images/mx1.png', url: 'puzzle_1.html' },
+    { id: 'puzzle_2', image: 'images/p2.png', url: 'puzzle_2.html' },
+    { id: 'puzzle_3', image: 'images/p3.png', url: 'puzzle_3.html' },
+    { id: 'puzzle_4', image: 'images/p4.png', url: 'puzzle_4.html' },
+    { id: 'puzzle_5', image: 'images/p5.png', url: 'puzzle_5.html' },
+    { id: 'puzzle_6', image: 'images/p6.png', url: 'puzzle_6.html' },
+    { id: 'puzzle_7', image: 'images/p7.png', url: 'puzzle_7.html' },
+    { id: 'puzzle_8', image: 'images/p8.png', url: 'puzzle_8.html' },
+    { id: 'puzzle_9', image: 'images/p9.png', url: 'puzzle_9.html' },
   ];
   // ═══════════════════════════════════════════════════════════════
 
@@ -262,7 +278,8 @@
 
   window.onload = () => {
     buildBoard();
-    // 每次页面可见时重新检查解锁状态（从子页面返回时）
+    // 检查是否需要播放"飞回"动画
+    handleReturnAnimation();
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') refreshAll();
     });
@@ -275,19 +292,16 @@
     dotsEl.innerHTML = '';
 
     PUZZLES.forEach((p, i) => {
-      // 格子
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.id = 'cell_' + i;
-      cell.addEventListener('click', () => goToPuzzle(p.url));
+      cell.addEventListener('click', () => goToPuzzle(i, p.url));
 
-      // 角标
       const badge = document.createElement('span');
       badge.className = 'cell-badge';
       badge.textContent = i + 1;
       cell.appendChild(badge);
 
-      // 锁定图标层
       const lockLayer = document.createElement('div');
       lockLayer.className = 'lock-icon';
       lockLayer.id = 'lock_' + i;
@@ -301,7 +315,6 @@
       `;
       cell.appendChild(lockLayer);
 
-      // 图片层
       const img = document.createElement('img');
       img.className = 'cell-img';
       img.alt = '第' + (i + 1) + '格';
@@ -311,7 +324,6 @@
 
       board.appendChild(cell);
 
-      // 进度点
       const dot = document.createElement('div');
       dot.className = 'dot';
       dot.id = 'dot_' + i;
@@ -330,15 +342,14 @@
   function updateCell(i, animate) {
     const p = PUZZLES[i];
     const isUnlocked = localStorage.getItem(p.id + '_unlocked') === 'true';
-    const cell  = document.getElementById('cell_' + i);
-    const lock  = document.getElementById('lock_' + i);
-    const img   = document.getElementById('img_' + i);
-    const dot   = document.getElementById('dot_' + i);
+    const cell = document.getElementById('cell_' + i);
+    const lock = document.getElementById('lock_' + i);
+    const img  = document.getElementById('img_' + i);
+    const dot  = document.getElementById('dot_' + i);
 
     if (isUnlocked) {
       unlockedCount++;
       if (!cell.classList.contains('unlocked')) {
-        // 首次解锁
         cell.classList.remove('locked');
         cell.classList.add('unlocked');
         if (animate) cell.classList.add('just-unlocked');
@@ -363,13 +374,106 @@
     else msg.classList.remove('show');
   }
 
-  function goToPuzzle(url) {
+  // ── 进入子页面：保存第 i 格的屏幕坐标 ──
+  function goToPuzzle(i, url) {
+    const cell = document.getElementById('cell_' + i);
+    const r = cell.getBoundingClientRect();
+    sessionStorage.setItem('puzzle_origin', JSON.stringify({
+      index: i,
+      left:  r.left,
+      top:   r.top,
+      width: r.width,
+      height: r.height
+    }));
     window.location.href = url;
   }
 
-  // 开发用：重置所有解锁状态（在控制台调用 resetAll()）
+  // ── 处理从子页面带回的"飞入"动画 ──
+  function handleReturnAnimation() {
+    const raw = sessionStorage.getItem('puzzle_returning');
+    if (!raw) return;
+
+    let data;
+    try { data = JSON.parse(raw); } catch (e) { sessionStorage.removeItem('puzzle_returning'); return; }
+    sessionStorage.removeItem('puzzle_returning');
+
+    const i = data.index;
+    if (i == null || !PUZZLES[i]) return;
+
+    const p = PUZZLES[i];
+
+    // 确保该格已被标记为解锁
+    if (localStorage.getItem(p.id + '_unlocked') !== 'true') return;
+
+    // 隐藏目标格内的图片，等飞入动画结束后再显示（防止重影）
+    const targetImg = document.getElementById('img_' + i);
+    const targetCell = document.getElementById('cell_' + i);
+    targetImg.style.opacity = '0';
+
+    // 取目标格的屏幕坐标作为终点
+    const targetRect = targetCell.getBoundingClientRect();
+
+    // 起始坐标 = 子页面传过来的卡片当前位置和尺寸
+    const start = data.from || {
+      left:  window.innerWidth / 2 - 110,
+      top:   window.innerHeight / 2 - 110,
+      width: 220,
+      height: 220
+    };
+
+    const flyImg = document.getElementById('fly-in-img');
+    flyImg.src = p.image;
+
+    // 设置起点（先不加 flying 类，避免 transition 立即触发）
+    flyImg.style.display = 'block';
+    flyImg.style.left   = start.left + 'px';
+    flyImg.style.top    = start.top + 'px';
+    flyImg.style.width  = start.width + 'px';
+    flyImg.style.height = start.height + 'px';
+    flyImg.style.opacity = '1';
+
+    // 等图加载完再开始动画，否则可能跳变
+    const startAnim = () => {
+      // 强制 reflow 让上面的初始值生效
+      void flyImg.offsetWidth;
+      flyImg.classList.add('flying');
+
+      // 触发动画到目标位置
+      requestAnimationFrame(() => {
+        flyImg.style.left   = targetRect.left + 'px';
+        flyImg.style.top    = targetRect.top + 'px';
+        flyImg.style.width  = targetRect.width + 'px';
+        flyImg.style.height = targetRect.height + 'px';
+        flyImg.style.boxShadow = '0 0 0 rgba(74,144,217,0)';
+      });
+
+      // 动画结束后把图片真正放进格子里
+      setTimeout(() => {
+        targetImg.style.opacity = '';
+        targetImg.classList.add('loaded');
+        targetCell.classList.add('just-unlocked');
+        flyImg.classList.remove('flying');
+        flyImg.style.display = 'none';
+        flyImg.style.opacity = '';
+        flyImg.style.boxShadow = '';
+      }, 900);
+    };
+
+    if (flyImg.complete && flyImg.naturalWidth > 0) {
+      startAnim();
+    } else {
+      flyImg.onload = startAnim;
+      // 兜底，避免图片加载失败时卡住
+      setTimeout(() => {
+        if (flyImg.style.display !== 'none' && !flyImg.classList.contains('flying')) startAnim();
+      }, 800);
+    }
+  }
+
+  // 开发用：重置所有解锁状态
   window.resetAll = () => {
     PUZZLES.forEach(p => localStorage.removeItem(p.id + '_unlocked'));
+    sessionStorage.clear();
     refreshAll();
   };
 </script>

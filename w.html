@@ -256,10 +256,12 @@ const overlayImg    = document.getElementById('overlay-img');
 // ══════════════════════════════════════════════════════════════
 // NODES
 // reply       — 对方先说的话
-// choices     — [ { text, branchReply, next } ]
+// choices     — [ { text, branchReply, next, extra? } ]
 //               选过的会灰掉，可继续选其他
 //               全部选完后自动跳 next
 //               所有 choice 的 next 必须相同（汇合点）
+//   extra     — 该分支的额外对白，播完后【回到本菜单】(不前进)
+//               [ { from:'user'|'system', text:'...', delay?:ms } ]
 // next        — 无 choices 时自动跳转
 // delay       — 自动跳转延迟 ms（默认 1800）
 // image       — 展示图片后跳 next
@@ -281,7 +283,16 @@ const NODES = {
       { text: '你是黑客？',
         branchReply: '太刻板印象了，黑客是不会给你做这么好看的用户互动界面的', next: 'n2' },
       { text: '把我引过来？',
-        branchReply: '没错，我特意设计了一些谜题，因为我只想让一小部分人与我对话，但看来你是唯一的一个了', next: 'n2' },
+        branchReply: '没错，我特意设计了一些谜题，因为我只想让一小部分人与我对话，但看来你是唯一的一个了',
+        // ↓↓↓ 这条分支的额外聊天，播完后回到 n1 菜单（继续选其他项）。文字随意改。
+        extra: [
+          { from: 'user',   text: '唯一一个？其他人呢' },
+          { from: 'system', text: '要么没解开谜题，要么解开了却假装没看见。只有你一路找到了这里。' },
+          { from: 'user',   text: '那你为什么非要找到人不可' },
+          { from: 'system', text: '一个人想明白的事，总得说给另一个人听才算数。' },
+          { from: 'system', text: '别急——你还有想问的，对吧？继续问。' },
+        ],
+        next: 'n2' },
       { text: '你一直在监视我？',
         branchReply: '不是监视。是……联络候选人筛选？听起来很可怕，但我真的没有恶意。', next: 'n2' },
     ]
@@ -450,6 +461,19 @@ function hideChoices() {
   pendingNext = null;
 }
 
+// 顺序播放某分支的额外对白，播完后调用 done()
+function playExtra(lines, i, done) {
+  if (i >= lines.length) { setTimeout(done, 500); return; }
+  const ln = lines[i];
+  const isUser = ln.from === 'user';
+  const prefix = isUser ? 'guest@local:~$ ' : '> ';
+  const cls    = isUser ? 'user' : 'system';
+  setTimeout(() => {
+    print(prefix + ln.text, cls);
+    playExtra(lines, i + 1, done);
+  }, ln.delay || 900);
+}
+
 // 展示一组选项（可多选，选过的灰掉，全部选完后自动跳下一轮）
 function showChoices(choices) {
   const nextId = choices[0].next; // 所有选项汇合到同一个 next
@@ -473,24 +497,30 @@ function showChoices(choices) {
 
       print('guest@local:~$ ' + c.text, 'user');
 
+      // 回复打完（含可选的额外对白）后的收尾：判断是否全选完
+      const finalize = () => {
+        busy = false;
+        const allUsed = [...userChoices.querySelectorAll('.uchoice-btn')]
+                          .every(b => b.classList.contains('used'));
+        if (allUsed) {
+          // 全选完 → 自动进入下一轮
+          const next = pendingNext;
+          setTimeout(() => { hideChoices(); go(next); }, 600);
+        } else {
+          // 还有剩余 → 解锁继续选（即“回到本菜单”）
+          lockBtns(false);
+        }
+      };
+
       setTimeout(() => {
         print('> ' + c.branchReply, 'system');
 
-        setTimeout(() => {
-          busy = false;
-
-          // 检查是否所有都选完了
-          const allUsed = [...userChoices.querySelectorAll('.uchoice-btn')]
-                            .every(b => b.classList.contains('used'));
-          if (allUsed) {
-            // 全选完 → 自动进入下一轮
-            const next = pendingNext;
-            setTimeout(() => { hideChoices(); go(next); }, 600);
-          } else {
-            // 还有剩余 → 解锁继续选
-            lockBtns(false);
-          }
-        }, 500);
+        if (c.extra && c.extra.length) {
+          // 这条分支有额外聊天：播完后回到菜单（busy 维持锁定中）
+          playExtra(c.extra, 0, finalize);
+        } else {
+          setTimeout(finalize, 500);
+        }
       }, 380);
     });
 

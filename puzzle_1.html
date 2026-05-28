@@ -208,23 +208,25 @@
 
   /* ── 底部交互区 ── */
   .action-area {
-    height: 44px;
-    display: flex;
+    display: none;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
   }
+  .action-area.show { display: flex; animation: fadeInUp 0.4s ease; }
 
   .word-input-wrap {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 8px;
   }
-  .word-input-wrap.show { display: flex; animation: fadeInUp 0.4s ease; }
 
-  .btn-replay {
-    display: none;
-    align-items: center;
-    gap: 6px;
+  .btn-row {
+    display: flex;
+    gap: 16px;
+  }
+
+  .btn-replay, .btn-submit {
     font-family: 'Noto Serif SC', serif;
     font-size: 0.78rem;
     letter-spacing: 0.12em;
@@ -236,10 +238,13 @@
     cursor: pointer;
     transition: all 0.25s ease;
   }
-  .btn-replay.show { display: flex; animation: fadeInUp 0.4s ease 0.2s; }
-  .btn-replay:hover {
+  .btn-replay:hover, .btn-submit:hover {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+  }
+  .btn-submit {
+    background: rgba(74,144,217,0.2);
+    border-color: var(--accent);
   }
 
   @keyframes fadeInUp {
@@ -337,7 +342,8 @@
     position: relative;
     background: linear-gradient(135deg, rgba(244, 233, 210, 0.97), rgba(220, 207, 178, 0.95));
     color: #2a1a0a;
-    padding: 14px 18px 18px 38px;
+    /* 左右内边距对称，右下给箭头留出空间 → 文字居中显示 */
+    padding: 14px 18px 22px 18px;
     border-radius: 4px;
     font-family: 'Noto Serif SC', serif;
     font-size: 0.86rem;
@@ -387,8 +393,8 @@
 
   .next-arrow {
     position: absolute;
-    left: 12px;
-    bottom: 6px;
+    right: 12px;
+    bottom: 4px;
     font-size: 0.85rem;
     color: #8b5a2b;
     animation: arrow-blink 1.2s ease-in-out infinite;
@@ -396,7 +402,7 @@
 
   @keyframes arrow-blink {
     0%, 100% { opacity: 0.25; transform: translateX(0); }
-    50%      { opacity: 1;    transform: translateX(-3px); }
+    50%      { opacity: 1;    transform: translateX(3px); }
   }
 
   .rooster {
@@ -471,15 +477,18 @@
     </div>
   </div>
 
-  <div class="action-area">
-    <div class="word-input-wrap" id="word-wrap">
+  <div class="action-area" id="action-area">
+    <div class="word-input-wrap">
       <input class="word-input" id="word-input" type="text"
              placeholder="输入密码…" autocomplete="off" spellcheck="false">
     </div>
-    <button class="btn-replay" id="btn-replay" onclick="resetGame()">↻ 重新掉落</button>
+    <div class="btn-row">
+      <button class="btn-replay" id="btn-replay" onclick="resetGame()">↻ 重新掉落</button>
+      <button class="btn-submit" id="btn-submit" onclick="checkPassword()">确 认</button>
+    </div>
   </div>
 
-  <p class="hint" id="main-hint">点击右下角的公鸡 听他说话</p>
+  <p class="hint" id="main-hint"></p>
   <p id="flip-hint">点击图片可翻回正面</p>
 </div>
 
@@ -487,7 +496,7 @@
 <div class="rooster-container" id="rooster-container">
   <div class="speech-bubble" id="speech-bubble">
     <span id="bubble-text"></span>
-    <span class="next-arrow">◂</span>
+    <span class="next-arrow">▸</span>
   </div>
   <div class="rooster" id="rooster">
     <img id="rooster-img" src="images/mojingji.png" alt="公鸡"
@@ -498,7 +507,7 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/mx1.png';
+  const BACK_IMAGE  = 'images/gongyegeming.png';
   const PASSWORD    = 'ceres';
   const PUZZLE_ID   = 'puzzle_1';
   const PUZZLE_INDEX = 0;          // 这是九宫格里的第 1 格（索引 0）
@@ -515,22 +524,26 @@
 
   const dialogues = {
     intro: [
-      '咯咯咯——欢迎来到苹果与篮子。',
-      '你看,下方那只篮子上写着一个字母——那是我们这一轮要收集的字母。',
-      '点击中间的苹果,它会自动落入正确的篮子里。',
-      '总共有五轮,把五个字母按顺序记下来,就能拼出密码。',
-      '准备好了吗?现在去点苹果吧!'
+      '咯咯咯——欢迎了解我们的过去',
+      '这其实是给我们内部实习生培训用的，但是因为不想再做第二个PPT所以就拿来用了',
+      '总之你得解开一些简单的题目来了解',
+      '这是第一题，很简单吧？',
+      '我记得地球也有球心引力吧？'
     ],
     playing: [
-      '咯咯咯,加油!别忘了看下方篮子上的字母。',
-      '一个一个来,急不来的。',
-      '把五个字母连起来——那就是答案。',
-      '我相信你,咯咯咯~'
+      '咯咯咯,记性不好可以再来一次',
+      '是有顺序的哟',
+      '第一题其实不需要提示吧'
+
     ],
     ending: [
-      '咯咯咯——你真的把密码拼出来了!',
-      '你看,这张图就藏在密码后面。',
-      '它是大九宫格里的一块碎片。',
+      '科学，很奇妙吧。',
+      '苹果会落到下方的篮子里，就像太阳永远会在第二天升起',
+      '一切的结果终究有一个可以探索的原因',
+      '五百多年前的我们也是这么想的',
+      '那时我们中的一部分人深陷其中，并有了一些切实的发现与应用，工业机器就这么诞生了',
+      '噢其实我们是用不到珍妮机的，但为了让你理解还是画上去了',
+      '那时的我们还是选择了美好人世间的',
       '让它归位吧,咯咯咯——'
     ]
   };
@@ -721,8 +734,7 @@
     document.getElementById('apple').style.display = 'none';
     document.getElementById('success-msg').style.display = 'flex';
 
-    document.getElementById('word-wrap').classList.add('show');
-    document.getElementById('btn-replay').classList.add('show');
+    document.getElementById('action-area').classList.add('show');
     document.getElementById('main-hint').style.opacity = '0';
 
     setTimeout(() => {
@@ -745,9 +757,7 @@
     document.getElementById('apple').classList.remove('locked');
     document.getElementById('success-msg').style.display = 'none';
 
-    const wordWrap = document.getElementById('word-wrap');
-    wordWrap.classList.remove('show');
-    document.getElementById('btn-replay').classList.remove('show');
+    document.getElementById('action-area').classList.remove('show');
     document.getElementById('main-hint').style.opacity = '';
     document.getElementById('main-hint').textContent = '点击苹果 它会落入哪个袋子';
 
@@ -771,7 +781,7 @@
     document.getElementById('flip-hint').classList.add('show');
 
     if (nowFlipped) {
-      document.getElementById('flip-hint').textContent = '听公鸡说完话…';
+      document.getElementById('flip-hint').textContent = '听我说完先…';
 
       setTimeout(() => {
         gamePhase = 'ending';

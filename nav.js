@@ -38,50 +38,47 @@
   // ── 数据定义 ──
   var CATEGORIES = {
     '西红柿': [
-      { id:'xhsyingwu',    label:'养金刚鹦鹉' },
-      { id:'xhstroisbody', label:'仨体 Day2' },
+      { id:'xhsyingwu',    label:'金刚鹦鹉' },
+      { id:'xhstroisbody', label:'仨体' },
       { id:'xhsjiankang',  label:'健康生活' },
-      { id:'xhsyiqing',    label:'yq六年' },
-      { id:'xhshuajia',    label:'语文书配图' },
-      { id:'xhsyubian',    label:'宇宙编撰部' },
-      { id:'xhsfumao',     label:'猫叼孩子' },
+      { id:'xhsyiqing',    label:'疫情' },
+      { id:'xhshuajia',    label:'语文书' },
+      { id:'xhsfumao',     label:'孵猫' },
       { id:'xhschongyan',  label:'彩南虫宴' },
-      { id:'xhsxunyu',     label:'熏鱼眼睛' },
-      { id:'xhsshangzhua', label:'上爪问题' },
+      { id:'xhsxunyu',     label:'熏鱼' },
+      { id:'xhsshangzhua', label:'上爪' },
       { id:'xhsyingwupl',  label:'金刚鹦鹉(评)' },
       { id:'xhstroisbodypl',label:'仨体(评)' },
       { id:'xhsjiankangpl',label:'健康(评)' },
-      { id:'xhsyiqingpl',  label:'yq(评)' },
-      { id:'xhsyubianpl',  label:'宇宙(评)' },
+      { id:'xhsyiqingpl',  label:'y疫情(评)' },
       { id:'xhsbwbj',      label:'霸王别姬' },
       { id:'xhsmbc',       label:'鹦鹉套餐' },
       { id:'xhswangle',    label:'首页推荐' },
-      { id:'xhscasetubu',  label:'脚印工单' },
-      { id:'xhscasexiaban',label:'裸猿工单' },
-      { id:'xhscaseyouyong',label:'水猴子工单' },
-      { id:'xhscasexiangxia',label:'这是什么工单' },
-      { id:'xhshuajiabucuo',label:'雪地小画家' },
+      { id:'xhscasetubu',  label:'徒步发现的脚印' },
+      { id:'xhscasexiaban',label:'下班发现裸猿' },
+      { id:'xhscaseyouyong',label:'水猴子' },
+      { id:'xhscasexiangxia',label:'无意拍摄' },
+      { id:'xhshuajiabucuo',label:'雪地里的小画家' },
       { id:'xhsweys',      label:'威尔已死' },
-      { id:'xhsxiaolantx', label:'新头像' },
+      { id:'xhsxiaolantx', label:'小蓝的头像' },
       { id:'xhsyuangong',  label:'员工后台' },
-      { id:'jisuanji1',    label:'计算机 Day1' },
-      { id:'jisuanji2',    label:'计算机 Day2' },
-      { id:'jisuanji3',    label:'计算机 Day3' },
+      { id:'jisuanji2',    label:'计算机' },
+
     ],
     '矢呼': [
       { id:'shssnn',          label:'穗穗黏黏' },
       { id:'shheianmaitian',  label:'黑暗麦田' },
-      { id:'shfg',            label:'风格' },
+      { id:'shfg',            label:'文麦特主页' },
       { id:'shdx',            label:'大学' },
-      { id:'shhpy',           label:'花瓶鱼' },
-      { id:'shwosihu',        label:'我是虎' },
+      { id:'shhpy',           label:'好朋友' },
+      { id:'shwosihu',        label:'沃斯湖' },
       { id:'shxueshan',       label:'雪山' },
-      { id:'shjm',            label:'解密' },
-      { id:'shsjz',           label:'时间轴' },
-      { id:'shiershengxiao',  label:'十二生肖' },
+      { id:'shjm',            label:'穗子主页' },
+      { id:'shsjz',           label:'十进制' },
     ],
     '千百度': [
       { id:'qbdxdldxhj',  label:'雪地里的小画家' },
+      { id:'shiershengxiao',  label:'十二生肖' },
       { id:'qbdxcy',       label:'旧城疫' },
       { id:'qbdmaoxing',   label:'昴星' },
       { id:'qbdrenlei',    label:'人类' },
@@ -187,8 +184,11 @@
 
   var bodyHTML = '';
   for (var cat in CATEGORIES) {
-    bodyHTML += '<div class="idx-cat"><div class="idx-cat-title">' + cat + '</div>';
     var items = CATEGORIES[cat];
+    // 该组是否有至少一个页面已访问
+    var anySeen = items.some(function(it) { return visitedSet.indexOf(it.id) !== -1; });
+    var catTitle = anySeen ? cat : '???';
+    bodyHTML += '<div class="idx-cat"><div class="idx-cat-title">' + catTitle + '</div>';
     for (var j = 0; j < items.length; j++) {
       var it = items[j];
       var seen = visitedSet.indexOf(it.id) !== -1;

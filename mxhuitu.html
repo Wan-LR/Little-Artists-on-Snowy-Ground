@@ -86,30 +86,45 @@
     position: relative;
     overflow: hidden;
     border-radius: 2px;
-    cursor: pointer;
     background: var(--locked);
     transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.3s ease;
   }
 
-  /* 未解锁 */
-  .cell.locked { cursor: pointer; }
-  .cell.locked:hover {
-    transform: scale(0.96);
-    box-shadow: 0 0 14px rgba(74,144,217,0.4);
-  }
-  .cell.locked:active { transform: scale(0.93); }
+  /* 完全锁定 */
+  .cell.state-locked { cursor: not-allowed; }
 
-  /* 锁定状态内容 */
+  /* 可挑战 */
+  .cell.state-available { cursor: pointer; }
+  .cell.state-available:hover {
+    transform: scale(0.97);
+    z-index: 2;
+    box-shadow: 0 0 16px rgba(74,144,217,0.5);
+    filter: brightness(1.08);
+  }
+  .cell.state-available:active { transform: scale(0.94); }
+
+  /* 已通关 */
+  .cell.state-done { cursor: pointer; }
+  .cell.state-done:hover {
+    transform: scale(0.97);
+    z-index: 2;
+    box-shadow: 0 0 18px rgba(74,144,217,0.6);
+    filter: brightness(1.08);
+  }
+  .cell.state-done:active { transform: scale(0.94); }
+
+  /* 锁层 */
   .lock-icon {
     position: absolute;
     inset: 0;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 8px;
     pointer-events: none;
   }
+  .cell.state-locked .lock-icon { display: flex; }
   .lock-svg { opacity: 0.2; }
   .cell-num {
     font-family: 'Ma Shan Zheng', serif;
@@ -118,16 +133,26 @@
     letter-spacing: 0.05em;
   }
 
-  /* 已解锁 */
-  .cell.unlocked { cursor: pointer; }
-  .cell.unlocked:hover {
-    transform: scale(0.97);
-    z-index: 2;
-    box-shadow: 0 0 18px rgba(74,144,217,0.6);
-    filter: brightness(1.08);
+  /* Emoji 入口 */
+  .emoji-hint {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.6rem;
+    pointer-events: none;
+    text-shadow: 0 4px 16px rgba(74,144,217,0.5);
+    animation: emoji-pulse 2.4s ease-in-out infinite;
   }
-  .cell.unlocked:active { transform: scale(0.94); }
+  .cell.state-available .emoji-hint { display: flex; }
 
+  @keyframes emoji-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.95; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+
+  /* 原图层 */
   .cell-img {
     width: 100%;
     height: 100%;
@@ -140,8 +165,8 @@
     transition: opacity 0.5s ease;
   }
   .cell-img.loaded { opacity: 1; }
+  .cell:not(.state-done) .cell-img { opacity: 0 !important; }
 
-  /* 解锁动画（一般情况，从普通解锁状态切换） */
   @keyframes unlockReveal {
     0%   { opacity: 0; transform: scale(0.8); filter: blur(6px); }
     60%  { transform: scale(1.04); filter: blur(0); }
@@ -149,6 +174,15 @@
   }
   .cell.just-unlocked {
     animation: unlockReveal 0.6s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+
+  @keyframes availableReveal {
+    0%   { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .cell.just-available .emoji-hint {
+    animation: availableReveal 0.5s ease-out 0.2s backwards,
+               emoji-pulse 2.4s ease-in-out infinite 0.7s;
   }
 
   /* 角标 */
@@ -174,7 +208,9 @@
     opacity: 0;
     transition: opacity 0.3s ease 0.3s;
   }
-  .cell.unlocked .cell-badge { opacity: 1; }
+  .cell.state-done .cell-badge,
+  .cell.state-available .cell-badge { opacity: 1; }
+  .cell.state-available .cell-badge { background: rgba(168,204,240,0.6); }
 
   /* 进度提示 */
   .progress-row {
@@ -201,7 +237,6 @@
   }
   .dot.on { background: var(--accent); box-shadow: 0 0 5px rgba(74,144,217,0.6); }
 
-  /* 全部完成提示 */
   #complete-msg {
     font-family: 'Ma Shan Zheng', serif;
     font-size: 1.1rem;
@@ -215,7 +250,7 @@
   }
   #complete-msg.show { opacity: 1; }
 
-  /* ── 飞入九宫格的图片（从子页返回时使用） ── */
+  /* 飞入图片 */
   #fly-in-img {
     position: fixed;
     z-index: 999;
@@ -254,23 +289,26 @@
   <p id="complete-msg">全部解锁！</p>
 </div>
 
-<!-- 用于"图片飞回第 N 格"动画 -->
 <img id="fly-in-img" alt="">
 
 <script>
   // ═══════════════════════════════════════════════════════════════
   // 9 个格子的配置
+  //   id    : localStorage 标记键
+  //   emoji : 该格"可挑战"时显示的入口提示 emoji（你可以随时替换）
+  //   image : 该题通关后显示的原图
+  //   url   : 谜题页面
   // ═══════════════════════════════════════════════════════════════
   const PUZZLES = [
-    { id: 'puzzle_1', image: 'images/mx1.png', url: 'puzzle_1.html' },
-    { id: 'puzzle_2', image: 'images/p2.png', url: 'puzzle_2.html' },
-    { id: 'puzzle_3', image: 'images/p3.png', url: 'puzzle_3.html' },
-    { id: 'puzzle_4', image: 'images/p4.png', url: 'puzzle_4.html' },
-    { id: 'puzzle_5', image: 'images/p5.png', url: 'puzzle_5.html' },
-    { id: 'puzzle_6', image: 'images/p6.png', url: 'puzzle_6.html' },
-    { id: 'puzzle_7', image: 'images/p7.png', url: 'puzzle_7.html' },
-    { id: 'puzzle_8', image: 'images/p8.png', url: 'puzzle_8.html' },
-    { id: 'puzzle_9', image: 'images/p9.png', url: 'puzzle_9.html' },
+    { id: 'puzzle_1', emoji: '🍎', image: 'images/gongyegeming.png', url: 'puzzle_1.html' },
+    { id: 'puzzle_2', emoji: '🦆', image: 'images/p2.png',           url: 'puzzle_2.html' },
+    { id: 'puzzle_3', emoji: '🥣', image: 'images/p3.png',           url: 'puzzle_3.html' },
+    { id: 'puzzle_4', emoji: '🥚', image: 'images/p4.png',           url: 'puzzle_4.html' },
+    { id: 'puzzle_5', emoji: '💻', image: 'images/p5.png',           url: 'puzzle_5.html' },
+    { id: 'puzzle_6', emoji: '💥', image: 'images/p6.png',           url: 'puzzle_6.html' },
+    { id: 'puzzle_7', emoji: '🪖', image: 'images/p7.png',           url: 'puzzle_7.html' },
+    { id: 'puzzle_8', emoji: '🧠', image: 'images/p8.png',           url: 'puzzle_8.html' },
+    { id: 'puzzle_9', emoji: '👁️', image: 'images/p9.png',           url: 'puzzle_9.html' },
   ];
   // ═══════════════════════════════════════════════════════════════
 
@@ -278,7 +316,6 @@
 
   window.onload = () => {
     buildBoard();
-    // 检查是否需要播放"飞回"动画
     handleReturnAnimation();
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') refreshAll();
@@ -295,7 +332,7 @@
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.id = 'cell_' + i;
-      cell.addEventListener('click', () => goToPuzzle(i, p.url));
+      cell.addEventListener('click', () => onCellClick(i));
 
       const badge = document.createElement('span');
       badge.className = 'cell-badge';
@@ -315,6 +352,12 @@
       `;
       cell.appendChild(lockLayer);
 
+      const emojiLayer = document.createElement('div');
+      emojiLayer.className = 'emoji-hint';
+      emojiLayer.id = 'emoji_' + i;
+      emojiLayer.textContent = p.emoji;
+      cell.appendChild(emojiLayer);
+
       const img = document.createElement('img');
       img.className = 'cell-img';
       img.alt = '第' + (i + 1) + '格';
@@ -333,34 +376,44 @@
     refreshAll();
   }
 
+  // 判断某格当前状态
+  // done       : 已通关 → 显示原图，可点击重看
+  // available  : 可挑战 → 显示 emoji，可点击进入
+  // locked     : 前置未通关 → 显示锁，不可点击
+  function getCellState(i) {
+    if (isPuzzleDone(i)) return 'done';
+    if (i === 0) return 'available';
+    if (isPuzzleDone(i - 1)) return 'available';
+    return 'locked';
+  }
+
+  function isPuzzleDone(i) {
+    return localStorage.getItem(PUZZLES[i].id + '_unlocked') === 'true';
+  }
+
   function refreshAll() {
     unlockedCount = 0;
-    PUZZLES.forEach((p, i) => updateCell(i, false));
+    PUZZLES.forEach((p, i) => updateCell(i));
     updateProgress();
   }
 
-  function updateCell(i, animate) {
+  function updateCell(i) {
     const p = PUZZLES[i];
-    const isUnlocked = localStorage.getItem(p.id + '_unlocked') === 'true';
+    const state = getCellState(i);
     const cell = document.getElementById('cell_' + i);
-    const lock = document.getElementById('lock_' + i);
     const img  = document.getElementById('img_' + i);
     const dot  = document.getElementById('dot_' + i);
 
-    if (isUnlocked) {
+    cell.classList.remove('state-done', 'state-available', 'state-locked');
+    cell.classList.add('state-' + state);
+
+    if (state === 'done') {
       unlockedCount++;
-      if (!cell.classList.contains('unlocked')) {
-        cell.classList.remove('locked');
-        cell.classList.add('unlocked');
-        if (animate) cell.classList.add('just-unlocked');
-        lock.style.display = 'none';
+      if (!img.src.endsWith(p.image)) {
         img.src = p.image;
-        dot.classList.add('on');
       }
+      dot.classList.add('on');
     } else {
-      cell.classList.remove('unlocked', 'just-unlocked');
-      cell.classList.add('locked');
-      lock.style.display = '';
       img.src = '';
       img.classList.remove('loaded');
       dot.classList.remove('on');
@@ -374,7 +427,30 @@
     else msg.classList.remove('show');
   }
 
-  // ── 进入子页面：保存第 i 格的屏幕坐标 ──
+  function onCellClick(i) {
+    const state = getCellState(i);
+    if (state === 'locked') {
+      shakeCell(i);
+      return;
+    }
+    goToPuzzle(i, PUZZLES[i].url);
+  }
+
+  function shakeCell(i) {
+    const cell = document.getElementById('cell_' + i);
+    cell.animate(
+      [
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-4px)' },
+        { transform: 'translateX(4px)' },
+        { transform: 'translateX(-3px)' },
+        { transform: 'translateX(3px)' },
+        { transform: 'translateX(0)' },
+      ],
+      { duration: 280, easing: 'ease-out' }
+    );
+  }
+
   function goToPuzzle(i, url) {
     const cell = document.getElementById('cell_' + i);
     const r = cell.getBoundingClientRect();
@@ -388,7 +464,6 @@
     window.location.href = url;
   }
 
-  // ── 处理从子页面带回的"飞入"动画 ──
   function handleReturnAnimation() {
     const raw = sessionStorage.getItem('puzzle_returning');
     if (!raw) return;
@@ -401,19 +476,14 @@
     if (i == null || !PUZZLES[i]) return;
 
     const p = PUZZLES[i];
+    if (!isPuzzleDone(i)) return;
 
-    // 确保该格已被标记为解锁
-    if (localStorage.getItem(p.id + '_unlocked') !== 'true') return;
-
-    // 隐藏目标格内的图片，等飞入动画结束后再显示（防止重影）
     const targetImg = document.getElementById('img_' + i);
     const targetCell = document.getElementById('cell_' + i);
     targetImg.style.opacity = '0';
 
-    // 取目标格的屏幕坐标作为终点
     const targetRect = targetCell.getBoundingClientRect();
 
-    // 起始坐标 = 子页面传过来的卡片当前位置和尺寸
     const start = data.from || {
       left:  window.innerWidth / 2 - 110,
       top:   window.innerHeight / 2 - 110,
@@ -424,7 +494,6 @@
     const flyImg = document.getElementById('fly-in-img');
     flyImg.src = p.image;
 
-    // 设置起点（先不加 flying 类，避免 transition 立即触发）
     flyImg.style.display = 'block';
     flyImg.style.left   = start.left + 'px';
     flyImg.style.top    = start.top + 'px';
@@ -432,13 +501,10 @@
     flyImg.style.height = start.height + 'px';
     flyImg.style.opacity = '1';
 
-    // 等图加载完再开始动画，否则可能跳变
     const startAnim = () => {
-      // 强制 reflow 让上面的初始值生效
       void flyImg.offsetWidth;
       flyImg.classList.add('flying');
 
-      // 触发动画到目标位置
       requestAnimationFrame(() => {
         flyImg.style.left   = targetRect.left + 'px';
         flyImg.style.top    = targetRect.top + 'px';
@@ -447,7 +513,6 @@
         flyImg.style.boxShadow = '0 0 0 rgba(74,144,217,0)';
       });
 
-      // 动画结束后把图片真正放进格子里
       setTimeout(() => {
         targetImg.style.opacity = '';
         targetImg.classList.add('loaded');
@@ -456,6 +521,14 @@
         flyImg.style.display = 'none';
         flyImg.style.opacity = '';
         flyImg.style.boxShadow = '';
+
+        // 下一格也"点亮"动画
+        const nextIdx = i + 1;
+        if (nextIdx < PUZZLES.length) {
+          const nextCell = document.getElementById('cell_' + nextIdx);
+          nextCell.classList.add('just-available');
+          setTimeout(() => nextCell.classList.remove('just-available'), 1500);
+        }
       }, 900);
     };
 
@@ -463,14 +536,13 @@
       startAnim();
     } else {
       flyImg.onload = startAnim;
-      // 兜底，避免图片加载失败时卡住
       setTimeout(() => {
         if (flyImg.style.display !== 'none' && !flyImg.classList.contains('flying')) startAnim();
       }, 800);
     }
   }
 
-  // 开发用：重置所有解锁状态
+  // 开发用
   window.resetAll = () => {
     PUZZLES.forEach(p => localStorage.removeItem(p.id + '_unlocked'));
     sessionStorage.clear();

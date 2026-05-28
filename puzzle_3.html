@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>能吃与不能吃</title>
+<title>三仙归洞</title>
 <style>
   @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
@@ -157,77 +157,106 @@
     letter-spacing: 0.24em;
   }
 
-  /* 选项行 */
-  .options-row {
+  /* ── 碗行（三仙归洞）── */
+  .bowls-row {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 52%; left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
-    gap: 22px;
+    gap: 30px;
   }
-  .options-row.locked .option-tile { pointer-events: none; }
+  .bowls-row.locked .bowl-slot { pointer-events: none; }
 
-  .option-tile {
+  .bowl-slot {
     position: relative;
-    width: 104px;
-    height: 104px;
-    background: linear-gradient(135deg, rgba(74,144,217,0.12), rgba(20,60,140,0.20));
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    width: 110px;
+    height: 132px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    font-size: 3rem;
     cursor: pointer;
     user-select: none;
-    transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
-    box-shadow: inset 0 1px 0 rgba(74,144,217,0.15), 0 4px 10px rgba(0,0,0,0.45);
-    /* 让卡片处于 3D 上下文里时，瓦片始终正面朝向、独立成层，避免抖动时被剔除而"消失" */
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
+    transition: opacity 0.35s ease;
+  }
+
+  /* 碗下藏的词（初始被碗盖住，掀开后显现） */
+  .reveal-word {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    z-index: 1;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #ffd97a;
+    text-shadow: 0 0 16px rgba(255,200,90,0.75);
+    opacity: 0;
+    transition: opacity 0.4s 0.25s ease, transform 0.4s 0.25s ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .bowl-slot.revealed .reveal-word {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* 倒扣的碗 */
+  .bowl {
+    position: relative;
+    z-index: 2;
+    width: 104px;
+    height: 80px;
+    background: linear-gradient(160deg, #7a512f 0%, #4f3219 58%, #35200f 100%);
+    border: 1px solid #271606;
+    border-radius: 54px 54px 14px 14px / 64px 64px 14px 14px;
+    box-shadow:
+      inset 0 7px 11px rgba(255,210,150,0.18),
+      inset 0 -11px 16px rgba(0,0,0,0.55),
+      0 8px 16px rgba(0,0,0,0.55);
+    transition: transform 0.5s cubic-bezier(0.34,1.3,0.5,1), filter 0.25s;
     transform: translateZ(0);
   }
-  .option-tile:hover {
-    transform: translateZ(0) translateY(-4px) scale(1.04);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(74,144,217,0.25), 0 8px 16px rgba(0,0,0,0.55);
-  }
-  .option-tile:active { transform: translateZ(0) scale(0.97); }
-
-  .option-tile .letter-badge {
+  .bowl::before {            /* 碗口高光 */
+    content: '';
     position: absolute;
-    right: -7px; bottom: -7px;
-    width: 27px; height: 27px;
-    background: var(--accent);
-    color: #fff;
+    left: 50%; top: -3px;
+    transform: translateX(-50%);
+    width: 94px; height: 14px;
+    background: radial-gradient(ellipse at center, rgba(255,222,165,0.5), transparent 70%);
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Noto Serif SC', serif;
-    font-size: 0.86rem; font-weight: 700;
-    letter-spacing: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.35);
   }
+  .bowl::after {             /* 碗身一圈纹路 */
+    content: '';
+    position: absolute;
+    left: 12px; right: 12px; top: 30px;
+    height: 1px;
+    background: rgba(255,210,150,0.12);
+  }
+  .bowl-slot:hover .bowl {
+    filter: brightness(1.15);
+    transform: translateY(-7px);
+  }
+  .bowl-slot:active .bowl { transform: translateY(-3px) scale(0.98); }
 
-  .option-tile.correct {
-    border-color: #4ad980;
-    box-shadow: 0 0 0 2px rgba(74,217,128,0.45), 0 0 22px rgba(74,217,128,0.32);
+  /* 掀碗 */
+  .bowl-slot.lifted .bowl {
+    transform: translateY(-90px) rotate(-7deg);
+    filter: brightness(1.05);
   }
-  .option-tile.correct .letter-badge { background: #4ad980; }
-  .option-tile.wrong {
-    border-color: #d94a4a !important;
-    background: rgba(217,74,74,0.22);
-    box-shadow: 0 0 0 2px rgba(217,74,74,0.5), 0 0 18px rgba(217,74,74,0.35);
-    animation: tile-shake 0.4s ease;
+  .bowl-slot.chosen .reveal-word { color: #ffe39a; }
+  .bowl-slot.dimmed { opacity: 0.45; }
+
+  /* 洗碗（三仙归洞的"混"）*/
+  @keyframes bowl-mix {
+    0%   { transform: translate(0,0); }
+    20%  { transform: translate(var(--mx, 40px), -12px); }
+    45%  { transform: translate(calc(var(--mx, 40px) * -0.8), -7px); }
+    70%  { transform: translate(calc(var(--mx, 40px) * 0.5), -10px); }
+    100% { transform: translate(0,0); }
   }
-  .option-tile.wrong .letter-badge { background: #d94a4a; }
-  /* 抖动保留 translateZ(0)，避免在 3D 卡片里被剔除而消失 */
-  @keyframes tile-shake {
-    0%,100% { transform: translateZ(0) translateX(0); }
-    25%     { transform: translateZ(0) translateX(-6px); }
-    75%     { transform: translateZ(0) translateX(6px); }
-  }
-  .option-tile.dimmed { opacity: 0.3; }
+  .bowls-row.mixing .bowl { animation: bowl-mix 0.95s ease-in-out; }
 
   #success-msg {
     display: none;
@@ -285,7 +314,7 @@
     background: rgba(8,18,36,0.8);
     color: var(--white);
     border-radius: 3px;
-    width: 180px;
+    width: 200px;
     outline: none;
     transition: border-color 0.25s, box-shadow 0.25s;
     text-align: center;
@@ -453,13 +482,13 @@
           <div id="game-board">
             <div class="quiz-question" id="quiz-question"></div>
             <div class="quiz-round-no" id="quiz-round-no"></div>
-            <div class="options-row" id="options-row"></div>
-            <div id="success-msg">六轮作答完毕</div>
+            <div class="bowls-row" id="bowls-row"></div>
+            <div id="success-msg">三段已现 · 归洞了</div>
           </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="images/sawney.png" alt="背面">
+        <img id="back-img" src="images/persephone.png" alt="背面">
       </div>
     </div>
   </div>
@@ -494,52 +523,22 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/sawney.png';   // ← 换成你的背面图
-  const PASSWORD    = 'sawney';
-  const PUZZLE_ID   = 'puzzle_2';
-  const PUZZLE_INDEX = 1;          // 九宫格里的第 2 格（索引 1）
+  const BACK_IMAGE  = 'images/persephone.png';  // ← 换成你的背面图
+  const PASSWORD    = 'persephone';
+  const PUZZLE_ID   = 'puzzle_3';
+  const PUZZLE_INDEX = 2;          // 九宫格里的第 3 格（索引 2）
   const RETURN_URL  = 'mxhuitu.html';
   // ═══════════════════════════════════════════
 
-  // ── 六轮题目 ──────────────────────────────────────────────
-  // canEat:true  → 题目“选出能吃的东西”，正确答案是【食物】
-  // canEat:false → 题目“选出不能吃的东西”，正确答案是【杂物】
-  // 每轮 options 里 correct:true 的那一项带着答案字母（按顺序拼成 sawney）
-  // 其余两项是干扰项，字母随意（不影响答案）
+  // ── 三轮：三只碗，玩家点哪只哪只就是"对的" ──────────────
+  // 点中的碗会揭出本轮词组，另外两只碗也掀开、底下是空的。
+  // 三段按顺序拼起来就是密码：per + sep + hone = persephone
   const ROUNDS = [
-    { canEat: true,  options: [
-        { emoji: '🌽', letter: 's', correct: true  },   // 面包 = 能吃
-        { emoji: '🪨', letter: 'k', correct: false },   // 石头
-        { emoji: '🧼', letter: 'q', correct: false } ]  // 肥皂
-    },
-    { canEat: false, options: [
-        { emoji: '🐛', letter: 't', correct: false },   // 苹果
-        { emoji: '🔩', letter: 'a', correct: true  },   // 螺丝 = 不能吃
-        { emoji: '🍇', letter: 'm', correct: false } ]  // 葡萄
-    },
-    { canEat: true,  options: [
-        { emoji: '🪵', letter: 'r', correct: false },   // 木头
-        { emoji: '🍐', letter: 'w', correct: true  },   // 披萨 = 能吃
-        { emoji: '🧷', letter: 'z', correct: false } ]  // 别针
-    },
-    { canEat: false, options: [
-        { emoji: '🍌', letter: 'b', correct: false },   // 香蕉
-        { emoji: '🥕', letter: 'f', correct: false },   // 胡萝卜
-        { emoji: '💡', letter: 'n', correct: true  } ]  // 灯泡 = 不能吃
-    },
-    { canEat: true,  options: [
-        { emoji: '🔧', letter: 'x', correct: false },   // 扳手
-        { emoji: '🥚', letter: 'e', correct: true  },   // 鸡蛋 = 能吃
-        { emoji: '⛓️', letter: 'g', correct: false } ]  // 铁链
-    },
-    { canEat: true, options: [
-        { emoji: '🌽', letter: 'd', correct: false },   // 草莓
-        { emoji: '🦆', letter: 'y', correct: true  },   // 硬币 = 不能吃
-        { emoji: '🐛', letter: 'p', correct: false } ]  // 樱桃
-    },
+    { word: 'per'  },
+    { word: 'sep'  },
+    { word: 'hone' },
   ];
 
-  const targetWord = PASSWORD.split('');   // ['s','a','w','n','e','y']
   let currentRound = 0;
   let isAnimating = false;
   let gameSolved = false;
@@ -549,25 +548,25 @@
 
   const dialogues = {
     intro: [
-      '咯咯咯——旗开得胜啊',
-      '顺便说一句 你看到的画面都是按照时间顺序来的哟',
-      '这一题与吃的有关',
-      '民以食为天嘛',
-      '根据问题选择，记得记住密码哟',
-      
+      '咯咯咯——你又来了',
+      '这一摊，叫"三仙归洞"',
+      '三只碗，我把一段字藏在其中一只底下',
+      '你来猜，它藏在哪只碗里',
+      '放心——你掀开的那只，底下就有字',
+      '一共三轮，三段连起来就是密码'
     ],
     playing: [
-      '咯咯咯，再想想',
-      '是不是食物，有时候在一念之间',
-
+      '咯咯咯，挑一只吧',
+      '哪只都行——反正都归洞',
+      '把掀出来的那段字记牢'
     ],
     ending: [
-      '你拼出的那个词……其实是个名字。',
-      '很久以前，海边的洞里藏过一窝东西',
-      '他们什么都吃下肚——包括本不该吃的',
-      '能吃与不能吃，从来不只是肚子的事，也是规矩的事',
-      '昴星人立过这样的规矩，地球人也立过',
-      '守住规矩的，才活到了今天',
+      '你拼出的，又是一个名字。',
+      '她叫珀耳塞福涅——被带进地底的那一位',
+      '一年里，总有几个月，她得回到洞里去',
+      '三仙归洞，归的也是同一个地方',
+      '有些归途，掀哪只碗都躲不掉',
+      '昴星人懂这个，所以从不与命争碗',
       '让它归位吧,咯咯咯——'
     ]
   };
@@ -585,18 +584,18 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    buildOptionsAndStart();
+    buildBowlsAndStart();
 
     playEnterAnimation(() => {
       setTimeout(() => { showDialogue(dialogues.intro[0]); }, 250);
     });
   };
 
-  function buildOptionsAndStart() {
-    setupRound(); // intro 阶段 setupRound 会自动把选项锁住
+  function buildBowlsAndStart() {
+    setupRound(); // intro 阶段 setupRound 会自动把碗锁住
   }
 
-  // ── 入场展开动画（与 puzzle1 完全一致）──
+  // ── 入场展开动画（与其它 puzzle 完全一致）──
   function playEnterAnimation(onDone) {
     let originRaw = sessionStorage.getItem('puzzle_origin');
     let origin = null;
@@ -634,7 +633,7 @@
     }, 720);
   }
 
-  // ── 公鸡说话与摆动（与 puzzle1 一致）──
+  // ── 公鸡说话与摆动 ──
   function showDialogue(text) {
     const bubble = document.getElementById('speech-bubble');
     const bubbleText = document.getElementById('bubble-text');
@@ -661,8 +660,8 @@
         gamePhase = 'playing';
         dialogueIndex = -1;
         hideDialogue();
-        document.getElementById('options-row').classList.remove('locked');
-        document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+        document.getElementById('bowls-row').classList.remove('locked');
+        document.getElementById('main-hint').textContent = '点你想掀的那只碗';
       }
     } else if (gamePhase === 'playing') {
       dialogueIndex = (dialogueIndex + 1) % dialogues.playing.length;
@@ -680,45 +679,43 @@
   }
 
   // ── 游戏核心逻辑 ──────────────────────────────────────────────
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
   function setupRound() {
     if (currentRound >= ROUNDS.length) { onGameComplete(); return; }
 
     const round = ROUNDS[currentRound];
-    document.getElementById('quiz-question').textContent =
-      round.canEat ? '选出昴星人能吃的东西' : '选出昴星人不能吃的东西';
+    document.getElementById('quiz-question').textContent = '这一段，藏在哪只碗下？';
     document.getElementById('quiz-round-no').textContent =
       '第 ' + (currentRound + 1) + ' / ' + ROUNDS.length + ' 轮';
 
-    const row = document.getElementById('options-row');
+    const row = document.getElementById('bowls-row');
     row.innerHTML = '';
 
-    shuffle(round.options).forEach(opt => {
-      const tile = document.createElement('div');
-      tile.className = 'option-tile';
-      tile.innerHTML = opt.emoji + '<span class="letter-badge">' +
-                       opt.letter.toUpperCase() + '</span>';
-      tile.addEventListener('click', () => selectOption(opt, tile));
-      row.appendChild(tile);
-    });
+    const mixDirs = ['-46px', '46px', '0px'];   // 三只碗的"洗碗"方向，略有差异
+    for (let i = 0; i < 3; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'bowl-slot';
+      slot.style.setProperty('--mx', mixDirs[i]);
+      slot.innerHTML = '<span class="reveal-word"></span><div class="bowl"></div>';
+      slot.addEventListener('click', () => selectBowl(slot, round));
+      row.appendChild(slot);
+    }
 
-    // intro 阶段锁住选项，进入 playing 后解锁（修复"第二轮点不动"）
-    if (gamePhase === 'intro') row.classList.add('locked');
-    else                       row.classList.remove('locked');
+    if (gamePhase === 'intro') {
+      row.classList.add('locked');
+    } else {
+      // 进入正式游戏：先"洗碗"再解锁
+      row.classList.add('locked', 'mixing');
+      setTimeout(() => {
+        row.classList.remove('mixing');
+        row.classList.remove('locked');
+      }, 980);
+    }
 
     isAnimating = false;
   }
 
-  function selectOption(opt, tile) {
-    // intro 阶段：点选项 → 让公鸡接着说，不计入答题
+  function selectBowl(slot, round) {
+    // intro 阶段：点碗 → 让公鸡接着说，不计入答题
     if (gamePhase === 'intro') {
       const rooster = document.getElementById('rooster');
       rooster.classList.remove('bobbing');
@@ -732,26 +729,26 @@
     }
     if (isAnimating || currentRound >= ROUNDS.length) return;
 
-    if (opt.correct) {
-      isAnimating = true;
-      tile.classList.add('correct');
-      document.getElementById('options-row').classList.add('locked');
-      // 把其他项淡掉
-      [...document.querySelectorAll('.option-tile')].forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
+    isAnimating = true;
+    const row = document.getElementById('bowls-row');
+    row.classList.add('locked');
 
-      // 停留一会儿让你看清这一项的字母，再进入下一轮（不汇总、不剧透整词）
-      setTimeout(() => {
-        currentRound++;
-        setupRound();
-      }, 850);
-    } else {
-    // 选错：该选项直接消失（保留占位，其余选项不位移）
-    tile.style.pointerEvents = 'none';
-    tile.style.opacity = '0';
-    showDialogue(dialogues.playing[0]);
-    }
+    // 玩家点的这只碗 = 正确：填入本轮词组并掀开
+    slot.querySelector('.reveal-word').textContent = round.word;
+    slot.classList.add('lifted', 'revealed', 'chosen');
+
+    // 其余两只碗也掀开，底下是空的（卖"三仙归洞"的把戏）
+    [...row.querySelectorAll('.bowl-slot')].forEach(s => {
+      if (s !== slot) s.classList.add('lifted', 'dimmed');
+    });
+
+    showDialogue(dialogues.playing[2]); // “把掀出来的那段字记牢”
+
+    // 停留一会儿让你看清这一段，再进入下一轮
+    setTimeout(() => {
+      currentRound++;
+      setupRound();
+    }, 1300);
   }
 
   function onGameComplete() {
@@ -759,7 +756,7 @@
 
     document.getElementById('quiz-question').style.display = 'none';
     document.getElementById('quiz-round-no').style.display = 'none';
-    document.getElementById('options-row').style.display = 'none';
+    document.getElementById('bowls-row').style.display = 'none';
     document.getElementById('success-msg').style.display = 'flex';
 
     document.getElementById('action-area').classList.add('show');
@@ -780,13 +777,13 @@
 
     document.getElementById('quiz-question').style.display = '';
     document.getElementById('quiz-round-no').style.display = '';
-    document.getElementById('options-row').style.display = '';
-    document.getElementById('options-row').classList.remove('locked');
+    document.getElementById('bowls-row').style.display = '';
+    document.getElementById('bowls-row').classList.remove('locked');
     document.getElementById('success-msg').style.display = 'none';
 
     document.getElementById('action-area').classList.remove('show');
     document.getElementById('main-hint').style.opacity = '';
-    document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+    document.getElementById('main-hint').textContent = '点你想掀的那只碗';
 
     const input = document.getElementById('word-input');
     input.value = '';
@@ -817,7 +814,7 @@
     }
   }
 
-  // ── 飞回九宫格（与 puzzle1 完全一致）──
+  // ── 飞回九宫格（与其它 puzzle 完全一致）──
   function triggerFlyOut() {
     const scene = document.getElementById('card-scene');
     const r = scene.getBoundingClientRect();

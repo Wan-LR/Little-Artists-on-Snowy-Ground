@@ -330,7 +330,7 @@
   <!-- 找不到关键词时的弹窗 -->
   <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <h2 class="modal-title" id="modalTitle">你为什么要搜索这个?</h2>
+      <h2 class="modal-title" id="modalTitle">抱歉 该词条尚未收录</h2>
       <button type="button" class="modal-btn" id="modalCloseBtn">我 知 道 了</button>
     </div>
   </div>
@@ -338,12 +338,12 @@
   <script>
     // ═══════════════════════════════════════════════════════
     // 两组关键词，每组找齐后弹出"西红柿更新了"跳转
-    // "有限大暗" → 仅成就，不跳转
+    // "有限大暗" → 仅成就，不计入进度
     // 全部找齐 → 最终成就弹窗
     // ═══════════════════════════════════════════════════════
     const GROUPS = [
       {
-        keywords: ["雪地里的小画家", "旧城疫", "小石子"],
+        keywords: [ "旧城疫", "小石子", "月球", "昴星"],
         unlockUrl: "xhs2.html",
       },
       {
@@ -352,9 +352,28 @@
       },
     ];
 
-    // 仅弹成就的关键词（不计入进度，不跳转）
+    // 仅弹成就的关键词（不计入进度）
     const ACHIEVEMENT_ONLY = {
       "有限大暗": { emoji: '🌌', title: '有限大暗', desc: '你找到了隐藏的关键词' },
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // 【自己填写】每个关键词搜到后跳转的页面文件名
+    //   · 留空 "" = 该关键词不跳转（保持仅记录、不跳页）
+    //   · 注意：「昴星」同时属于两个组，这里只能配一个页面
+    //   · 当某个关键词正好把一整组搜齐时，会优先走「组解锁」
+    //     （弹成就 +「西红柿更新了」跳到 xhs2/xhs3），不跳本词页面
+    // ═══════════════════════════════════════════════════════
+    const KEYWORD_PAGES = {
+      "旧城疫":   "",
+      "小石子":   "",
+      "月球":     "",
+      "昴星":     "",
+      "人":       "",
+      "彩南":     "",
+      "上爪":     "",
+      "过目不忘": "",
+      "有限大暗": "",   // 隐藏成就词；留空则只弹成就不跳转
     };
 
     // 全部关键词找齐后的成就
@@ -375,6 +394,12 @@
     }
 
     const totalKeywords = Object.keys(keywordGroup).length; // 不含成就关键词
+
+    // 取某个关键词配置的跳转页面（没配或为空则返回 null）
+    function pageFor(matched) {
+      const p = KEYWORD_PAGES[matched];
+      return (p && p.trim()) ? p.trim() : null;
+    }
 
     // ── DOM ──
     const form          = document.getElementById('searchForm');
@@ -435,6 +460,14 @@
       };
     }
 
+    // 计算是否所有关键词（含有限大暗）都找到了
+    function isAllDone(found) {
+      const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
+      return GROUPS.every(g =>
+        g.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1)
+      ) && achKeys.every(ak => found.indexOf(ak) !== -1);
+    }
+
     // ── 搜索处理 ──
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -452,21 +485,21 @@
           localStorage.setItem('qbd-found', JSON.stringify(found));
         }
 
-        // 1. 检查是不是成就关键词
+        // 1. 成就关键词（不计入组进度）
         if (ACHIEVEMENT_ONLY[matched]) {
           showAchievement(ACHIEVEMENT_ONLY[matched]);
-          // 如果所有关键词（含有限大暗）都找到了 → 最终成就
-          const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
-          const allDone = GROUPS.every(g =>
-            g.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1)
-          ) && achKeys.every(ak => found.indexOf(ak) !== -1);
-          if (allDone) {
+          if (isAllDone(found)) {
             setTimeout(() => showAchievement(FINAL_ACHIEVEMENT), 1200);
+          }
+          // 若给这个成就词也配了页面，则在成就弹完后跳转
+          const pageA = pageFor(matched);
+          if (pageA) {
+            setTimeout(() => { window.location.href = pageA; }, 1400);
           }
           return;
         }
 
-        // 2. 检查所属组是否完成
+        // 2. 检查所属组是否刚刚搜齐（组解锁优先）
         const gi = keywordGroup[key];
         if (gi !== undefined) {
           const group = GROUPS[gi];
@@ -475,20 +508,23 @@
 
           if (groupDone && unlocked.indexOf(gi) === -1) {
             markGroupUnlocked(gi);
-            // 所有关键词（含有限大暗）全部找到 → 最终成就
-            const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
-            const allDone = GROUPS.every(g =>
-              g.keywords.every(kw => found.indexOf(kw.toLowerCase()) !== -1)
-            ) && achKeys.every(ak => found.indexOf(ak) !== -1);
+            const allDone = isAllDone(found);
             if (allDone) {
               showAchievement(FINAL_ACHIEVEMENT);
             }
             setTimeout(() => showUpdateModal(group.unlockUrl), allDone ? 1200 : 0);
-            return;
+            return; // 组解锁优先，不跳本词页面
           }
         }
 
-        // 3. 已搜过但组还没齐 → 静默（不弹窗）
+        // 3. 普通情况（组未搜齐，或该组之前已解锁）→ 跳到这个关键词自己的页面
+        const page = pageFor(matched);
+        if (page) {
+          window.location.href = page;
+          return;
+        }
+        // 没配页面 → 静默（仅记录，不跳转）
+
       } else {
         // 未匹配
         modalTitle.textContent = '你为什么要搜索这个?';

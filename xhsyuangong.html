@@ -472,13 +472,40 @@
 
   <script>
     /* ============================================================
-       密码验证 — 大小写和空格忽略
+       密码配置
+       ────────────────────────────────────────────────────────────
+       · 两个账号都能登录，密码输入时【忽略大小写和空格】，怎么打都行：
+           TOMATO642 → 密码 thesims    （靠输入：直接在登录框里打）
+           TOMATO845 → 密码 helloworld （靠破解：F12 控制台输命令拿到）
+       · console 里 password("工号") 按工号返回密码：
+           password("TOMATO642") → thesims
+           password("TOMATO845") → helloworld
+           其它工号 / 不带参数     → 查无此工号(不破解)
+       · 破解成功后会自动跳转到 xhsit.html（登录框输入正确密码也跳同一页）
        ============================================================ */
-    const CORRECT_PW = 'thesims';
-    const REDIRECT_TO = 'yuangongxiaolan.html';
+    const REDIRECT_TO = 'xhsit.html';
+    const CRACK_REDIRECT_DELAY = 2800;   // 控制台破解出密码后，停留多少毫秒再跳转
 
+    // 登录接受的密码（已是“去空格 + 小写”后的形式）
+    const VALID_PASSWORDS = ['thesims', 'helloworld'];
+
+    // 工号 → 密码 对照表（key 用去空格小写后的工号）
+    const PW_TABLE = {
+      'tomato642': 'thesims',     // 靠输入：直接在登录框里打 thesims
+      'tomato845': 'helloworld',  // 靠破解：F12 控制台 password("TOMATO845") 得到
+    };
+
+    // 统一归一化：去掉所有空格 + 转小写
+    function normalize(s) {
+      return String(s == null ? '' : s).toLowerCase().replace(/\s/g, '');
+    }
+    // 按工号查密码
+    function lookupPassword(id) {
+      return PW_TABLE[normalize(id)] || null;
+    }
+    // 登录校验：两个密码都行，忽略大小写和空格
     function checkPassword(input) {
-      return input.toLowerCase().replace(/\s/g, '') === CORRECT_PW;
+      return VALID_PASSWORDS.indexOf(normalize(input)) !== -1;
     }
 
 
@@ -539,10 +566,17 @@
 
 
     /* ============================================================
-       控制台"破解"彩蛋 — password()
+       控制台"破解"彩蛋 — password("工号")
+       ────────────────────────────────────────────────────────────
+       password("TOMATO642") → 破解出 thesims    → 跳转 xhsit.html
+       password("TOMATO845") → 破解出 helloworld → 跳转 xhsit.html
+       其它工号 / 不带参数      → 查无此工号，不破解、不跳转
        ============================================================ */
-    window.password = function() {
+    window.password = function(id) {
       const _delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+      const queriedId = (id == null || String(id).trim() === '') ? '未指定' : String(id).trim();
+      const realPw    = lookupPassword(id);     // 按工号取对应密码
 
       const _run = async () => {
         const S = {
@@ -555,8 +589,6 @@
           pw:    'font-size:16px;color:#e33932;font-weight:bold;background:#fde8e7;padding:4px 12px;border-radius:4px;',
         };
 
-        const realPw = 'The Sims';
-
         console.clear();
         console.log('%c🍅 TOMATO INTERNAL — PASSWORD RECOVERY TOOL v2.4', S.title);
         console.log('%c─────────────────────────────────────────────────', S.info);
@@ -567,8 +599,16 @@
         console.log('%c  ✓ 已连接 auth.tomato-internal.cn:8443', S.info);
         await _delay(400);
 
-        console.log('%c[2/6] 查询员工档案数据库...', S.step);
+        console.log('%c[2/6] 查询员工档案数据库  [账号: ' + queriedId + ']...', S.step);
         await _delay(1000);
+
+        // 查不到这个工号 → 直接失败，不破解、不跳转
+        if (!realPw) {
+          console.log('%c  ✗ 未找到该工号的密码记录', 'font-size:12px;color:#e33932;font-weight:bold;');
+          console.log('%c  请用正确的工号重试，例如 password("TOMATO642") 或 password("TOMATO845")', S.info);
+          return;
+        }
+
         console.log('%c  ✓ 匹配到 1 条员工记录', S.info);
         await _delay(500);
 
@@ -622,10 +662,17 @@
           title: '密码破解成功',
           desc:  '你找到了隐藏指令'
         });
+
+        // 破解出来 → 跳转到 xhsit.html
+        await _delay(CRACK_REDIRECT_DELAY);
+        console.log('%c⟫ 正在跳转至 ' + REDIRECT_TO + ' ...', S.step);
+        window.location.href = REDIRECT_TO;
       };
 
       _run();
-      return '⏳ 正在破解,请查看控制台输出...';
+      return realPw
+        ? '⏳ 正在破解,请查看控制台输出...'
+        : '⚠ 该工号无效,请查看控制台输出';
     };
 
 

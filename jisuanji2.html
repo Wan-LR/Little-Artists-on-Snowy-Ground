@@ -215,12 +215,7 @@
 
 
     /* ============================================================
-       ★ 6. 帖子 Tags  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       蓝色胶囊标签,放在正文和操作栏之间。
-       # 符号由 ::before 自动添加 (HTML 不用写)。
-       注:HTML 中用 <span> 不可点击,但鼠标悬停仍会触发
-          .tag:hover 视觉变化(深蓝实心 + 上浮 1px)
+       6. 帖子 Tags
        ============================================================ */
     .post-tags {
       display: flex;
@@ -344,9 +339,6 @@
 
     /* ============================================================
        9. 评论区 — 输入框
-       ────────────────────────────────────────────────────────────
-       ★【最近改动】底部已删除"以xx身份发布"提示行,
-                    .input-foot 改为 flex-end → "发布"按钮靠右
        ============================================================ */
     .comment-input {
       display: flex;
@@ -392,12 +384,11 @@
 
     .input-foot {
       display: flex;
-      justify-content: flex-end;   /* ★ 删除 hint 行后,按钮靠右 */
+      justify-content: flex-end;
       align-items: center;
     }
 
     .input-hint {
-      /* 注:这个类目前 HTML 已不使用,保留以防需要恢复提示文字 */
       font-size: 12px;
       color: var(--ink-faint);
     }
@@ -517,12 +508,7 @@
 
 
     /* ============================================================
-       ★ 11. 顶部 Toast 弹窗  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       触发场景:用户点"发布"评论时
-       行为:从屏幕顶部滑下,显示"你不想留下任何评论",
-             2.6 秒后自动收回(也可点击立即关闭)
-       配套:.comment-input.shake → 输入框左右抖一下作为反馈
+       11. 顶部 Toast 弹窗（评论被拦截时）
        ============================================================ */
     .toast {
       position: fixed;
@@ -579,7 +565,6 @@
       }
     }
 
-    /* 输入框抖动反馈 (拦截发布时触发) */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-4px); }
@@ -593,12 +578,7 @@
 
 
     /* ============================================================
-       ★ 12. 评论加载失败状态  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       替换了原本的评论列表 (<ul class="comment-list">),
-       由 [圆形图标] + [失败文案] + [重新加载按钮] 组成。
-       重新加载按钮:点击后转 1.4s 圈,然后回到失败态(假装失败)
-       注:本版本 HTML 中已删除 .error-sub 副文案行,只保留主标题
+       12. 评论加载失败状态
        ============================================================ */
     .comment-error {
       display: flex;
@@ -693,74 +673,193 @@
     .av-5 { background: linear-gradient(135deg, #6b8e5a, #4f6d40); }
     .av-6 { background: linear-gradient(135deg, #c97b3a, #a55e22); }
 
-    /* 成就弹窗 + 五彩纸屑 */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(26, 26, 26, 0.45);
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.4s ease;
-      z-index: 1000;
+
+    /* ============================================================
+       ★ 14. Steam 风格成就弹窗（仿熏鱼帖：右上角滑入，5 秒自动收回，不跳转）
+       ============================================================ */
+    .achievement-toast {
+      position: fixed;
+      top: 28px;
+      right: 28px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px 16px 16px;
+      min-width: 340px;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1b2838 0%, #1e3a2f 50%, #1b2838 100%);
+      border: 1px solid #4a6741;
+      border-radius: 4px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 0 20px rgba(78, 154, 65, 0.25),
+        0 8px 32px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity: 0;
+      transform: translateX(120%) scale(0.95);
+      pointer-events: none;
+      transition:
+        opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: var(--font-body);
     }
-    .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-    .modal {
-      background: var(--surface);
-      border-radius: 20px; padding: 40px 36px 32px;
-      max-width: 420px; width: 100%; text-align: center;
-      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.3);
-      transform: scale(0.85) translateY(20px);
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    .achievement-toast.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .achievement-icon {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      background: linear-gradient(145deg, #2a4a3a 0%, #1a3028 100%);
+      border: 2px solid #5a8a50;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 12px rgba(78, 154, 65, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.08);
       position: relative;
+      overflow: hidden;
     }
-    .modal-backdrop.show .modal { transform: scale(1) translateY(0); }
-    .modal-icon {
-      width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%;
-      background: linear-gradient(135deg, #ff6b5e 0%, #e33932 100%);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 24px rgba(227, 57, 50, 0.35);
-      animation: bounce 0.6s ease 0.2s both;
+
+    .achievement-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      animation: iconShine 3s ease-in-out infinite;
     }
-    @keyframes bounce {
-      0% { transform: scale(0); }
-      60% { transform: scale(1.15); }
-      100% { transform: scale(1); }
+
+    @keyframes iconShine {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
     }
-    .modal-icon svg { width: 32px; height: 32px; }
-    .modal-icon svg polyline { stroke: #fff; stroke-width: 2.5; fill: none; }
-    .modal-title {
-      font-family: var(--font-display); font-weight: 800; font-size: 22px;
-      letter-spacing: -0.01em; color: var(--ink); margin-bottom: 8px;
+
+    .achievement-icon .icon-emoji {
+      font-size: 30px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(180, 220, 100, 0.55));
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 10px rgba(143, 188, 90, 0.7), 0 0 20px rgba(143, 188, 90, 0.35);
     }
-    .modal-sub {
-      font-size: 14px; color: var(--ink-soft); margin-bottom: 24px; line-height: 1.6;
+
+    .achievement-text {
+      flex: 1;
+      min-width: 0;
     }
-    .modal-btn {
-      width: 100%; height: 46px; border: none; border-radius: 12px;
-      background: var(--ink); color: #fff;
-      font-family: var(--font-display); font-weight: 700; font-size: 14.5px;
-      cursor: pointer; letter-spacing: 0.02em;
-      transition: background 0.2s, transform 0.15s;
+
+    .achievement-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8fbc5a;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .modal-btn:hover { background: var(--accent); transform: translateY(-1px); }
-    .confetti {
-      position: fixed; top: -20px; width: 8px; height: 14px;
-      pointer-events: none; z-index: 99; opacity: 0;
+
+    .achievement-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #8fbc5a;
+      animation: dotPulse 2s ease-in-out infinite;
     }
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px #8fbc5a; }
+      50% { opacity: 0.6; box-shadow: 0 0 2px #8fbc5a; }
+    }
+
+    .achievement-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 17px;
+      color: #e5e5e5;
+      line-height: 1.2;
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .achievement-desc {
+      font-size: 12.5px;
+      color: #8f98a0;
+      line-height: 1.4;
+    }
+
+    .achievement-toast::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #5a8a2a, #8fbc5a, #b8e060);
+      border-radius: 0 0 4px 4px;
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    .achievement-toast.show::after {
+      animation: progressShrink 5s 0.5s linear forwards;
+    }
+
+    @keyframes progressShrink {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+
+    .achievement-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #8fbc5a;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .achievement-toast.show .particle {
+      animation: particleFloat 2s ease-out forwards;
+    }
+
+    @keyframes particleFloat {
+      0%   { opacity: 0.8; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    @media (max-width: 480px) {
+      .achievement-toast {
+        top: 16px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+        max-width: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ============================================================
-       ★ 顶部 Toast 弹窗  【最近改动 — 新增】
-       默认隐藏 (transform: translateY(-100%)),
-       由 JS 在拦截发布时加 .show 类滑下来
-       ============================================================ -->
+  <!-- 顶部 Toast 弹窗（评论被拦截时滑下） -->
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span class="toast-dot"></span>
     <span class="toast-text">你不想留下任何评论</span>
@@ -793,7 +892,7 @@
     <!-- ═══════════ 4. 标题 ═══════════ -->
     <h1 class="post-title">一点都有用的计算机小知识 Day2</h1>
 
-    <!-- ═══════════ 5. 正文 (含编号问题列表) ═══════════ -->
+    <!-- ═══════════ 5. 正文 ═══════════ -->
     <div class="post-body">
       <p>很重要的小知识</p>
       <p>某些人为了好玩 会把自己的密码藏在<strong>登录</strong>界面里</p>
@@ -805,15 +904,13 @@
       <p>关注我 获得更多计算机小知识</p>
     </div>
 
-    <!-- ═══════════ ★ 6. Tags ═══════════
-         【最近改动 — 新增】蓝色胶囊标签,# 符号由 CSS 自动加 -->
+    <!-- ═══════════ 6. Tags ═══════════ -->
     <div class="post-tags">
       <span class="tag">计算机</span>
       <span class="tag">小知识</span>
     </div>
 
-    <!-- ═══════════ 7. 操作栏 (点赞 / 评论 / 分享) ═══════════
-         注:#commentTopCount 显示为 "—",因评论加载失败 -->
+    <!-- ═══════════ 7. 操作栏 ═══════════ -->
     <div class="post-actions">
       <button class="action-btn" id="likeBtn" aria-pressed="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -829,15 +926,12 @@
       </button>
     </div>
 
-    <!-- ═══════════ 8. 评论区标题 ═══════════
-         注:#commentNumLabel 显示为 "—",因评论加载失败 -->
+    <!-- ═══════════ 8. 评论区标题 ═══════════ -->
     <h2 class="comments-title">
       评论 <span class="num" id="commentNumLabel">—</span>
     </h2>
 
-    <!-- ═══════════ 9. 评论输入框 ═══════════
-         ★【最近改动】.input-foot 内已删除 "以xx身份发布" 提示行,
-            现在只剩"发布"按钮且靠右对齐 -->
+    <!-- ═══════════ 9. 评论输入框 ═══════════ -->
     <div class="comment-input">
       <div class="avatar sm av-3">你</div>
       <div class="input-wrap">
@@ -848,9 +942,7 @@
       </div>
     </div>
 
-    <!-- ═══════════ ★ 10. 评论加载失败 UI ═══════════
-         【最近改动 — 新增】替换了原本的 <ul class="comment-list">
-         结构:[斜线评论气泡图标] + [失败文案] + [重新加载按钮] -->
+    <!-- ═══════════ 10. 评论加载失败 UI ═══════════ -->
     <div class="comment-error" id="commentError">
       <div class="icon-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -872,15 +964,16 @@
 
   </div>
 
-  <!-- 成就弹窗  【修复:加回 #achieveBtn 按钮,否则脚本里 addEventListener 会对 null 报错】 -->
-  <div class="modal-backdrop" id="achieveModal">
-    <div class="modal">
-      <div class="modal-icon">
-        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <h3 class="modal-title">计算机0.5级</h3>
-      <p class="modal-sub">你学完了三个知识</p>
-      <button class="modal-btn" id="achieveBtn">完成</button>
+  <!-- ★ Steam 风格成就弹窗：右上角滑入，5 秒后自动收回，不跳转 -->
+  <div class="achievement-toast" id="achievementToast" role="alert">
+    <div class="achievement-particles" id="achParticles"></div>
+    <div class="achievement-icon">
+      <span class="icon-emoji">💻</span>
+    </div>
+    <div class="achievement-text">
+      <div class="achievement-label">成就已解锁</div>
+      <div class="achievement-title">计算机0.5级</div>
+      <div class="achievement-desc">你学完了三个知识</div>
     </div>
   </div>
 
@@ -893,12 +986,9 @@
 
 
     /* ============================================================
-       ★ 0. 评论数据占位  【修复 — 关键】
-       ────────────────────────────────────────────────────────────
-       原代码直接用了未定义的 seedComments,导致整段 <script> 在
-       下面 seedComments.forEach(...) 处抛 ReferenceError 中断,
-       后面的点赞 / toast / 成就逻辑全都没执行 → 成就弹窗调不出来。
-       评论区本就是"加载失败"占位,这里给个空数组即可。
+       ★ 0. 评论数据占位（关键修复：原代码用了未定义的 seedComments
+              会抛 ReferenceError 中断整段脚本）。评论本是“加载失败”
+              占位，这里给个空数组即可。
        ============================================================ */
     const seedComments = [];
 
@@ -929,9 +1019,8 @@
           </div>
         </div>
       `;
-      // Set text safely
       li.querySelector('.comment-text').textContent = c.text;
-      if (!commentList) return li;          // 评论列表已被失败 UI 替换,容错
+      if (!commentList) return li;
       if (prepend) commentList.prepend(li);
       else commentList.appendChild(li);
       return li;
@@ -941,7 +1030,7 @@
 
 
     /* ============================================================
-       2. 帖子主点赞按钮 (爱心图标切换 + 计数 ±1)
+       2. 帖子主点赞按钮
        ============================================================ */
     const likeBtn = document.getElementById('likeBtn');
     const likeCount = document.getElementById('likeCount');
@@ -958,7 +1047,7 @@
 
 
     /* ============================================================
-       3. 评论点赞 (事件委托 — 给所有 .like-comment 按钮)
+       3. 评论点赞 (事件委托)
        ============================================================ */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.like-comment');
@@ -989,34 +1078,21 @@
 
 
     /* ============================================================
-       ★ 5. 提交评论 (拦截 → 触发弹窗)  【最近改动】
-       ────────────────────────────────────────────────────────────
-       原行为:把评论 prepend 到列表 + 计数 +1
-       新行为:不发送,改为:
-              ① 调用 showToast() 显示顶部弹窗
-              ② 给输入框加 .shake 类做抖动反馈
+       5. 提交评论 (拦截 → 顶部 Toast + 输入框抖动)
        ============================================================ */
     function submit() {
       const text = input.value.trim();
       if (!text) return;
-
-      // Block submission — show top toast instead
       showToast();
-
-      // Visual feedback on the input box
       const inputBox = document.querySelector('.comment-input');
       inputBox.classList.remove('shake');
-      // Force reflow so animation can replay
       void inputBox.offsetWidth;
       inputBox.classList.add('shake');
     }
 
 
     /* ============================================================
-       ★ 6. Toast 弹窗显隐控制  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       showToast()  → 加 .show 类显示,2.6 秒后自动收回
-       点击 toast   → 立即关闭(不用等)
+       6. 顶部 Toast 显隐控制
        ============================================================ */
     const toast = document.getElementById('toast');
     let toastTimer = null;
@@ -1029,7 +1105,6 @@
       }, 2600);
     }
 
-    // Click toast to dismiss early
     toast.addEventListener('click', () => {
       toast.classList.remove('show');
       clearTimeout(toastTimer);
@@ -1037,7 +1112,7 @@
 
 
     /* ============================================================
-       7. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
+       7. 提交事件绑定
        ============================================================ */
     submitBtn.addEventListener('click', submit);
 
@@ -1048,67 +1123,79 @@
       }
     });
 
-    /* ── 成就:看完三篇计算机小知识 ── */
-    (function() {
-      const POST_ID   = 'ji-day2';
+
+    /* ════════════════════════════════════════════════════════════
+       ★ 成就:看完三篇计算机小知识
+       → Steam 风格右上角弹窗（仿熏鱼帖），自动消失，【不跳转】
+       ════════════════════════════════════════════════════════════ */
+    (function () {
+      const POST_ID   = 'ji-day2';                 // ← 每页不同：day1 / day2 / day3
       const ALL       = ['ji-day1', 'ji-day2', 'ji-day3'];
       const STORE_KEY = 'ji-posts-viewed';
-      const MODAL_KEY = 'ji-modal-shown';
+      const SHOWN_KEY = 'ji-ach-shown';            // 用新 key，旧的居中弹窗用的是 ji-modal-shown
 
-      var get = function() {
+      function getViewed() {
         try { return new Set(JSON.parse(localStorage.getItem(STORE_KEY) || '[]')); }
-        catch(e) { return new Set(); }
-      };
-      var save = function(s) {
-        try { localStorage.setItem(STORE_KEY, JSON.stringify([].concat(Array.from(s)))); } catch(e) {}
-      };
-      var shown = function() { return localStorage.getItem(MODAL_KEY) === '1'; };
-      var mark  = function() { localStorage.setItem(MODAL_KEY, '1'); };
+        catch (e) { return new Set(); }
+      }
+      function saveViewed(s) {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(Array.from(s))); } catch (e) {}
+      }
+      const shown = function () { return localStorage.getItem(SHOWN_KEY) === '1'; };
+      const mark  = function () { localStorage.setItem(SHOWN_KEY, '1'); };
 
-      var s = get();
-      s.add(POST_ID);
-      save(s);
+      const viewed = getViewed();
+      viewed.add(POST_ID);
+      saveViewed(viewed);
 
-      var modal = document.getElementById('achieveModal');
-
-      if (ALL.every(function(id) { return s.has(id); }) && !shown()) {
-        setTimeout(function() {
-          modal.classList.add('show');
-          confetti_();
-        }, 600);
+      if (ALL.every(function (id) { return viewed.has(id); }) && !shown()) {
+        setTimeout(showAchievement, 600);
       }
 
-      function confetti_() {
-        var colors = ['#e33932', '#ff8a65', '#ffb74d', '#1a1a1a', '#6b6b6b'];
-        for (var i = 0; i < 40; i++) {
-          var c = document.createElement('div');
-          c.className = 'confetti';
-          c.style.left = Math.random() * 100 + 'vw';
-          c.style.background = colors[Math.floor(Math.random() * colors.length)];
-          c.style.animation = 'fall ' + (1.8 + Math.random() * 1.5) + 's cubic-bezier(0.4,0,0.6,1) ' + (Math.random() * 0.4) + 's forwards';
-          c.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
-          document.body.appendChild(c);
-          setTimeout(function() { c.remove(); }, 4000);
+      function spawnParticles() {
+        const c = document.getElementById('achParticles');
+        if (!c) return;
+        c.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement('span');
+          p.className = 'particle';
+          p.style.left = Math.random() * 100 + '%';
+          p.style.top  = Math.random() * 100 + '%';
+          p.style.setProperty('--dx', (Math.random() - 0.5) * 80 + 'px');
+          p.style.setProperty('--dy', (Math.random() - 0.5) * 80 + 'px');
+          p.style.animationDelay = Math.random() * 0.6 + 's';
+          c.appendChild(p);
         }
       }
 
-      // 【修复】原来直接 getElementById('achieveBtn').addEventListener,
-      // 但弹窗里没有这个按钮时会对 null 报错,连带下面的遮罩点击监听也绑不上。
-      // 现已在弹窗里加回按钮,并在这里加判空双保险。
-      var okBtn = document.getElementById('achieveBtn');
-      if (okBtn) {
-        okBtn.addEventListener('click', function() {
-          modal.classList.remove('show');
-          mark();
-          setTimeout(function() { window.location.href = 'emlogin.html'; }, 400);
-        });
+      function showAchievement() {
+        const toastEl = document.getElementById('achievementToast');
+        if (!toastEl) return;
+        spawnParticles();
+
+        // 解锁音效（和喂鱼那页一样，浏览器拦截也不影响）
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const playNote = function (freq, t, dur) {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.18, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(t); osc.stop(t + dur);
+          };
+          const t = ctx.currentTime;
+          playNote(587, t, 0.15);
+          playNote(784, t + 0.12, 0.15);
+          playNote(988, t + 0.24, 0.3);
+        } catch (e) { /* 无声也行 */ }
+
+        requestAnimationFrame(function () { toastEl.classList.add('show'); });
+        setTimeout(function () { toastEl.classList.remove('show'); }, 5500);
+
+        mark();
+        localStorage.setItem('ach-computer', '1');
       }
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          modal.classList.remove('show');
-          mark();
-        }
-      });
     })();
   </script>
 <script src="nav.js"></script>

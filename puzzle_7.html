@@ -219,12 +219,12 @@
   .gem.clearing { animation: gemClear 0.26s ease forwards; pointer-events: none; }
   @keyframes gemClear { to { transform: scale(0.15) rotate(45deg); opacity: 0; } }
 
-  /* 方块底色（不透明，盖住背景词）+ 上面的 emoji */
-  .gem.t0 { background: radial-gradient(circle at 34% 30%, #ff7a6e, #c23a2e); }
-  .gem.t1 { background: radial-gradient(circle at 34% 30%, #ffb35a, #d87a1e); }
-  .gem.t2 { background: radial-gradient(circle at 34% 30%, #f7e07a, #d8b82a); }
-  .gem.t3 { background: radial-gradient(circle at 34% 30%, #7ee0a0, #2a9c5c); }
-  .gem.t4 { background: radial-gradient(circle at 34% 30%, #c79ae8, #8a46c0); }
+  /* ★ 方块底色（不透明，盖住背景词）+ 上面的 emoji —— 想换颜色改这 5 行就行 */
+  .gem.t0 { background: radial-gradient(circle at 34% 30%, #ff8a8a, #c81e3a); } /* 红 */
+  .gem.t1 { background: radial-gradient(circle at 34% 30%, #ffc266, #e0851e); } /* 橙 */
+  .gem.t2 { background: radial-gradient(circle at 34% 30%, #5fd6ef, #1f93c4); } /* 青 */
+  .gem.t3 { background: radial-gradient(circle at 34% 30%, #6fe0a0, #1f9c5c); } /* 绿 */
+  .gem.t4 { background: radial-gradient(circle at 34% 30%, #c79af0, #8a46c0); } /* 紫 */
 
   /* ── 底部交互区 ── */
   .action-area {
@@ -392,8 +392,8 @@
   }
 
   .rooster {
-    width: 180px;
-    height: 180px;
+    width: 260px;
+    height: 260px;
     cursor: pointer;
     user-select: none;
     pointer-events: auto;
@@ -496,8 +496,11 @@
   const EMOJIS = ['🪖', '🔫', '⚔️', '🛡️', '♟️'];
   const ROWS = 5, COLS = 7, CELL = 46, GAP = 4;
   const NUM_TYPES = EMOJIS.length;
-  // 消掉这么大比例的方块（剩下的会一起化开，露出完整的词）
-  const REVEAL_TARGET = 0.6;
+
+  // ★ 需要把方块【全部】消除后，才揭晓并进入对话（1.0 = 100%）。
+  //   说明：消消乐不补位，靠 3 连消时极少能正好清到 0；万一最后剩下
+  //   实在凑不齐的零头（<3 个、无法再消），会自动化开收尾，避免卡死。
+  const REVEAL_TARGET = 1.0;
 
   let grid = [];          // grid[r][c] = 方块种类(0..NUM_TYPES-1) 或 null(已消除)
   let sel = null;
@@ -519,6 +522,12 @@
       'Unbelievable！',
       'Good!',
       'Exellent!'
+    ],
+    // ★ 新增：方块全部消除后、答题阶段公鸡说的话
+    //   （原代码缺这一组，导致通关时 dialogues.answer[0] 报错、卡住没法继续）
+    answer: [
+      '咯咯咯，方块全清光了',
+      '把背后露出来的词，原样填进下面的框里吧',
     ],
     ending: [
       '如果说之前的所有事件都还有可以解释的余地',
@@ -710,17 +719,17 @@
     }, 260);
   }
 
-  // 一轮稳定后：够了就揭晓；没招了就重排；否则继续玩
+  // 一轮稳定后：全消了就揭晓；没招了就重排；否则继续玩
   function afterSettle() {
     if (gamePhase !== 'playing') return;
     const ratio = clearedCount / (ROWS * COLS);
-    if (ratio >= REVEAL_TARGET) { completeReveal(); return; }
+    if (ratio >= REVEAL_TARGET) { completeReveal(); return; }   // 已全部消除 → 揭晓
     if (!hasAnyMove()) {
       if (reshuffleRemaining()) {
         renderBoard();
         showDialogue('咯咯咯，凑不上了，我把剩下的重新摆一摆');
       } else {
-        completeReveal();   // 实在没法继续 → 把剩下的也化开，露出整词
+        completeReveal();   // 实在没法继续（剩的零头无法再消）→ 把剩下的也化开，露出整词
       }
     }
   }
@@ -738,7 +747,7 @@
       for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) grid[r][c] = null;
       renderBoard();
       document.getElementById('board-stack').classList.add('revealed');
-      document.getElementById('quiz-question').textContent = '后面的词，全露出来了';
+      document.getElementById('quiz-question').textContent = '全都暴露';
       document.getElementById('main-hint').textContent = '';
 
       const rooster = document.getElementById('rooster');

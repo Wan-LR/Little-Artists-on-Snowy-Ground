@@ -687,7 +687,7 @@
             avatar: 'av-1',
             initial: 'H',
             time: '38 分钟前',
-            text: '爪人是什么，还有喜欢研究上爪的人吗😯',
+            text: '爪人是什么，还有喜欢研究***上爪***的人吗😯',
             likes: 2
           },
           {
@@ -748,9 +748,39 @@
       }
     ];
  
+    // ===== 行内格式化 (**粗** *斜*) =====
+    function appendFormatted(parent, text) {
+      const regex = /\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+      let last = 0, m;
+      while ((m = regex.exec(text)) !== null) {
+        if (m.index > last) {
+          parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+        }
+        if (m[1]) {
+          const s = document.createElement('strong');
+          const e = document.createElement('em');
+          e.textContent = m[1];
+          s.appendChild(e);
+          parent.appendChild(s);
+        } else if (m[2]) {
+          const s = document.createElement('strong');
+          s.textContent = m[2];
+          parent.appendChild(s);
+        } else if (m[3]) {
+          const e = document.createElement('em');
+          e.textContent = m[3];
+          parent.appendChild(e);
+        }
+        last = m.index + m[0].length;
+      }
+      if (last < text.length) {
+        parent.appendChild(document.createTextNode(text.slice(last)));
+      }
+    }
+
     // ===== 渲染评论 =====
     const commentList = document.getElementById('commentList');
- 
+
     function renderComment(c, prepend = false) {
       const li = document.createElement('li');
       li.className = 'comment';
@@ -780,9 +810,9 @@
         replyMark.className = 'reply-to';
         replyMark.textContent = '回复 ' + c.replyTo + ':';
         textEl.appendChild(replyMark);
-        textEl.appendChild(document.createTextNode(c.text));
+        appendFormatted(textEl, c.text);
       } else {
-        textEl.textContent = c.text;
+        appendFormatted(textEl, c.text);
       }
 
       // 如果该评论有嵌套回复,渲染它们
@@ -829,9 +859,9 @@
         replyMark.className = 'reply-to';
         replyMark.textContent = '回复 ' + r.replyTo + ':';
         textEl.appendChild(replyMark);
-        textEl.appendChild(document.createTextNode(r.text));
+        appendFormatted(textEl, r.text);
       } else {
-        textEl.textContent = r.text;
+        appendFormatted(textEl, r.text);
       }
       return li;
     }

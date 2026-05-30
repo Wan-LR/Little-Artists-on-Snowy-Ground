@@ -472,13 +472,14 @@
 
   <script>
     /* ============================================================
-       账号数据 — base64 编码
+       密码验证 — 大小写和空格忽略
        ============================================================ */
-    const ACCOUNTS_B64 =
-      'eyJUT01BVE82NDIiOiB7InAiOiAiVGhlIFNpbXMiLCAiciI6ICJ5dWFuZ29uZ3hpYW9sYW4uaHRtbCJ9LCAiVE9NQVRPODQ1IjogeyJwIjogImhlbGxvd29ybGQiLCAiciI6ICJ4aHNpdC5odG1sIn19';
+    const CORRECT_PW = 'thesims';
+    const REDIRECT_TO = 'yuangongxiaolan.html';
 
-    let ACCOUNTS = {};
-    try { ACCOUNTS = JSON.parse(atob(ACCOUNTS_B64)); } catch (e) { console.error('账号数据解码失败', e); }
+    function checkPassword(input) {
+      return input.toLowerCase().replace(/\s/g, '') === CORRECT_PW;
+    }
 
 
     /* ============================================================
@@ -538,11 +539,9 @@
 
 
     /* ============================================================
-       控制台"破解"彩蛋 — password("工号")
+       控制台"破解"彩蛋 — password()
        ============================================================ */
-    const _PW_VAULT_B64 = 'eyJUT01BVE84NDUiOiAiYUdWc2JHOTNiM0pzWkE9PSJ9';
-
-    window.password = function(id) {
+    window.password = function() {
       const _delay = (ms) => new Promise(r => setTimeout(r, ms));
 
       const _run = async () => {
@@ -554,21 +553,14 @@
           hash:  'font-size:11px;color:#636e72;font-family:monospace;',
           ok:    'font-size:13px;color:#00b894;font-weight:bold;',
           pw:    'font-size:16px;color:#e33932;font-weight:bold;background:#fde8e7;padding:4px 12px;border-radius:4px;',
-          fail:  'font-size:13px;color:#d63031;font-weight:bold;',
         };
+
+        const realPw = 'The Sims';
 
         console.clear();
         console.log('%c🍅 TOMATO INTERNAL — PASSWORD RECOVERY TOOL v2.4', S.title);
         console.log('%c─────────────────────────────────────────────────', S.info);
         await _delay(400);
-
-        if (!id || typeof id !== 'string') {
-          console.log('%c✖ 用法: password("工号")  例如 password("TOMATO845")', S.fail);
-          return;
-        }
-
-        console.log('%c▸ 目标工号: ' + id, S.info);
-        await _delay(600);
 
         console.log('%c[1/6] 连接内部认证服务器...', S.step);
         await _delay(800);
@@ -577,17 +569,6 @@
 
         console.log('%c[2/6] 查询员工档案数据库...', S.step);
         await _delay(1000);
-
-        let vault = {};
-        try { vault = JSON.parse(atob(_PW_VAULT_B64)); } catch(e) {}
-        const encoded = vault[id.toUpperCase()];
-
-        if (!encoded) {
-          console.log('%c  ✖ 未找到工号 "' + id + '" 的记录', S.fail);
-          console.log('%c  提示: 仅支持查询部分测试账号', S.info);
-          return;
-        }
-
         console.log('%c  ✓ 匹配到 1 条员工记录', S.info);
         await _delay(500);
 
@@ -605,7 +586,6 @@
         console.log('%c[4/6] 尝试解密 (AES-256-GCM → Base64 → plaintext)...', S.step);
         await _delay(600);
 
-        const realPw = atob(encoded);
         const pwLen = realPw.length;
         const chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
         let display = Array(pwLen).fill('_');
@@ -633,16 +613,14 @@
 
         console.log('%c─────────────────────────────────────────────────', S.info);
         console.log('%c✅ 破解完成!', S.ok);
-        console.log('%c  工号: ' + id.toUpperCase(), S.info);
         console.log('%c密码: ' + realPw, S.pw);
         console.log('%c─────────────────────────────────────────────────', S.info);
         console.log('%c⚠ 本工具仅限内部调试使用,请勿外传', S.warn);
 
-        /* ★ 破解成功 → 触发成就弹窗 */
         showAchievement({
           emoji: '🔓',
           title: '密码破解成功',
-          desc:  '工号 ' + id.toUpperCase() + ' · 你找到了隐藏指令'
+          desc:  '你找到了隐藏指令'
         });
       };
 
@@ -700,9 +678,8 @@
         submitBtn.disabled = false;
         submitBtn.textContent = '登 录';
 
-        const entry = ACCOUNTS[account];
-        if (entry && entry.p === password) {
-          window.location.href = entry.r;
+        if (checkPassword(password)) {
+          window.location.href = REDIRECT_TO;
         } else {
           errorMsg.textContent = '账号或密码不正确,请重新输入';
           errorMsg.classList.add('show');
@@ -710,6 +687,6 @@
       }, 600);
     });
   </script>
-    <script src="nav.js"></script>
+<script src="nav.js"></script>
 </body>
 </html>

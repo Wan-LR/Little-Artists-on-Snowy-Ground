@@ -684,10 +684,6 @@
        默认隐藏 (transform: translateY(-100%)),
        由 JS 在拦截发布时加 .show 类滑下来
        ============================================================ -->
-  <div class="toast" id="toast" role="status" aria-live="polite">
-    <span class="toast-dot"></span>
-    <span class="toast-text">你不想留下任何评论</span>
-  </div>
 
   <div class="container">
 
@@ -701,14 +697,14 @@
 
     <!-- ═══════════ 2. 帖子主图 ═══════════ -->
     <div class="hero">
-      <img src="images/bawangbieji.png" alt="健康生活">
+      <img src="images/bawangbieji.png" alt="霸王别姬">
     </div>
 
     <!-- ═══════════ 3. 作者信息 ═══════════ -->
     <div class="post-meta">
-      <div class="avatar av-5">G</div>
+      <div class="avatar av-5">J</div>
       <div class="meta-text">
-        <div class="user-id">@龟背竹</div>
+        <div class="user-id">@家具批发商</div>
         <div class="meta-sub">3 小时前 · 阅读 2381</div>
       </div>
     </div>
@@ -770,38 +766,27 @@
     <!-- ═══════════ ★ 10. 评论加载失败 UI ═══════════
          【最近改动 — 新增】替换了原本的 <ul class="comment-list">
          结构:[斜线评论气泡图标] + [失败文案] + [重新加载按钮] -->
-    <div class="comment-error" id="commentError">
-      <div class="icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-          <line x1="3" y1="3" x2="21" y2="21"/>
-        </svg>
-      </div>
-      <div class="error-title">评论加载失败</div>
-      <button class="retry-btn" id="retryBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-          <path d="M21 3v5h-5"/>
-          <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
-          <path d="M3 21v-5h5"/>
-        </svg>
-        重新加载
-      </button>
-    </div>
+    <ul class="comment-list" id="commentList"></ul>
 
   </div>
 
   <script>
-    /* ============================================================
-       通用:复用的 SVG 图标字符串
-       ============================================================ */
     const HEART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const REPLY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5M4 12h11a5 5 0 0 1 5 5v3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+    const seedComments = [
+      { userId:'@小凳子', avatar:'av-2', initial:'X', time:'2 小时前',
+        text:'这部片子真的经典！', likes:241 },
+      { userId:'@小桌子', avatar:'av-4', initial:'X', time:'1 小时前',
+        text:'每次看每次哭，哭完还会看', likes:186,
+        replies:[
+          { userId:'@龟背竹', avatar:'av-5', initial:'G', time:'30 分钟前',
+            text:'同意！我每年都要重温一遍。', likes:52, replyTo:'@小桌子' }
+        ]},
+      { userId:'@小椅子', avatar:'av-6', initial:'X', time:'45 分钟前',
+        text:'主角的扮相真的太好看了。', likes:97 },
+    ];
 
-    /* ============================================================
-       1. 评论渲染函数 (当前未被实际调用 — 评论加载失败)
-       ============================================================ */
     const commentList = document.getElementById('commentList');
 
     function renderComment(c, prepend = false) {
@@ -825,36 +810,77 @@
           </div>
         </div>
       `;
-      // Set text safely
-      li.querySelector('.comment-text').textContent = c.text;
+      const textEl = li.querySelector('.comment-text');
+      if (c.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + c.replyTo + ':';
+        textEl.appendChild(replyMark);
+        textEl.appendChild(document.createTextNode(c.text));
+      } else {
+        textEl.textContent = c.text;
+      }
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        const repliesUl = document.createElement('ul');
+        repliesUl.className = 'comment-replies';
+        c.replies.forEach(r => {
+          repliesUl.appendChild(renderReplyItem(r));
+        });
+        li.querySelector('.comment-body').appendChild(repliesUl);
+      }
       if (prepend) commentList.prepend(li);
       else commentList.appendChild(li);
       return li;
     }
 
+    function renderReplyItem(r) {
+      const li = document.createElement('li');
+      li.className = 'comment';
+      li.innerHTML = `
+        <div class="avatar sm ${r.avatar}">${r.initial}</div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <span class="user-id">${r.userId}</span>
+            <span class="time">${r.time}</span>
+          </div>
+          <p class="comment-text"></p>
+          <div class="comment-actions">
+            <button class="comment-action like-comment" data-likes="${r.likes}" aria-pressed="false">
+              ${HEART_SVG}<span class="lc">${r.likes}</span>
+            </button>
+            <button class="comment-action">
+              ${REPLY_SVG}回复
+            </button>
+          </div>
+        </div>
+      `;
+      const textEl = li.querySelector('.comment-text');
+      if (r.replyTo) {
+        const replyMark = document.createElement('span');
+        replyMark.className = 'reply-to';
+        replyMark.textContent = '回复 ' + r.replyTo + ':';
+        textEl.appendChild(replyMark);
+        textEl.appendChild(document.createTextNode(r.text));
+      } else {
+        textEl.textContent = r.text;
+      }
+      return li;
+    }
+
     seedComments.forEach(c => renderComment(c));
 
-
-    /* ============================================================
-       2. 帖子主点赞按钮 (爱心图标切换 + 计数 ±1)
-       ============================================================ */
+    // 帖子点赞
     const likeBtn = document.getElementById('likeBtn');
     const likeCount = document.getElementById('likeCount');
-    let postLiked = false;
-    let postLikes = 128;
-
+    let postLiked = false, postLikes = 327;
     likeBtn.addEventListener('click', () => {
       postLiked = !postLiked;
       postLikes += postLiked ? 1 : -1;
       likeCount.textContent = postLikes;
       likeBtn.classList.toggle('liked', postLiked);
-      likeBtn.setAttribute('aria-pressed', postLiked);
     });
 
-
-    /* ============================================================
-       3. 评论点赞 (事件委托 — 给所有 .like-comment 按钮)
-       ============================================================ */
+    // 评论点赞
     document.addEventListener('click', e => {
       const btn = e.target.closest('.like-comment');
       if (!btn) return;
@@ -863,18 +889,16 @@
       n += isLiked ? 1 : -1;
       btn.dataset.likes = n;
       btn.querySelector('.lc').textContent = n;
-      btn.setAttribute('aria-pressed', isLiked);
     });
 
-
-    /* ============================================================
-       4. 评论输入框 — 自动撑高 + 发布按钮启用/禁用
-       ============================================================ */
+    // 评论输入
     const input = document.getElementById('commentInput');
     const submitBtn = document.getElementById('submitBtn');
     const commentNumLabel = document.getElementById('commentNumLabel');
     const commentTopCount = document.getElementById('commentTopCount');
     let commentTotal = seedComments.length;
+    commentNumLabel.textContent = commentTotal;
+    commentTopCount.textContent = commentTotal;
 
     input.addEventListener('input', () => {
       input.style.height = 'auto';
@@ -882,64 +906,25 @@
       submitBtn.disabled = input.value.trim().length === 0;
     });
 
-
-    /* ============================================================
-       ★ 5. 提交评论 (拦截 → 触发弹窗)  【最近改动】
-       ────────────────────────────────────────────────────────────
-       原行为:把评论 prepend 到列表 + 计数 +1
-       新行为:不发送,改为:
-              ① 调用 showToast() 显示顶部弹窗
-              ② 给输入框加 .shake 类做抖动反馈
-       ============================================================ */
     function submit() {
       const text = input.value.trim();
       if (!text) return;
-
-      // Block submission — show top toast instead
-      showToast();
-
-      // Visual feedback on the input box
-      const inputBox = document.querySelector('.comment-input');
-      inputBox.classList.remove('shake');
-      // Force reflow so animation can replay
-      void inputBox.offsetWidth;
-      inputBox.classList.add('shake');
+      renderComment({
+        userId:'@龟背竹 (你)', avatar:'av-3', initial:'你',
+        time:'刚刚', text:text, likes:0
+      }, true);
+      commentTotal++;
+      commentNumLabel.textContent = commentTotal;
+      commentTopCount.textContent = commentTotal;
+      input.value = '';
+      input.style.height = 'auto';
+      submitBtn.disabled = true;
     }
 
-
-    /* ============================================================
-       ★ 6. Toast 弹窗显隐控制  【最近改动 — 新增】
-       ────────────────────────────────────────────────────────────
-       showToast()  → 加 .show 类显示,2.6 秒后自动收回
-       点击 toast   → 立即关闭(不用等)
-       ============================================================ */
-    const toast = document.getElementById('toast');
-    let toastTimer = null;
-
-    function showToast() {
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2600);
-    }
-
-    // Click toast to dismiss early
-    toast.addEventListener('click', () => {
-      toast.classList.remove('show');
-      clearTimeout(toastTimer);
-    });
-
-
-    /* ============================================================
-       7. 提交事件绑定 (按钮点击 + Cmd/Ctrl + Enter 快捷键)
-       ============================================================ */
     submitBtn.addEventListener('click', submit);
-
     input.addEventListener('keydown', e => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        e.preventDefault();
-        submit();
+        e.preventDefault(); submit();
       }
     });
   </script>

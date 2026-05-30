@@ -6,14 +6,13 @@
   var pages = { '1':'xhs1.html', 'pl':'xhspl.html', '2':'xhs2.html', '3':'xhs3.html' };
   var home = pages[version] || 'xhs1.html';
 
-  var logos = document.querySelectorAll('.site-logo');
-  for (var i = 0; i < logos.length; i++) { logos[i].href = home; }
-
-  var backs = document.querySelectorAll('.back-link');
-  for (var i = 0; i < backs.length; i++) {
-    var href = backs[i].getAttribute('href');
-    if (href === 'xhs1.html' || href === 'xhspl.html' || href === 'xhs2.html' || href === 'xhs3.html') {
-      backs[i].href = home;
+  // 更新所有指向 xhs 版本页的链接为当前最新版本
+  var xhsPages = ['xhs1.html','xhspl.html','xhs2.html','xhs3.html'];
+  var allLinks = document.querySelectorAll('a');
+  for (var i = 0; i < allLinks.length; i++) {
+    var h = allLinks[i].getAttribute('href');
+    if (h && xhsPages.indexOf(h) !== -1) {
+      allLinks[i].href = home;
     }
   }
 
@@ -38,19 +37,15 @@
   // ── 数据定义 ──
   var CATEGORIES = {
     '西红柿': [
-      { id:'xhsyingwu',    label:'金刚鹦鹉' },
-      { id:'xhstroisbody', label:'仨体' },
-      { id:'xhsjiankang',  label:'健康生活' },
-      { id:'xhsyiqing',    label:'疫情' },
+      { id:'xhsyingwu',    label:'金刚鹦鹉', pl:'xhsyingwupl' },
+      { id:'xhstroisbody', label:'仨体',      pl:'xhstroisbodypl' },
+      { id:'xhsjiankang',  label:'健康生活',  pl:'xhsjiankangpl' },
+      { id:'xhsyiqing',    label:'疫情',      pl:'xhsyiqingpl' },
       { id:'xhshuajia',    label:'语文书' },
       { id:'xhsfumao',     label:'孵猫' },
       { id:'xhschongyan',  label:'彩南虫宴' },
       { id:'xhsxunyu',     label:'熏鱼' },
       { id:'xhsshangzhua', label:'上爪' },
-      { id:'xhsyingwupl',  label:'金刚鹦鹉(评)' },
-      { id:'xhstroisbodypl',label:'仨体(评)' },
-      { id:'xhsjiankangpl',label:'健康(评)' },
-      { id:'xhsyiqingpl',  label:'y疫情(评)' },
       { id:'xhsbwbj',      label:'霸王别姬' },
       { id:'xhsmbc',       label:'鹦鹉套餐' },
       { id:'xhswangle',    label:'首页推荐' },
@@ -60,9 +55,11 @@
       { id:'xhscasexiangxia',label:'无意拍摄' },
       { id:'xhshuajiabucuo',label:'雪地里的小画家' },
       { id:'xhsweys',      label:'威尔已死' },
-      { id:'xhsxiaolantx', label:'小蓝的头像' },
+      { id:'xiaolan',       label:'小蓝主页' },
+      { id:'xhsit',         label:'贾霭醍主页' },
+      { id:'xhssettings',   label:'西红柿设置' },
       { id:'xhsyuangong',  label:'员工后台' },
-      { id:'jisuanji2',    label:'计算机' },
+      { id:'jisuanji2',    label:'计算机小知识' },
 
     ],
     '矢呼': [
@@ -79,7 +76,7 @@
     '千百度': [
       { id:'qbdxdldxhj',  label:'雪地里的小画家' },
       { id:'shiershengxiao',  label:'十二生肖' },
-      { id:'qbdxcy',       label:'旧城疫' },
+      { id:'qbdxcy',       label:'新城疫' },
       { id:'qbdmaoxing',   label:'昴星' },
       { id:'qbdrenlei',    label:'人类' },
       { id:'qbdweys',      label:'威尔已死' },
@@ -87,6 +84,7 @@
       { id:'qbdyq',        label:'月球' },
       { id:'qbdcainan',    label:'彩南' },
       { id:'qbdshangzhua', label:'上爪' },
+      { id:'qbdxsz',       label:'小石子' },
     ]
   };
 
@@ -99,7 +97,7 @@
     { key:'ach-chirp',              name:'布谷布谷' },
     { key:'ach-leave',              name:'还得谢谢咱' },
     { key:'ach-youxiandaan',        name:'有限大暗' },
-    { key:'ach-searchmaster',       name:'搜索大师' },
+    { key:'ach-searchmaster',       name:'却不在灯火阑珊处' },
   ];
 
   // ── 辅助函数 ──
@@ -134,6 +132,8 @@
     + '.idx-cat{margin-bottom:18px;}'
     + '.idx-cat-title{font-size:13px;font-weight:700;color:#e33932;margin-bottom:8px;'
     + 'padding-bottom:6px;border-bottom:1px solid #f0f0f0;}'
+    + '.idx-cat-link{display:block;text-decoration:none;transition:opacity .15s;}'
+    + '.idx-cat-link:hover{opacity:.7;}'
     + '.idx-cat:nth-child(2) .idx-cat-title{color:#2563eb;}'
     + '.idx-cat:nth-child(3) .idx-cat-title{color:#059669;}'
     + '.idx-link{display:block;padding:5px 0;font-size:13px;color:#666;text-decoration:none;'
@@ -181,12 +181,25 @@
     // 该组是否有至少一个页面已访问
     var anySeen = items.some(function(it) { return visitedSet.indexOf(it.id) !== -1; });
     var catTitle = anySeen ? cat : '???';
-    bodyHTML += '<div class="idx-cat"><div class="idx-cat-title">' + catTitle + '</div>';
+    // 分类标题可点击跳转
+    var catLinks = { '西红柿':'xhs1.html', '矢呼':'shjm.html', '千百度':'qianbaidu.html' };
+    if (cat === '西红柿') catLinks['西红柿'] = home;  // 当前最新xhs版本
+    var titleHTML = anySeen
+      ? '<a class="idx-cat-title idx-cat-link" href="' + catLinks[cat] + '">' + catTitle + '</a>'
+      : '<div class="idx-cat-title">' + catTitle + '</div>';
+    bodyHTML += '<div class="idx-cat">' + titleHTML;
     for (var j = 0; j < items.length; j++) {
       var it = items[j];
-      var seen = visitedSet.indexOf(it.id) !== -1;
+      // 已访问 或 pl评论版已访问 都算"已解锁"
+      var seen = visitedSet.indexOf(it.id) !== -1
+        || (it.pl && visitedSet.indexOf(it.pl) !== -1);
+      // 如果有 pl 评论版且已解锁，跳转到评论版
+      var url = it.id + '.html';
+      if (it.pl && visitedSet.indexOf(it.pl) !== -1) {
+        url = it.pl + '.html';
+      }
       if (seen) {
-        bodyHTML += '<a class="idx-link seen" href="' + it.id + '.html">'
+        bodyHTML += '<a class="idx-link seen" href="' + url + '">'
           + '<span class="dot"></span>' + it.label + '</a>';
       } else {
         bodyHTML += '<span class="idx-link idx-unknown">'

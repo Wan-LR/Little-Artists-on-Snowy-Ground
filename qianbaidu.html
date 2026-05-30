@@ -208,6 +208,27 @@
     }
     .modal-btn:hover { background: var(--accent-hover); }
 
+    /* ★ 两个按钮并排：一会再去 / 去看看 */
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-actions .modal-btn {
+      flex: 1 1 0;
+      width: auto;          /* 覆盖单按钮时的 100% 宽 */
+    }
+    /* 次要按钮（一会再去）：描边幽灵样式 */
+    .modal-btn-ghost {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+    }
+    .modal-btn-ghost:hover {
+      background: var(--line-soft);
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
     /* ── Steam 风格成就弹窗 ── */
     .achievement-toast {
       position: fixed;
@@ -327,18 +348,22 @@
     </div>
   </div>
 
-  <!-- 找不到关键词时的弹窗 -->
+  <!-- 弹窗：未收录(单按钮) / 西红柿更新了(两个按钮:一会再去 + 去看看) -->
   <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <h2 class="modal-title" id="modalTitle">抱歉 该词条尚未收录</h2>
-      <button type="button" class="modal-btn" id="modalCloseBtn">我 知 道 了</button>
+      <div class="modal-actions">
+        <!-- 仅在"西红柿更新了"时显示；默认隐藏 -->
+        <button type="button" class="modal-btn modal-btn-ghost" id="modalLaterBtn" hidden>一 会 再 去</button>
+        <button type="button" class="modal-btn" id="modalCloseBtn">我 知 道 了</button>
+      </div>
     </div>
   </div>
 
   <script>
     // ═══════════════════════════════════════════════════════
     // 两组关键词，每组找齐后弹出"西红柿更新了"跳转
-    // "有限大暗" → 仅成就，不计入进度
+    // "鉴定网络热门生物" → 仅成就，不计入进度
     // 全部找齐 → 最终成就弹窗
     // ═══════════════════════════════════════════════════════
     const GROUPS = [
@@ -354,7 +379,7 @@
 
     // 仅弹成就的关键词（不计入进度）
     const ACHIEVEMENT_ONLY = {
-      "有限大暗": { emoji: '🌌', title: '有限大暗', desc: '你找到了隐藏的关键词' },
+      "鉴定网络热门生物": { emoji: '🌌', title: '鉴定网络热门生物', desc: '你找到了隐藏的关键词' },
     };
 
     // ═══════════════════════════════════════════════════════
@@ -373,11 +398,11 @@
       "彩南":     "qbdcainan.html",
       "上爪":     "qbdshangzhua.html",
       "过目不忘": "qbdgmbw.html",
-      "有限大暗": "",   // 隐藏成就词；留空则只弹成就不跳转
+      "鉴定网络热门生物": "",   // 隐藏成就词；留空则只弹成就不跳转
     };
 
     // 全部关键词找齐后的成就
-    const FINAL_ACHIEVEMENT = { emoji: '🏆', title: '搜索大师', desc: '所有关键词全部找到！' };
+    const FINAL_ACHIEVEMENT = { emoji: '🏆', title: '却不在灯火阑珊处', desc: '所有关键词全部找到！' };
 
     // 构建搜索用全集 + 标记每个词属于哪个组
     const allKeywords = {};
@@ -407,6 +432,7 @@
     const modalMask     = document.getElementById('modalMask');
     const modalTitle    = document.getElementById('modalTitle');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalLaterBtn = document.getElementById('modalLaterBtn');   // ★ 新增：一会再去
 
     // ── 已解锁的组 (防重复弹窗) ──
     function getUnlockedGroups() {
@@ -449,22 +475,29 @@
       setTimeout(() => toast.classList.remove('show'), 5500);
 
       // 持久化成就
-      if (title === '有限大暗') localStorage.setItem('ach-youxiandaan', '1');
-      if (title === '搜索大师') localStorage.setItem('ach-searchmaster', '1');
+      if (title === '鉴定网络热门生物') localStorage.setItem('ach-youxiandaan', '1');
+      if (title === '却不在灯火阑珊处') localStorage.setItem('ach-searchmaster', '1');
     }
 
-    // ── "西红柿更新了" 弹窗 ──
+    // ── "西红柿更新了" 弹窗（两个选项：一会再去 / 去看看）──
     function showUpdateModal(url) {
       modalTitle.textContent = '西红柿更新了';
       modalCloseBtn.textContent = '去 看 看 →';
+      modalLaterBtn.hidden = false;                 // ★ 显示"一会再去"
+
       modalMask.classList.add('show');
+
+      // 去看看 → 跳转
       modalCloseBtn.onclick = function () { window.location.href = url; };
+      // 一会再去 → 关闭弹窗，留在当前搜索页
+      modalLaterBtn.onclick = function () { hideModal(); };
+      // 点遮罩 = 留在本页（不再像以前那样直接跳转）
       modalMask.onclick = function (ev) {
-        if (ev.target === modalMask) { window.location.href = url; };
+        if (ev.target === modalMask) hideModal();
       };
     }
 
-    // 计算是否所有关键词（含有限大暗）都找到了
+    // 计算是否所有关键词（含鉴定网络热门生物）都找到了
     function isAllDone(found) {
       const achKeys = Object.keys(ACHIEVEMENT_ONLY).map(k => k.toLowerCase());
       return GROUPS.every(g =>
@@ -533,6 +566,7 @@
         // 未匹配
         modalTitle.textContent = '抱歉 本词条尚未收录';
         modalCloseBtn.textContent = '我 知 道 了';
+        modalLaterBtn.hidden = true;          // ★ 该弹窗只要单按钮
         modalMask.classList.add('show');
         modalCloseBtn.onclick = hideModal;
         modalMask.onclick = function (ev) {
@@ -543,6 +577,7 @@
 
     function hideModal() {
       modalMask.classList.remove('show');
+      modalLaterBtn.hidden = true;            // ★ 复位：隐藏"一会再去"，避免带到下一个弹窗
       input.focus();
       input.select();
     }

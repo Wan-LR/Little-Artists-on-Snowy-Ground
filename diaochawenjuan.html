@@ -780,21 +780,21 @@
       const optD = document.getElementById('optD');
       optD.style.opacity = '1';
       optD.style.pointerEvents = '';
-      // 闪烁: 每300ms切换
+      // 闪烁: 每150ms切换
       let visible = true;
       q3FlashTimer = setInterval(() => {
         visible = !visible;
-        optD.style.opacity = visible ? '1' : '0.15';
-      }, 300);
-      // 1.5s后消失
+        optD.style.opacity = visible ? '1' : '0.1';
+      }, 150);
+      // 0.8s后消失
       setTimeout(() => {
         clearInterval(q3FlashTimer);
         q3FlashTimer = null;
-        optD.style.transition = 'opacity 0.4s, transform 0.4s';
+        optD.style.transition = 'opacity 0.25s, transform 0.25s';
         optD.style.opacity = '0';
         optD.style.transform = 'scale(0.9)';
         optD.style.pointerEvents = 'none';
-      }, 1500);
+      }, 800);
     }
 
     // Q4: 计算成就积分
@@ -849,8 +849,8 @@
       { key: 'ach-goldfish',           name: 'Tell me tell me',  pts: 5 },
       { key: 'ach-chirp',              name: '布谷布谷',         pts: 5 },
       { key: 'ach-leave',              name: '还得谢谢咱',       pts: 5 },
-      { key: 'ach-youxiandaan',        name: '有限大暗',         pts: 5 },
-      { key: 'ach-searchmaster',       name: '搜索大师',         pts: 10 },
+      { key: 'ach-youxiandaan',        name: '鉴定网络热门生物',         pts: 5 },
+      { key: 'ach-searchmaster',       name: '却不在灯火阑珊处',         pts: 10 },
     ];
 
     scoreQ4 = 0;

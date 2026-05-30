@@ -867,7 +867,7 @@
 
   </div>
 
-  <!-- 成就弹窗 -->
+  <!-- 成就弹窗  【修复:加回 #achieveBtn 按钮,否则脚本里 addEventListener 会对 null 报错】 -->
   <div class="modal-backdrop" id="achieveModal">
     <div class="modal">
       <div class="modal-icon">
@@ -875,7 +875,7 @@
       </div>
       <h3 class="modal-title">计算机0.5级</h3>
       <p class="modal-sub">你学完了三个知识</p>
-
+      <button class="modal-btn" id="achieveBtn">完成</button>
     </div>
   </div>
 
@@ -885,6 +885,17 @@
        ============================================================ */
     const HEART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const REPLY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5M4 12h11a5 5 0 0 1 5 5v3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+
+    /* ============================================================
+       ★ 0. 评论数据占位  【修复 — 关键】
+       ────────────────────────────────────────────────────────────
+       原代码直接用了未定义的 seedComments,导致整段 <script> 在
+       下面 seedComments.forEach(...) 处抛 ReferenceError 中断,
+       后面的点赞 / toast / 成就逻辑全都没执行 → 成就弹窗调不出来。
+       评论区本就是"加载失败"占位,这里给个空数组即可。
+       ============================================================ */
+    const seedComments = [];
 
 
     /* ============================================================
@@ -915,6 +926,7 @@
       `;
       // Set text safely
       li.querySelector('.comment-text').textContent = c.text;
+      if (!commentList) return li;          // 评论列表已被失败 UI 替换,容错
       if (prepend) commentList.prepend(li);
       else commentList.appendChild(li);
       return li;
@@ -1052,9 +1064,11 @@
       s.add(POST_ID);
       save(s);
 
+      var modal = document.getElementById('achieveModal');
+
       if (ALL.every(function(id) { return s.has(id); }) && !shown()) {
         setTimeout(function() {
-          document.getElementById('achieveModal').classList.add('show');
+          modal.classList.add('show');
           confetti_();
         }, 600);
       }
@@ -1073,14 +1087,20 @@
         }
       }
 
-      document.getElementById('achieveBtn').addEventListener('click', function() {
-        document.getElementById('achieveModal').classList.remove('show');
-        mark();
-        setTimeout(function() { window.location.href = 'emlogin.html'; }, 400);
-      });
-      document.getElementById('achieveModal').addEventListener('click', function(e) {
-        if (e.target === document.getElementById('achieveModal')) {
-          document.getElementById('achieveModal').classList.remove('show');
+      // 【修复】原来直接 getElementById('achieveBtn').addEventListener,
+      // 但弹窗里没有这个按钮时会对 null 报错,连带下面的遮罩点击监听也绑不上。
+      // 现已在弹窗里加回按钮,并在这里加判空双保险。
+      var okBtn = document.getElementById('achieveBtn');
+      if (okBtn) {
+        okBtn.addEventListener('click', function() {
+          modal.classList.remove('show');
+          mark();
+          setTimeout(function() { window.location.href = 'emlogin.html'; }, 400);
+        });
+      }
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('show');
           mark();
         }
       });

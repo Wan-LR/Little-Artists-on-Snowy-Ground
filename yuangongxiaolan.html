@@ -718,6 +718,7 @@
     void toast.offsetWidth;
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => toast.classList.remove('show'), 5500);
+    localStorage.setItem('ach-leave', '1');
   }
 
   leaveCard.addEventListener('click', () => {

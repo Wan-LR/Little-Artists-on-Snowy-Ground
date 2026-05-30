@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>能吃与不能吃</title>
+<title>怎么孵化</title>
 <style>
   @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
@@ -157,77 +157,91 @@
     letter-spacing: 0.24em;
   }
 
-  /* 选项行 */
-  .options-row {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    gap: 22px;
-  }
-  .options-row.locked .option-tile { pointer-events: none; }
+  /* ── 孵蛋舞台 ── */
+  .hatch-stage { position: absolute; inset: 0; }
 
-  .option-tile {
-    position: relative;
-    width: 104px;
-    height: 104px;
-    background: linear-gradient(135deg, rgba(74,144,217,0.12), rgba(20,60,140,0.20));
-    border: 1px solid var(--border);
-    border-radius: 12px;
+  .zones {
+    position: absolute;
+    top: 116px; left: 0; right: 0;
     display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0 24px;
+  }
+  .zone {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
-    box-shadow: inset 0 1px 0 rgba(74,144,217,0.15), 0 4px 10px rgba(0,0,0,0.45);
-    /* 让卡片处于 3D 上下文里时，瓦片始终正面朝向、独立成层，避免抖动时被剔除而"消失" */
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
-    transform: translateZ(0);
+    gap: 12px;
+    transition: transform 0.2s, filter 0.2s;
   }
-  .option-tile:hover {
-    transform: translateZ(0) translateY(-4px) scale(1.04);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(74,144,217,0.25), 0 8px 16px rgba(0,0,0,0.55);
-  }
-  .option-tile:active { transform: translateZ(0) scale(0.97); }
-
-  .option-tile .letter-badge {
-    position: absolute;
-    right: -7px; bottom: -7px;
-    width: 27px; height: 27px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+  .zone.hot { transform: translateY(-4px) scale(1.05); filter: drop-shadow(0 0 10px rgba(74,144,217,0.5)); }
+  .zone-label {
     font-family: 'Noto Serif SC', serif;
-    font-size: 0.86rem; font-weight: 700;
-    letter-spacing: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.35);
+    font-size: 0.74rem;
+    color: var(--light);
+    letter-spacing: 0.08em;
   }
 
-  .option-tile.correct {
-    border-color: #4ad980;
-    box-shadow: 0 0 0 2px rgba(74,217,128,0.45), 0 0 22px rgba(74,217,128,0.32);
+  /* 孵蛋器 / 母产房 —— 用图片 */
+  .zone-img {
+    width: 120px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;          /* 拖放靠坐标判定，图片本身不拦截事件 */
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
   }
-  .option-tile.correct .letter-badge { background: #4ad980; }
-  .option-tile.wrong {
-    border-color: #d94a4a !important;
-    background: rgba(217,74,74,0.22);
-    box-shadow: 0 0 0 2px rgba(217,74,74,0.5), 0 0 18px rgba(217,74,74,0.35);
-    animation: tile-shake 0.4s ease;
+  /* 图片加载失败时的占位（虚线框 + 问号），方便你还没放图时也能看到判定区 */
+  .zone-img.broken {
+    width: 120px; height: 100px;
+    background: rgba(74,144,217,0.06);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
   }
-  .option-tile.wrong .letter-badge { background: #d94a4a; }
-  /* 抖动保留 translateZ(0)，避免在 3D 卡片里被剔除而消失 */
-  @keyframes tile-shake {
-    0%,100% { transform: translateZ(0) translateX(0); }
-    25%     { transform: translateZ(0) translateX(-6px); }
-    75%     { transform: translateZ(0) translateX(6px); }
+
+  /* 鸡蛋托盘 */
+  .egg-tray {
+    position: absolute;
+    bottom: 40px; left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
-  .option-tile.dimmed { opacity: 0.3; }
+  .tray-label {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.66rem;
+    color: rgba(168,204,240,0.5);
+    letter-spacing: 0.12em;
+  }
+
+  /* 鸡蛋 */
+  .egg {
+    width: 54px; height: 70px;
+    background: radial-gradient(ellipse at 38% 30%, #fffdf6 0%, #f2e4c4 56%, #ddc89a 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow:
+      inset -6px -8px 14px rgba(150,120,70,0.35),
+      inset 4px 5px 9px rgba(255,255,255,0.45),
+      0 6px 12px rgba(0,0,0,0.45);
+    cursor: grab;
+    touch-action: none;
+    transition: opacity 0.2s;
+  }
+  .egg:hover { filter: brightness(1.04); }
+  .egg:active { cursor: grabbing; }
+
+  /* 拖动中的浮空鸡蛋 */
+  #float-egg {
+    cursor: grabbing;
+    pointer-events: none;
+    z-index: 9999;
+    transform: scale(1.08) rotate(-6deg);
+    filter: drop-shadow(0 12px 16px rgba(0,0,0,0.5));
+  }
 
   #success-msg {
     display: none;
@@ -285,7 +299,7 @@
     background: rgba(8,18,36,0.8);
     color: var(--white);
     border-radius: 3px;
-    width: 180px;
+    width: 200px;
     outline: none;
     transition: border-color 0.25s, box-shadow 0.25s;
     text-align: center;
@@ -414,7 +428,7 @@
     pointer-events: auto;
     position: relative;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,0.6));
-    transition: filter 0.3s ease;
+    transition: filter 0.3s ease, transform 0.2s ease;
   }
   .rooster.bobbing { animation: rooster-bob 0.8s ease-in-out 5; }
   @keyframes rooster-bob {
@@ -426,6 +440,12 @@
   .rooster:hover {
     filter: drop-shadow(0 10px 20px rgba(74,144,217,0.5))
             drop-shadow(0 8px 14px rgba(0,0,0,0.55));
+  }
+  /* 鸡蛋悬到公鸡上时高亮 */
+  .rooster.egg-hot {
+    filter: drop-shadow(0 0 18px rgba(255,210,120,0.7))
+            drop-shadow(0 8px 14px rgba(0,0,0,0.55));
+    transform: scale(1.06);
   }
   .rooster img {
     width: 100%; height: 100%;
@@ -453,13 +473,33 @@
           <div id="game-board">
             <div class="quiz-question" id="quiz-question"></div>
             <div class="quiz-round-no" id="quiz-round-no"></div>
-            <div class="options-row" id="options-row"></div>
-            <div id="success-msg">六轮作答完毕</div>
+
+            <div class="hatch-stage" id="hatch-stage">
+              <div class="zones">
+                <div class="zone" id="incubator-zone">
+                  <img class="zone-img" id="incubator" src="images/fudanqi.png" alt="人工孵蛋器"
+                       onerror="this.classList.add('broken');this.removeAttribute('src');">
+                  <div class="zone-label">人工孵蛋器</div>
+                </div>
+                <div class="zone" id="nest-zone">
+                  <img class="zone-img" id="hen-nest" src="images/jiwo.png" alt="产房"
+                       onerror="this.classList.add('broken');this.removeAttribute('src');">
+                  <div class="zone-label">产房</div>
+                </div>
+              </div>
+
+              <div class="egg-tray">
+                <div class="egg" id="egg"></div>
+                <div class="tray-label">抓起这颗蛋</div>
+              </div>
+            </div>
+
+            <div id="success-msg">放对地方了</div>
           </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="images/yazi.png" alt="背面">
+        <img id="back-img" src="images/pluto.png" alt="背面">
       </div>
     </div>
   </div>
@@ -494,81 +534,50 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/yazi.png';   // ← 换成你的背面图
-  const PASSWORD    = 'sawney';
-  const PUZZLE_ID   = 'puzzle_2';
-  const PUZZLE_INDEX = 1;          // 九宫格里的第 2 格（索引 1）
+  const BACK_IMAGE  = 'images/pluto.png';   // ← 换成你的背面图
+  const PASSWORD    = 'pluto';
+  const PUZZLE_ID   = 'puzzle_4';
+  const PUZZLE_INDEX = 3;          // 九宫格里的第 4 格（索引 3）
   const RETURN_URL  = 'mxhuitu.html';
   // ═══════════════════════════════════════════
 
-  // ── 六轮题目 ──────────────────────────────────────────────
-  // canEat:true  → 题目“选出能吃的东西”，正确答案是【食物】
-  // canEat:false → 题目“选出不能吃的东西”，正确答案是【杂物】
-  // 每轮 options 里 correct:true 的那一项带着答案字母（按顺序拼成 sawney）
-  // 其余两项是干扰项，字母随意（不影响答案）
-  const ROUNDS = [
-    { canEat: true,  options: [
-        { emoji: '🌽', letter: 's', correct: true  },   // 面包 = 能吃
-        { emoji: '🪨', letter: 'k', correct: false },   // 石头
-        { emoji: '🧼', letter: 'q', correct: false } ]  // 肥皂
-    },
-    { canEat: false, options: [
-        { emoji: '🐛', letter: 't', correct: false },   // 苹果
-        { emoji: '🔩', letter: 'a', correct: true  },   // 螺丝 = 不能吃
-        { emoji: '🍇', letter: 'm', correct: false } ]  // 葡萄
-    },
-    { canEat: true,  options: [
-        { emoji: '🪵', letter: 'r', correct: false },   // 木头
-        { emoji: '🍐', letter: 'w', correct: true  },   // 披萨 = 能吃
-        { emoji: '🧷', letter: 'z', correct: false } ]  // 别针
-    },
-    { canEat: false, options: [
-        { emoji: '🍌', letter: 'b', correct: false },   // 香蕉
-        { emoji: '🥕', letter: 'f', correct: false },   // 胡萝卜
-        { emoji: '💡', letter: 'n', correct: true  } ]  // 灯泡 = 不能吃
-    },
-    { canEat: true,  options: [
-        { emoji: '🔧', letter: 'x', correct: false },   // 扳手
-        { emoji: '🥚', letter: 'e', correct: true  },   // 鸡蛋 = 能吃
-        { emoji: '⛓️', letter: 'g', correct: false } ]  // 铁链
-    },
-    { canEat: true, options: [
-        { emoji: '🌽', letter: 'd', correct: false },   // 草莓
-        { emoji: '🦆', letter: 'y', correct: true  },   // 硬币 = 不能吃
-        { emoji: '🐛', letter: 'p', correct: false } ]  // 樱桃
-    },
-  ];
-
-  const targetWord = PASSWORD.split('');   // ['s','a','w','n','e','y']
-  let currentRound = 0;
   let isAnimating = false;
   let gameSolved = false;
+  let wrongCount = 0;
 
-  let gamePhase = 'intro';
+  let gamePhase = 'intro';   // intro → playing → answer → ending → done
   let dialogueIndex = 0;
 
   const dialogues = {
     intro: [
-      '咯咯咯——旗开得胜啊',
-      '顺便说一句 你看到的画面都是按照时间顺序来的哟',
-      '这一题与吃的有关',
-      '民以食为天嘛',
-      '根据问题选择，记得记住密码哟',
-      
+      '咯咯咯——又是你',
+      '这回很简单：孵一颗蛋',
+      '左边是人工孵蛋器，右边是产房',
+      '一只小昴星人，要怎么孵出来呢？',
+      '抓起这颗蛋，放到你觉得对的地方'
     ],
     playing: [
-      '咯咯咯，再想想',
-      '是不是食物，有时候在一念之间',
+      '咯咯咯，想好放哪了吗',
 
     ],
+    // 放错的反应
+    incubator: '机器嗡嗡转了半天……壳都没动一下',
+    nest:      '母亲趴了许久，但蛋还是没有动静',
+
+    // 放对（落到公鸡身上）
+    answer: [
+      '咯咯咯！被你猜对了',
+      '记住——答案是 pluto，把它输进去吧'
+    ],
     ending: [
-      '我们曾经认为鸭子也是拥有智慧的生物',
-      '所以很少会有人去食用鸭子',
-      '直到有一段时间我们平常吃的食物，比如谷物和虫类，突然大量枯死或死亡',
-      '于是大家将目光放到了鸭子上',
-      '更加奇怪的是，开始吃鸭子之后，那些食物的来源又开始稳定起来，而一旦停止食用，我们又会陷入同样的境地',
-      '就好像是有谁想让我们将鸭子加入食谱一样',
-      '当然了，我们也无法抵抗',
+      '冥王星，你也来了',
+      '话说我用的密码都是地球上的神话呢',
+      '怎么样，是不是很亲切',
+      '在突破了癌症这一关后，仿佛需要抑制我们的生存，新出生的卵突然无论如何都无法孵化',
+      '原本使用的人工孵蛋器也不起作用，产房里的小昴星人总是死在壳里',
+      '然后在某一天，有人突然发现他家的蛋壳有了动静',
+      '排除了一切变量后，大家终于发现唯一的不同是，这颗蛋是父亲孵出来的',
+      '仿佛大家在这一刻才突然发现原来不只是母亲可以孵蛋',
       '让它归位吧,咯咯咯——'
     ]
   };
@@ -586,18 +595,21 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    buildOptionsAndStart();
+    document.getElementById('egg').addEventListener('pointerdown', onEggPointerDown);
+
+    setupBoard();
 
     playEnterAnimation(() => {
       setTimeout(() => { showDialogue(dialogues.intro[0]); }, 250);
     });
   };
 
-  function buildOptionsAndStart() {
-    setupRound(); // intro 阶段 setupRound 会自动把选项锁住
+  function setupBoard() {
+    document.getElementById('quiz-question').textContent = '小昴星人……要怎么孵出来呢？';
+    document.getElementById('quiz-round-no').textContent = '';
   }
 
-  // ── 入场展开动画（与 puzzle1 完全一致）──
+  // ── 入场展开动画（与其它 puzzle 完全一致）──
   function playEnterAnimation(onDone) {
     let originRaw = sessionStorage.getItem('puzzle_origin');
     let origin = null;
@@ -635,7 +647,7 @@
     }, 720);
   }
 
-  // ── 公鸡说话与摆动（与 puzzle1 一致）──
+  // ── 公鸡说话与摆动 ──
   function showDialogue(text) {
     const bubble = document.getElementById('speech-bubble');
     const bubbleText = document.getElementById('bubble-text');
@@ -662,12 +674,13 @@
         gamePhase = 'playing';
         dialogueIndex = -1;
         hideDialogue();
-        document.getElementById('options-row').classList.remove('locked');
-        document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+        document.getElementById('main-hint').textContent = '把鸡蛋抓起来，放到该放的地方';
       }
     } else if (gamePhase === 'playing') {
       dialogueIndex = (dialogueIndex + 1) % dialogues.playing.length;
       showDialogue(dialogues.playing[dialogueIndex]);
+    } else if (gamePhase === 'answer') {
+      showDialogue(dialogues.answer[1]);
     } else if (gamePhase === 'ending') {
       dialogueIndex++;
       if (dialogueIndex < dialogues.ending.length) {
@@ -680,46 +693,25 @@
     }
   }
 
-  // ── 游戏核心逻辑 ──────────────────────────────────────────────
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  // ── 鸡蛋拖放 ────────────────────────────────────────────────
+  let dragging = false;
+  let floatEgg = null;
+  let dragOffset = { x: 0, y: 0 };
+
+  function inRect(x, y, el) {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+  }
+  function hitZone(x, y) {
+    if (inRect(x, y, document.getElementById('rooster')))   return 'rooster';
+    if (inRect(x, y, document.getElementById('incubator'))) return 'incubator';
+    if (inRect(x, y, document.getElementById('hen-nest')))  return 'nest';
+    return null;
   }
 
-  function setupRound() {
-    if (currentRound >= ROUNDS.length) { onGameComplete(); return; }
-
-    const round = ROUNDS[currentRound];
-    document.getElementById('quiz-question').textContent =
-      round.canEat ? '选出昴星人能吃的东西' : '选出昴星人不能吃的东西';
-    document.getElementById('quiz-round-no').textContent =
-      '第 ' + (currentRound + 1) + ' / ' + ROUNDS.length + ' 轮';
-
-    const row = document.getElementById('options-row');
-    row.innerHTML = '';
-
-    shuffle(round.options).forEach(opt => {
-      const tile = document.createElement('div');
-      tile.className = 'option-tile';
-      tile.innerHTML = opt.emoji + '<span class="letter-badge">' +
-                       opt.letter.toUpperCase() + '</span>';
-      tile.addEventListener('click', () => selectOption(opt, tile));
-      row.appendChild(tile);
-    });
-
-    // intro 阶段锁住选项，进入 playing 后解锁（修复"第二轮点不动"）
-    if (gamePhase === 'intro') row.classList.add('locked');
-    else                       row.classList.remove('locked');
-
-    isAnimating = false;
-  }
-
-  function selectOption(opt, tile) {
-    // intro 阶段：点选项 → 让公鸡接着说，不计入答题
+  function onEggPointerDown(e) {
+    // intro 阶段：摸蛋 → 让公鸡接着说
     if (gamePhase === 'intro') {
       const rooster = document.getElementById('rooster');
       rooster.classList.remove('bobbing');
@@ -731,28 +723,90 @@
       }
       return;
     }
-    if (isAnimating || currentRound >= ROUNDS.length) return;
+    if (gamePhase !== 'playing' || isAnimating) return;
 
-    if (opt.correct) {
-      isAnimating = true;
-      tile.classList.add('correct');
-      document.getElementById('options-row').classList.add('locked');
-      // 把其他项淡掉
-      [...document.querySelectorAll('.option-tile')].forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
+    e.preventDefault();
+    dragging = true;
 
-      // 停留一会儿让你看清这一项的字母，再进入下一轮（不汇总、不剧透整词）
-      setTimeout(() => {
-        currentRound++;
-        setupRound();
-      }, 850);
-    } else {
-    // 选错：该选项直接消失（保留占位，其余选项不位移）
-    tile.style.pointerEvents = 'none';
-    tile.style.opacity = '0';
-    showDialogue(dialogues.playing[0]);
+    const srcEgg = document.getElementById('egg');
+    const rect = srcEgg.getBoundingClientRect();
+
+    floatEgg = srcEgg.cloneNode(true);
+    floatEgg.id = 'float-egg';
+    floatEgg.style.position = 'fixed';
+    floatEgg.style.left   = rect.left + 'px';
+    floatEgg.style.top    = rect.top + 'px';
+    floatEgg.style.width  = rect.width + 'px';
+    floatEgg.style.height = rect.height + 'px';
+    floatEgg.style.margin = '0';
+    document.body.appendChild(floatEgg);
+
+    srcEgg.style.opacity = '0';
+
+    dragOffset.x = e.clientX - rect.left;
+    dragOffset.y = e.clientY - rect.top;
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!dragging) return;
+    floatEgg.style.left = (e.clientX - dragOffset.x) + 'px';
+    floatEgg.style.top  = (e.clientY - dragOffset.y) + 'px';
+
+    // 实时高亮悬停目标
+    const z = hitZone(e.clientX, e.clientY);
+    document.getElementById('rooster').classList.toggle('egg-hot', z === 'rooster');
+    document.getElementById('incubator-zone').classList.toggle('hot', z === 'incubator');
+    document.getElementById('nest-zone').classList.toggle('hot', z === 'nest');
+  }
+
+  function onPointerUp(e) {
+    if (!dragging) return;
+    dragging = false;
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+
+    const z = hitZone(e.clientX, e.clientY);
+
+    if (floatEgg) { floatEgg.remove(); floatEgg = null; }
+    document.getElementById('egg').style.opacity = '';
+    document.getElementById('rooster').classList.remove('egg-hot');
+    document.getElementById('incubator-zone').classList.remove('hot');
+    document.getElementById('nest-zone').classList.remove('hot');
+
+    if (z === 'rooster') {
+      onCorrectDrop();
+    } else if (z === 'incubator' || z === 'nest') {
+      onWrongDrop(z);
     }
+    // 其它地方：鸡蛋自动回到原位（什么都不做）
+  }
+
+  function onWrongDrop(zone) {
+    wrongCount++;
+    let line;
+    if (wrongCount >= 3)      line = dialogues.nudge3;
+    else if (wrongCount === 2) line = dialogues.nudge2;
+    else line = (zone === 'incubator') ? dialogues.incubator : dialogues.nest;
+    showDialogue(line);
+  }
+
+  function onCorrectDrop() {
+    if (gamePhase !== 'playing') return;
+    isAnimating = true;
+    gamePhase = 'answer';
+    document.getElementById('main-hint').textContent = '';
+
+    const rooster = document.getElementById('rooster');
+    rooster.classList.remove('bobbing');
+    void rooster.offsetWidth;
+    rooster.classList.add('bobbing');
+
+    showDialogue(dialogues.answer[0]);
+    setTimeout(() => showDialogue(dialogues.answer[1]), 1700);
+    setTimeout(onGameComplete, 2050);
   }
 
   function onGameComplete() {
@@ -760,7 +814,7 @@
 
     document.getElementById('quiz-question').style.display = 'none';
     document.getElementById('quiz-round-no').style.display = 'none';
-    document.getElementById('options-row').style.display = 'none';
+    document.getElementById('hatch-stage').style.display = 'none';
     document.getElementById('success-msg').style.display = 'flex';
 
     document.getElementById('action-area').classList.add('show');
@@ -770,24 +824,25 @@
   }
 
   function resetGame() {
-    currentRound = 0;
     gameSolved = false;
+    wrongCount = 0;
+    isAnimating = false;
+    gamePhase = 'playing';
+    dialogueIndex = -1;
+    hideDialogue();
 
-    if (gamePhase === 'ending' || gamePhase === 'done') {
-      gamePhase = 'playing';
-      dialogueIndex = -1;
-      hideDialogue();
-    }
+    if (floatEgg) { floatEgg.remove(); floatEgg = null; }
 
     document.getElementById('quiz-question').style.display = '';
     document.getElementById('quiz-round-no').style.display = '';
-    document.getElementById('options-row').style.display = '';
-    document.getElementById('options-row').classList.remove('locked');
+    document.getElementById('hatch-stage').style.display = '';
     document.getElementById('success-msg').style.display = 'none';
+    document.getElementById('egg').style.opacity = '';
+    document.getElementById('rooster').classList.remove('egg-hot');
 
     document.getElementById('action-area').classList.remove('show');
     document.getElementById('main-hint').style.opacity = '';
-    document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+    document.getElementById('main-hint').textContent = '把鸡蛋抓起来，放到该放的地方';
 
     const input = document.getElementById('word-input');
     input.value = '';
@@ -797,8 +852,6 @@
     const card = document.getElementById('card');
     if (card.classList.contains('flipped')) card.classList.remove('flipped');
     document.getElementById('flip-hint').classList.remove('show');
-
-    setupRound();
   }
 
   function flipCard() {
@@ -818,7 +871,7 @@
     }
   }
 
-  // ── 飞回九宫格（与 puzzle1 完全一致）──
+  // ── 飞回九宫格（与其它 puzzle 完全一致）──
   function triggerFlyOut() {
     const scene = document.getElementById('card-scene');
     const r = scene.getBoundingClientRect();

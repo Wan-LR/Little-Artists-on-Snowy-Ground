@@ -343,11 +343,11 @@
     // ═══════════════════════════════════════════════════════
     const GROUPS = [
       {
-        keywords: [ "旧城疫", "小石子", "月球", "昴星"],
+        keywords: [ "旧城疫", "小石子", "月球", "人","昴星"],
         unlockUrl: "xhs2.html",
       },
       {
-        keywords: ["人", "昴星", "彩南", "上爪", "过目不忘"],
+        keywords: [ "彩南", "上爪", "过目不忘"],
         unlockUrl: "xhs3.html",
       },
     ];
@@ -365,14 +365,14 @@
     //     （弹成就 +「西红柿更新了」跳到 xhs2/xhs3），不跳本词页面
     // ═══════════════════════════════════════════════════════
     const KEYWORD_PAGES = {
-      "旧城疫":   "",
-      "小石子":   "",
-      "月球":     "",
-      "昴星":     "",
-      "人":       "",
-      "彩南":     "",
-      "上爪":     "",
-      "过目不忘": "",
+      "旧城疫":   "qbdxcy.html",
+      "小石子":   "qbdxsz.html",
+      "月球":     "qbdyq.html",
+      "昴星":     "qbdmaoxing.html",
+      "人":       "qbdrenlei.html",
+      "彩南":     "qbdcainan.html",
+      "上爪":     "qbdshangzhua.html",
+      "过目不忘": "qbdgmbw.html",
       "有限大暗": "",   // 隐藏成就词；留空则只弹成就不跳转
     };
 
@@ -447,6 +447,10 @@
       void toast.offsetWidth;
       requestAnimationFrame(() => toast.classList.add('show'));
       setTimeout(() => toast.classList.remove('show'), 5500);
+
+      // 持久化成就
+      if (title === '有限大暗') localStorage.setItem('ach-youxiandaan', '1');
+      if (title === '搜索大师') localStorage.setItem('ach-searchmaster', '1');
     }
 
     // ── "西红柿更新了" 弹窗 ──
@@ -527,7 +531,7 @@
 
       } else {
         // 未匹配
-        modalTitle.textContent = '你为什么要搜索这个?';
+        modalTitle.textContent = '抱歉 本词条尚未收录';
         modalCloseBtn.textContent = '我 知 道 了';
         modalMask.classList.add('show');
         modalCloseBtn.onclick = hideModal;

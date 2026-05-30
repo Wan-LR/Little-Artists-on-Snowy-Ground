@@ -533,6 +533,7 @@
       void toast.offsetWidth;                   /* 强制重排，让动画重置 */
       requestAnimationFrame(() => toast.classList.add('show'));
       setTimeout(() => toast.classList.remove('show'), 5500);
+      localStorage.setItem('ach-console', '1');
     }
 
 

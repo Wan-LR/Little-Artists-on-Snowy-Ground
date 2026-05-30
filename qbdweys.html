@@ -553,6 +553,7 @@
 
         requestAnimationFrame(() => achievementToast.classList.add('show'));
         hideTimer = setTimeout(() => achievementToast.classList.remove('show'), 5500);
+        localStorage.setItem('ach-chirp', '1');
       }
 
       editorBtn.addEventListener('click', showAchievement);

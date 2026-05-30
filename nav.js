@@ -91,9 +91,15 @@
   };
 
   var ACHIEVEMENTS = [
-    { key:'xhs-allposts-ach-shown', name:'西红柿十级学者' },
-    { key:'xhs-cases-ach-shown',    name:'工单清道夫' },
-    { key:'ji-modal-shown',         name:'三小知识全部学完' },
+    { key:'xhs-allposts-ach-shown', name:'西红柿重度依赖' },
+    { key:'xhs-cases-ach-shown',    name:'工作狂' },
+    { key:'ji-modal-shown',         name:'计算机0.5级' },
+    { key:'ach-console',            name:'有些事情没那么难' },
+    { key:'ach-goldfish',           name:'Tell me tell me' },
+    { key:'ach-chirp',              name:'布谷布谷' },
+    { key:'ach-leave',              name:'还得谢谢咱' },
+    { key:'ach-youxiandaan',        name:'有限大暗' },
+    { key:'ach-searchmaster',       name:'搜索大师' },
   ];
 
   // ── 辅助函数 ──
@@ -104,18 +110,6 @@
 
   function hasAchievement(key) {
     return localStorage.getItem(key) === '1';
-  }
-
-  // 额外成就: 有限大暗 & 搜索大师
-  function checkExtraAch() {
-    var extra = [];
-    try {
-      var f = JSON.parse(localStorage.getItem('qbd-found') || '[]');
-      if (f.indexOf('有限大暗') !== -1) extra.push({ name:'有限大暗' });
-      var g = JSON.parse(localStorage.getItem('qbd-groups-unlocked') || '[]');
-      if (g.length >= 2) extra.push({ name:'搜索大师' });
-    } catch(e) {}
-    return extra;
   }
 
   // ── 注入 CSS ──
@@ -180,7 +174,6 @@
   panel.id = 'idxPanel';
 
   var visitedSet = getVisited();
-  var extraAch = checkExtraAch();
 
   var bodyHTML = '';
   for (var cat in CATEGORIES) {
@@ -211,10 +204,7 @@
     bodyHTML += '<div class="idx-ach-item ' + (got ? 'got' : 'miss') + '">'
       + (got ? ach.name : '???') + '</div>';
   }
-  for (var e = 0; e < extraAch.length; e++) {
-    bodyHTML += '<div class="idx-ach-item got">' + extraAch[e].name + '</div>';
-  }
-  if (ACHIEVEMENTS.length + extraAch.length === 0) {
+  if (ACHIEVEMENTS.length === 0) {
     bodyHTML += '<div class="idx-ach-item miss">暂无成就</div>';
   }
   bodyHTML += '</div>';

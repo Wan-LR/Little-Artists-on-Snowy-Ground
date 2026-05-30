@@ -231,7 +231,7 @@
   <h1 class="end-mark">END</h1>
   <div class="thanks">感谢你的游玩</div>
   <p class="message">
-    你成功帮助<span class="name" id="name-a">李远</span>删除了<span class="name" id="name-b">在昴星</span>留下的痕迹
+    <span class="name" id="reveal-line">昴星这颗小星球就交给你了</span>
   </p>
 </div>
 
@@ -320,8 +320,8 @@ resize();
 draw();
 window.addEventListener('resize', resize);
 
-/* ============= 文字反转效果 ============= */
-const scrambleChars = '李远昴星痕迹删除帮助留下在的成功你了';
+/* ============= 文字定格效果 ============= */
+const scrambleChars = '昴星这颗小星球就交给你了';
 
 function scramble(el, target, duration = 1400) {
   return new Promise(resolve => {
@@ -357,15 +357,11 @@ function scramble(el, target, duration = 1400) {
   });
 }
 
-const nameA = document.getElementById('name-a');
-const nameB = document.getElementById('name-b');
+const revealLine = document.getElementById('reveal-line');
 
-// 信息出现后等待数秒，再揭示真相
-setTimeout(async () => {
-  await Promise.all([
-    scramble(nameA, '昴星', 1600),
-    scramble(nameB, '李远', 1600)
-  ]);
+// 信息出现后等待数秒，再让这句话「乱码—定格」浮现
+setTimeout(() => {
+  scramble(revealLine, '昴星这颗小星球就交给你了', 1800);
 }, 10500);
 
 </script>

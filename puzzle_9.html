@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>能吃与不能吃</title>
+<title>答案</title>
 <style>
   @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
@@ -108,7 +108,7 @@
     -webkit-user-drag: none;
   }
 
-  /* ── 游戏棋盘 ── */
+  /* ── 卡面外框 ── */
   .board-wrap {
     width: 100%;
     height: 100%;
@@ -135,110 +135,46 @@
   /* 题目 */
   .quiz-question {
     position: absolute;
-    top: 28px;
+    top: 20px;
     left: 0; right: 0;
     text-align: center;
     color: var(--white);
     font-family: 'Noto Serif SC', serif;
-    font-size: 1.08rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 0 22px;
+    letter-spacing: 0.06em;
+    padding: 0 18px;
     text-shadow: 0 0 12px rgba(74,144,217,0.4);
   }
-  .quiz-round-no {
+
+  /* ★★★ 占位区：之后把小游戏放进 #game-board；现在直接显示答案 ★★★ */
+  .answer-display {
     position: absolute;
-    top: 60px;
-    left: 0; right: 0;
-    text-align: center;
-    color: rgba(168,204,240,0.4);
+    top: 44px; left: 0; right: 0; bottom: 14px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px; padding: 0 30px; text-align: center;
+  }
+  .answer-label {
     font-family: 'Noto Serif SC', serif;
-    font-size: 0.66rem;
-    letter-spacing: 0.24em;
+    font-size: 0.72rem; letter-spacing: 0.3em;
+    color: rgba(168,204,240,0.5);
   }
-
-  /* 选项行 */
-  .options-row {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    gap: 22px;
+  .answer-word {
+    font-family: 'Noto Serif SC', serif; font-weight: 700;
+    text-transform: uppercase;
+    font-size: 2.6rem; letter-spacing: 0.14em;
+    color: var(--white);
+    text-shadow: 0 0 18px rgba(74,144,217,0.6);
+    padding: 18px 30px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: rgba(74,144,217,0.06);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.4), 0 0 24px rgba(74,144,217,0.12);
   }
-  .options-row.locked .option-tile { pointer-events: none; }
-
-  .option-tile {
-    position: relative;
-    width: 104px;
-    height: 104px;
-    background: linear-gradient(135deg, rgba(74,144,217,0.12), rgba(20,60,140,0.20));
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
-    box-shadow: inset 0 1px 0 rgba(74,144,217,0.15), 0 4px 10px rgba(0,0,0,0.45);
-    /* 让卡片处于 3D 上下文里时，瓦片始终正面朝向、独立成层，避免抖动时被剔除而"消失" */
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
-    transform: translateZ(0);
-  }
-  .option-tile:hover {
-    transform: translateZ(0) translateY(-4px) scale(1.04);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(74,144,217,0.25), 0 8px 16px rgba(0,0,0,0.55);
-  }
-  .option-tile:active { transform: translateZ(0) scale(0.97); }
-
-  .option-tile .letter-badge {
-    position: absolute;
-    right: -7px; bottom: -7px;
-    width: 27px; height: 27px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+  .answer-note {
     font-family: 'Noto Serif SC', serif;
-    font-size: 0.86rem; font-weight: 700;
-    letter-spacing: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.35);
-  }
-
-  .option-tile.correct {
-    border-color: #4ad980;
-    box-shadow: 0 0 0 2px rgba(74,217,128,0.45), 0 0 22px rgba(74,217,128,0.32);
-  }
-  .option-tile.correct .letter-badge { background: #4ad980; }
-  .option-tile.wrong {
-    border-color: #d94a4a !important;
-    background: rgba(217,74,74,0.22);
-    box-shadow: 0 0 0 2px rgba(217,74,74,0.5), 0 0 18px rgba(217,74,74,0.35);
-    animation: tile-shake 0.4s ease;
-  }
-  .option-tile.wrong .letter-badge { background: #d94a4a; }
-  /* 抖动保留 translateZ(0)，避免在 3D 卡片里被剔除而消失 */
-  @keyframes tile-shake {
-    0%,100% { transform: translateZ(0) translateX(0); }
-    25%     { transform: translateZ(0) translateX(-6px); }
-    75%     { transform: translateZ(0) translateX(6px); }
-  }
-  .option-tile.dimmed { opacity: 0.3; }
-
-  #success-msg {
-    display: none;
-    position: absolute;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--light);
-    letter-spacing: 0.2em;
-    animation: fadeInUp 0.6s ease forwards;
+    font-size: 0.66rem; letter-spacing: 0.1em;
+    color: rgba(168,204,240,0.32);
   }
 
   /* ── 底部交互区 ── */
@@ -285,7 +221,7 @@
     background: rgba(8,18,36,0.8);
     color: var(--white);
     border-radius: 3px;
-    width: 180px;
+    width: 200px;
     outline: none;
     transition: border-color 0.25s, box-shadow 0.25s;
     text-align: center;
@@ -414,7 +350,7 @@
     pointer-events: auto;
     position: relative;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,0.6));
-    transition: filter 0.3s ease;
+    transition: filter 0.3s ease, transform 0.2s ease;
   }
   .rooster.bobbing { animation: rooster-bob 0.8s ease-in-out 5; }
   @keyframes rooster-bob {
@@ -451,15 +387,19 @@
       <div class="card-face card-front" id="card-front">
         <div class="board-wrap">
           <div id="game-board">
-            <div class="quiz-question" id="quiz-question"></div>
-            <div class="quiz-round-no" id="quiz-round-no"></div>
-            <div class="options-row" id="options-row"></div>
-            <div id="success-msg">六轮作答完毕</div>
+            <div class="quiz-question" id="quiz-question">这一关</div>
+
+            <!-- ★★★ 占位：之后把小游戏放进 #game-board，删掉下面这块即可 ★★★ -->
+            <div class="answer-display" id="answer-display">
+              <div class="answer-label">答案</div>
+              <div class="answer-word" id="answer-word">ANSWER</div>
+              <div class="answer-note">玩法待定 · 先直接给出答案</div>
+            </div>
           </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="images/yazi.png" alt="背面">
+        <img id="back-img" src="images/p9.png" alt="背面">
       </div>
     </div>
   </div>
@@ -467,7 +407,7 @@
   <div class="action-area" id="action-area">
     <div class="word-input-wrap">
       <input class="word-input" id="word-input" type="text"
-             placeholder="输入密码…" autocomplete="off" spellcheck="false">
+             placeholder="输入最终密码…" autocomplete="off" spellcheck="false">
     </div>
     <div class="btn-row">
       <button class="btn-replay" id="btn-replay" onclick="resetGame()">↻ 重新作答</button>
@@ -494,87 +434,44 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/yazi.png';   // ← 换成你的背面图
-  const PASSWORD    = 'sawney';
-  const PUZZLE_ID   = 'puzzle_2';
-  const PUZZLE_INDEX = 1;          // 九宫格里的第 2 格（索引 1）
+  const BACK_IMAGE  = 'images/p9.png';   // ← 换成你的背面图
+  const PASSWORD    = 'answer';           // ← 这一关的答案（暂定）
+  const PUZZLE_ID   = 'puzzle_9';
+  const PUZZLE_INDEX = 8;          // 九宫格里的第 9 格（索引 8）
   const RETURN_URL  = 'mxhuitu.html';
   // ═══════════════════════════════════════════
+  //
+  // ★ 这一关的小游戏还没做，先直接把答案显示在卡面上（= PASSWORD 大写）。
+  //   之后想好玩法时：把 #game-board 里的 .answer-display 换成你的游戏，
+  //   在游戏“通关/揭晓”时调用 revealAnswer()（显示密码框）即可，其余逻辑都现成。
+  //
+  // ═══════════════════════════════════════════
 
-  // ── 六轮题目 ──────────────────────────────────────────────
-  // canEat:true  → 题目“选出能吃的东西”，正确答案是【食物】
-  // canEat:false → 题目“选出不能吃的东西”，正确答案是【杂物】
-  // 每轮 options 里 correct:true 的那一项带着答案字母（按顺序拼成 sawney）
-  // 其余两项是干扰项，字母随意（不影响答案）
-  const ROUNDS = [
-    { canEat: true,  options: [
-        { emoji: '🌽', letter: 's', correct: true  },   // 面包 = 能吃
-        { emoji: '🪨', letter: 'k', correct: false },   // 石头
-        { emoji: '🧼', letter: 'q', correct: false } ]  // 肥皂
-    },
-    { canEat: false, options: [
-        { emoji: '🐛', letter: 't', correct: false },   // 苹果
-        { emoji: '🔩', letter: 'a', correct: true  },   // 螺丝 = 不能吃
-        { emoji: '🍇', letter: 'm', correct: false } ]  // 葡萄
-    },
-    { canEat: true,  options: [
-        { emoji: '🪵', letter: 'r', correct: false },   // 木头
-        { emoji: '🍐', letter: 'w', correct: true  },   // 披萨 = 能吃
-        { emoji: '🧷', letter: 'z', correct: false } ]  // 别针
-    },
-    { canEat: false, options: [
-        { emoji: '🍌', letter: 'b', correct: false },   // 香蕉
-        { emoji: '🥕', letter: 'f', correct: false },   // 胡萝卜
-        { emoji: '💡', letter: 'n', correct: true  } ]  // 灯泡 = 不能吃
-    },
-    { canEat: true,  options: [
-        { emoji: '🔧', letter: 'x', correct: false },   // 扳手
-        { emoji: '🥚', letter: 'e', correct: true  },   // 鸡蛋 = 能吃
-        { emoji: '⛓️', letter: 'g', correct: false } ]  // 铁链
-    },
-    { canEat: true, options: [
-        { emoji: '🌽', letter: 'd', correct: false },   // 草莓
-        { emoji: '🦆', letter: 'y', correct: true  },   // 硬币 = 不能吃
-        { emoji: '🐛', letter: 'p', correct: false } ]  // 樱桃
-    },
-  ];
-
-  const targetWord = PASSWORD.split('');   // ['s','a','w','n','e','y']
-  let currentRound = 0;
-  let isAnimating = false;
   let gameSolved = false;
-
-  let gamePhase = 'intro';
+  let gamePhase = 'intro';   // intro → answer → ending → done
   let dialogueIndex = 0;
 
+  // ▼▼▼ 公鸡台词：随便改 ▼▼▼
   const dialogues = {
     intro: [
-      '咯咯咯——旗开得胜啊',
-      '顺便说一句 你看到的画面都是按照时间顺序来的哟',
-      '这一题与吃的有关',
-      '民以食为天嘛',
-      '根据问题选择，记得记住密码哟',
-      
+      '咯咯咯——这一关的玩法，我还没想好',
+      '不卖关子了，答案直接给你',
+      '上面那个词，就是密码',
+      '把它填到下面，咱们过这关'
     ],
-    playing: [
-      '咯咯咯，再想想',
-      '是不是食物，有时候在一念之间',
-
-    ],
+    prompt: '咯咯咯，就填上面那个词',
     ending: [
-      '我们曾经认为鸭子也是拥有智慧的生物',
-      '所以很少会有人去食用鸭子',
-      '直到有一段时间我们平常吃的食物，比如谷物和虫类，突然大量枯死或死亡',
-      '于是大家将目光放到了鸭子上',
-      '更加奇怪的是，开始吃鸭子之后，那些食物的来源又开始稳定起来，而一旦停止食用，我们又会陷入同样的境地',
-      '就好像是有谁想让我们将鸭子加入食谱一样',
-      '当然了，我们也无法抵抗',
+      '虽然观测者限制了我们飞出去的技术，但我们对外太空的观察与研究却从未停下',
+      '昴星也真的如超脑所说的那样成为了平和安详的地方',
+      '但这个阶段很快就要被打破了',
       '让它归位吧,咯咯咯——'
     ]
   };
+  // ▲▲▲ 公鸡台词 ▲▲▲
 
   window.onload = () => {
     document.getElementById('back-img').src = BACK_IMAGE;
+    document.getElementById('answer-word').textContent = PASSWORD.toUpperCase();
 
     document.getElementById('card-back').addEventListener('click', () => {
       if (gameSolved && gamePhase === 'done') flipCard();
@@ -586,18 +483,20 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    buildOptionsAndStart();
-
     playEnterAnimation(() => {
       setTimeout(() => { showDialogue(dialogues.intro[0]); }, 250);
     });
   };
 
-  function buildOptionsAndStart() {
-    setupRound(); // intro 阶段 setupRound 会自动把选项锁住
+  // 显示密码框（占位关：公鸡讲完开场白就调用；将来换成游戏时，在“揭晓”处调用）
+  function revealAnswer() {
+    gamePhase = 'answer';
+    dialogueIndex = -1;
+    document.getElementById('action-area').classList.add('show');
+    document.getElementById('main-hint').textContent = '把上面的答案，填进下面的框';
+    document.getElementById('word-input').focus();
   }
 
-  // ── 入场展开动画（与 puzzle1 完全一致）──
   function playEnterAnimation(onDone) {
     let originRaw = sessionStorage.getItem('puzzle_origin');
     let origin = null;
@@ -635,7 +534,6 @@
     }, 720);
   }
 
-  // ── 公鸡说话与摆动（与 puzzle1 一致）──
   function showDialogue(text) {
     const bubble = document.getElementById('speech-bubble');
     const bubbleText = document.getElementById('bubble-text');
@@ -659,15 +557,11 @@
       if (dialogueIndex < dialogues.intro.length) {
         showDialogue(dialogues.intro[dialogueIndex]);
       } else {
-        gamePhase = 'playing';
-        dialogueIndex = -1;
-        hideDialogue();
-        document.getElementById('options-row').classList.remove('locked');
-        document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+        revealAnswer();
+        showDialogue(dialogues.prompt);
       }
-    } else if (gamePhase === 'playing') {
-      dialogueIndex = (dialogueIndex + 1) % dialogues.playing.length;
-      showDialogue(dialogues.playing[dialogueIndex]);
+    } else if (gamePhase === 'answer') {
+      showDialogue(dialogues.prompt);
     } else if (gamePhase === 'ending') {
       dialogueIndex++;
       if (dialogueIndex < dialogues.ending.length) {
@@ -680,114 +574,14 @@
     }
   }
 
-  // ── 游戏核心逻辑 ──────────────────────────────────────────────
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function setupRound() {
-    if (currentRound >= ROUNDS.length) { onGameComplete(); return; }
-
-    const round = ROUNDS[currentRound];
-    document.getElementById('quiz-question').textContent =
-      round.canEat ? '选出昴星人能吃的东西' : '选出昴星人不能吃的东西';
-    document.getElementById('quiz-round-no').textContent =
-      '第 ' + (currentRound + 1) + ' / ' + ROUNDS.length + ' 轮';
-
-    const row = document.getElementById('options-row');
-    row.innerHTML = '';
-
-    shuffle(round.options).forEach(opt => {
-      const tile = document.createElement('div');
-      tile.className = 'option-tile';
-      tile.innerHTML = opt.emoji + '<span class="letter-badge">' +
-                       opt.letter.toUpperCase() + '</span>';
-      tile.addEventListener('click', () => selectOption(opt, tile));
-      row.appendChild(tile);
-    });
-
-    // intro 阶段锁住选项，进入 playing 后解锁（修复"第二轮点不动"）
-    if (gamePhase === 'intro') row.classList.add('locked');
-    else                       row.classList.remove('locked');
-
-    isAnimating = false;
-  }
-
-  function selectOption(opt, tile) {
-    // intro 阶段：点选项 → 让公鸡接着说，不计入答题
-    if (gamePhase === 'intro') {
-      const rooster = document.getElementById('rooster');
-      rooster.classList.remove('bobbing');
-      void rooster.offsetWidth;
-      rooster.classList.add('bobbing');
-      const bubble = document.getElementById('speech-bubble');
-      if (!bubble.classList.contains('show')) {
-        showDialogue(dialogues.intro[dialogueIndex] || dialogues.intro[0]);
-      }
-      return;
-    }
-    if (isAnimating || currentRound >= ROUNDS.length) return;
-
-    if (opt.correct) {
-      isAnimating = true;
-      tile.classList.add('correct');
-      document.getElementById('options-row').classList.add('locked');
-      // 把其他项淡掉
-      [...document.querySelectorAll('.option-tile')].forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
-
-      // 停留一会儿让你看清这一项的字母，再进入下一轮（不汇总、不剧透整词）
-      setTimeout(() => {
-        currentRound++;
-        setupRound();
-      }, 850);
-    } else {
-    // 选错：该选项直接消失（保留占位，其余选项不位移）
-    tile.style.pointerEvents = 'none';
-    tile.style.opacity = '0';
-    showDialogue(dialogues.playing[0]);
-    }
-  }
-
-  function onGameComplete() {
-    gameSolved = true;
-
-    document.getElementById('quiz-question').style.display = 'none';
-    document.getElementById('quiz-round-no').style.display = 'none';
-    document.getElementById('options-row').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'flex';
+  function resetGame() {
+    gameSolved = false;
+    gamePhase = 'answer';
+    dialogueIndex = -1;
+    hideDialogue();
 
     document.getElementById('action-area').classList.add('show');
-    document.getElementById('main-hint').style.opacity = '0';
-
-    setTimeout(() => { document.getElementById('word-input').focus(); }, 400);
-  }
-
-  function resetGame() {
-    currentRound = 0;
-    gameSolved = false;
-
-    if (gamePhase === 'ending' || gamePhase === 'done') {
-      gamePhase = 'playing';
-      dialogueIndex = -1;
-      hideDialogue();
-    }
-
-    document.getElementById('quiz-question').style.display = '';
-    document.getElementById('quiz-round-no').style.display = '';
-    document.getElementById('options-row').style.display = '';
-    document.getElementById('options-row').classList.remove('locked');
-    document.getElementById('success-msg').style.display = 'none';
-
-    document.getElementById('action-area').classList.remove('show');
-    document.getElementById('main-hint').style.opacity = '';
-    document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+    document.getElementById('main-hint').textContent = '把上面的答案，填进下面的框';
 
     const input = document.getElementById('word-input');
     input.value = '';
@@ -797,8 +591,6 @@
     const card = document.getElementById('card');
     if (card.classList.contains('flipped')) card.classList.remove('flipped');
     document.getElementById('flip-hint').classList.remove('show');
-
-    setupRound();
   }
 
   function flipCard() {
@@ -818,7 +610,6 @@
     }
   }
 
-  // ── 飞回九宫格（与 puzzle1 完全一致）──
   function triggerFlyOut() {
     const scene = document.getElementById('card-scene');
     const r = scene.getBoundingClientRect();
@@ -859,6 +650,7 @@
     if (val.toLowerCase() === PASSWORD.toLowerCase()) {
       input.classList.remove('wrong');
       input.classList.add('correct');
+      gameSolved = true;
 
       const card = document.getElementById('card');
       if (!card.classList.contains('flipped')) flipCard();

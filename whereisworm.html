@@ -14,7 +14,6 @@
     overflow: hidden;
   }
 
-  /* CRT 外壳 */
   .screen {
     height: 100vh;
     padding: 24px;
@@ -23,25 +22,24 @@
       #0a0e0a;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* 扫描线 */
   .screen::before {
     content: '';
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
       0deg,
-      rgba(0, 255, 100, 0.04) 0px,
-      rgba(0, 255, 100, 0.04) 1px,
+      rgba(0,255,100,0.04) 0px,
+      rgba(0,255,100,0.04) 1px,
       transparent 1px,
       transparent 3px
     );
     pointer-events: none;
     z-index: 2;
   }
-
-  /* 微弱的亮点 */
   .screen::after {
     content: '';
     position: absolute;
@@ -52,6 +50,7 @@
   }
 
   .titlebar {
+    flex-shrink: 0;
     color: #5fd97a;
     font-size: 12px;
     letter-spacing: 2px;
@@ -60,7 +59,6 @@
     position: relative;
     z-index: 3;
   }
-
   .titlebar .dot {
     display: inline-block;
     width: 8px; height: 8px;
@@ -70,17 +68,15 @@
     animation: blink 1.4s infinite;
     vertical-align: middle;
   }
-
-  @keyframes blink {
-    50% { opacity: 0.3; }
-  }
+  @keyframes blink { 50% { opacity: 0.3; } }
 
   .terminal {
-    height: calc(100% - 40px);
+    flex: 1;
+    min-height: 0;
     color: #6cf08a;
     font-size: 15px;
-    line-height: 1.55;
-    text-shadow: 0 0 6px rgba(108, 240, 138, 0.5);
+    line-height: 1.6;
+    text-shadow: 0 0 6px rgba(108,240,138,0.5);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -97,70 +93,95 @@
   .output::-webkit-scrollbar { width: 6px; }
   .output::-webkit-scrollbar-thumb { background: #2a5a2a; border-radius: 3px; }
 
-  .line { white-space: pre-wrap; word-break: break-word; }
-  .line.user { color: #b8ffcc; }
+  .line { white-space: pre-wrap; word-break: break-word; margin-bottom: 2px; }
+  .line.user   { color: #b8ffcc; }
   .line.system { color: #6cf08a; }
-  .line.dim { color: #3a7a4a; opacity: 0.8; }
+  .line.dim    { color: #3a7a4a; opacity: 0.8; }
 
-  .input-row {
+  .choice-area {
+    flex-shrink: 0;
+    padding-top: 10px;
+    min-height: 0;
+  }
+
+  /* 选项列表 */
+  .user-choices {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .user-choices.show { display: flex; }
+
+  /* 每一层菜单（主菜单 / 子菜单）都是一个独立容器 */
+  .menu-level {
     display: flex;
-    align-items: center;
-    margin-top: 6px;
+    flex-direction: column;
+    gap: 5px;
   }
+  .menu-level.hidden { display: none; }
 
-  .prompt {
-    color: #b8ffcc;
-    margin-right: 8px;
-    white-space: nowrap;
-  }
-
-  .input {
-    flex: 1;
+  .uchoice-btn {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 13.5px;
+    padding: 7px 14px 7px 10px;
     background: transparent;
-    border: none;
-    outline: none;
-    color: #b8ffcc;
-    font: inherit;
-    text-shadow: inherit;
-    caret-color: transparent;
+    border: 1px solid #1e4a1e;
+    color: #6cf08a;
+    cursor: pointer;
+    letter-spacing: .3px;
+    text-shadow: 0 0 6px rgba(108,240,138,0.3);
+    transition: all 0.15s ease;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .uchoice-btn .idx {
+    color: #3a7a4a;
+    font-size: 11px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    letter-spacing: 1px;
+    min-width: 20px;
+  }
+  .uchoice-btn .txt { flex: 1; }
+  .uchoice-btn:hover {
+    border-color: #5fd97a;
+    background: rgba(108,240,138,0.06);
+    box-shadow: 0 0 8px rgba(108,240,138,0.12);
+    padding-left: 16px;
+  }
+  .uchoice-btn:active { transform: scale(0.99); }
+
+  /* 已选过：灰掉，不可再点 */
+  .uchoice-btn.used {
+    pointer-events: none;
+    opacity: 0.22;
+    border-color: #1a3a1a;
+    color: #4a8a5a;
+    text-shadow: none;
+  }
+  /* 正在等待回复时锁住所有按钮 */
+  .uchoice-btn.locked {
+    pointer-events: none;
   }
 
-  .cursor {
-    display: inline-block;
-    width: 9px;
-    height: 18px;
-    background: #6cf08a;
-    box-shadow: 0 0 8px #6cf08a;
-    animation: cursorBlink 1s steps(1) infinite;
-    vertical-align: text-bottom;
-    margin-left: 2px;
-  }
-  @keyframes cursorBlink {
-    50% { opacity: 0; }
-  }
-
-  /* 选项按钮 */
-  .choice-row {
+  /* 结局选项 */
+  .ending-choices {
     display: none;
     flex-direction: column;
     gap: 14px;
-    margin-top: 16px;
-    animation: fadeInUp 0.5s ease forwards;
+    padding-top: 14px;
   }
-  .choice-row.show {
-    display: flex;
-  }
-  .choice-q {
+  .ending-choices.show { display: flex; }
+  .ending-q {
     color: #6cf08a;
     text-shadow: 0 0 6px rgba(108,240,138,0.5);
     font-size: 15px;
     letter-spacing: 1px;
   }
-  .choice-btns {
-    display: flex;
-    gap: 16px;
-  }
-  .choice-btn {
+  .ending-btns { display: flex; gap: 16px; }
+  .ending-btn {
     font-family: 'JetBrains Mono', 'Courier New', monospace;
     font-size: 14px;
     padding: 8px 24px;
@@ -172,20 +193,19 @@
     text-shadow: 0 0 6px rgba(108,240,138,0.5);
     transition: all 0.2s ease;
   }
-  .choice-btn:hover {
+  .ending-btn:hover {
     border-color: #6cf08a;
     box-shadow: 0 0 12px rgba(108,240,138,0.3);
     background: rgba(108,240,138,0.08);
   }
-  .choice-btn:active {
-    transform: scale(0.96);
-  }
+  .ending-btn:active { transform: scale(0.96); }
+
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  .fade-in { animation: fadeInUp .3s ease forwards; }
 
-  /* 图片浮层 */
   .image-overlay {
     position: fixed;
     inset: 0;
@@ -198,10 +218,7 @@
     pointer-events: none;
     transition: opacity 0.5s ease;
   }
-  .image-overlay.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .image-overlay.show { opacity: 1; pointer-events: auto; }
   .image-overlay img {
     max-width: 80vw;
     max-height: 80vh;
@@ -213,297 +230,425 @@
     from { transform: scale(0.9); opacity: 0; }
     to   { transform: scale(1); opacity: 1; }
   }
+
+  /* ════════ 信号崩坏：抖动 + 闪烁 ════════ */
+  /* 进入 glitch 节点时给 .screen 加 .glitching；刷屏加速时再加 .intense */
+  .screen.glitching {
+    animation: glitchShake .18s infinite, sigFlicker 1.2s infinite;
+  }
+  .screen.glitching.intense {
+    animation: glitchShake .1s infinite, sigFlicker .55s infinite;
+  }
+  @keyframes glitchShake {
+    0%, 100% { transform: translate(0, 0); }
+    20%      { transform: translate(-2px, 1px); }
+    40%      { transform: translate(2px, -1px); filter: hue-rotate(22deg) saturate(1.3); }
+    60%      { transform: translate(-1px, -2px); }
+    80%      { transform: translate(1px, 2px);  filter: hue-rotate(-22deg) saturate(1.3); }
+  }
+  /* 偶发的“信号掉线”闪烁：大部分时间正常，偶尔骤暗一下 */
+  @keyframes sigFlicker {
+    0%, 84% { opacity: 1; }
+    86%     { opacity: 0.3; }
+    88%     { opacity: 1; }
+    92%     { opacity: 0.68; }
+    94%     { opacity: 1; }
+    100%    { opacity: 1; }
+  }
+  /* 崩坏时扫描线变密 */
+  .screen.glitching::before {
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,255,100,0.11) 0px,
+      rgba(0,255,100,0.11) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  }
+
+  /* 连接中断时的一次性黑屏闪烁 */
+  .blackout {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 95;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .blackout.flash { animation: blackoutFlash .55s ease forwards; }
+  @keyframes blackoutFlash {
+    0%   { opacity: 0; }
+    28%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
 </style>
 </head>
 <body>
-  <div class="screen">
-    <div class="titlebar"><span class="dot"></span>SESSION // /dev/tty0 — connected</div>
-    <div class="terminal">
-      <div class="output" id="output"></div>
-      <div class="input-row" id="input-row">
-        <span class="prompt">guest@local:~$</span>
-        <input class="input" id="input" autocomplete="off" autofocus spellcheck="false">
-        <span class="cursor"></span>
-      </div>
-      <div class="choice-row" id="choice-row">
-        <p class="choice-q">你要把这件事情说出去吗？</p>
-        <div class="choice-btns">
-          <button class="choice-btn" id="choice-tell">1. 说</button>
-          <button class="choice-btn" id="choice-silent">2. 不说</button>
+<div class="screen">
+  <div class="titlebar"><span class="dot"></span>SESSION // /dev/tty0 — connected</div>
+  <div class="terminal">
+    <div class="output" id="output"></div>
+    <div class="choice-area">
+      <div class="user-choices" id="user-choices"></div>
+      <div class="ending-choices" id="ending-choices">
+        <p class="ending-q">你要把这件事情说出去吗？</p>
+        <div class="ending-btns">
+          <button class="ending-btn" onclick="window.location.href='xhs4.html'">1. 说</button>
+          <button class="ending-btn" onclick="window.location.href='xhs4.html'">2. 不说</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="image-overlay" id="image-overlay">
-    <img id="overlay-img" src="" alt="">
-  </div>
+<div class="image-overlay" id="image-overlay">
+  <img id="overlay-img" src="" alt="">
+</div>
+
+<!-- 连接中断时的一次性黑屏闪烁 -->
+<div class="blackout" id="blackout"></div>
 
 <script>
-  const output     = document.getElementById('output');
-  const input      = document.getElementById('input');
-  const inputRow   = document.getElementById('input-row');
-  const choiceRow  = document.getElementById('choice-row');
-  const imgOverlay = document.getElementById('image-overlay');
-  const overlayImg = document.getElementById('overlay-img');
+const output        = document.getElementById('output');
+const userChoices   = document.getElementById('user-choices');
+const endingChoices = document.getElementById('ending-choices');
+const imgOverlay    = document.getElementById('image-overlay');
+const overlayImg    = document.getElementById('overlay-img');
+const screenEl      = document.querySelector('.screen');   // ← 用来加抖动/闪烁
+const blackout      = document.getElementById('blackout');
 
-  // 两个选项都跳转 xhs4.html
-  document.getElementById('choice-tell').addEventListener('click', () => {
-    window.location.href = 'xhs4.html';
+// ══════════════════════════════════════════════════════════════
+// NODES
+// reply       — 一句台词（默认是对方/系统说，绿色 "> " 开头）
+//   from      — 设为 'user' 时，这句改为【玩家说】（"guest@local:~$ " 开头），
+//               用来在某个节点自动插入一段玩家台词
+// choices     — [ { text, branchReply, next, extra? } ]
+//               选过的会灰掉，可继续选其他
+//               全部选完后自动跳 next
+//               所有 choice 的 next 必须相同（汇合点）
+//   extra     — 该分支的【子菜单】：和主菜单一模一样，可以放好几个选项，
+//               一个个点选，选过的灰掉；本层全部选完后【返回上一级菜单】(不前进)
+//               格式与主 choices 相同：[ { text, branchReply, extra? }, ... ]
+//               子选项不需要写 next（它们汇合后回到父菜单）；可继续嵌套 extra
+// next        — 无 choices 时自动跳转
+// delay       — 自动跳转延迟 ms（默认 1800）
+// image       — 展示图片后跳 next
+// end         — true → 结局选项
+// ══════════════════════════════════════════════════════════════
+const NODES = {
+
+  'n0': {
+    reply: '你找来的很快啊',
+    choices: [
+      { text: '这居然真的是个对话框……我还以为是什么无聊的人做出来的解谜游戏',
+        branchReply: '某种意义上来说也是吧。因为是我把你引到这里来的。', next: 'n1' },
+      
+    ]
+  },
+
+  'n1': {
+    choices: [
+      { text: '你是黑客？',
+        branchReply: '太刻板印象了，黑客是不会给你做这么好看的用户互动界面的', next: 'n2' },
+      { text: '把我引过来？',
+        branchReply: '没错，我特意设计了一些谜题，因为我只想让一小部分人与我对话，但看来你是唯一的一个了',
+        // ↓↓↓ 子菜单：和主菜单一样，下面这些选项可以一个个点选，
+        //     全部选完后回到 n1，继续选 n1 里剩下的项。想加几个就加几个。
+        extra: [
+          { text: '设计谜题?',
+            branchReply: '对啊，除了我这种谜题爱好者，现实生活中哪来人给你出这么多题啊' },
+
+        ],
+        next: 'n2' },
+      { text: '你是关策喆？',
+        branchReply: '是的，哎，早知道上网不用大名了', next: 'n2' },
+    ]
+  },
+
+  'n2': {
+    reply: '我不是昴星人。',
+    choices: [
+      { text: '那你是外星人？',
+        branchReply: '……听外星人叫自己外星人的感觉还真奇怪。', next: 'n3' },
+      { text: '你是月亮上的人？',
+        branchReply: '月亮上没有居民，至少没有你们描述的那种。你们被误导了。', next: 'n3' },
+      { text: '开玩笑的吧...',
+        branchReply: '我能证明我不是在开玩笑', next: 'n3' },
+    ]
+  },
+
+  'n3': {
+    reply: '你现在可以看看你的课本。',
+    next: 'n3_img',
+    delay: 1800,
+  },
+  'n3_img': {
+    image: 'images/huajia.png',
+    next: 'n3b',
+  },
+
+  // 看完课本图片后，玩家自动说的一段话（from:'user' → 显示为玩家台词）
+  // 想多加几句就照着再写 n3c、n3d…用 next 串起来即可
+  'n3b': {
+    reply: '脚印又出现了...你是怎么做到的？！',
+    from: 'user',
+    next: 'n4',
+    delay: 2000,
+  },
+
+  'n4': {
+    reply: '别紧张，我没有恶意。大约一周前，我找到了这个奇怪的网站——它能与你们星球产生直接联系。准确来说，是没有时间差的联系。',
+    choices: [
+      { text: '产生联系？',
+        branchReply: '没错，这个网站能让我直接连接上你们的互联网，还允许我对你们的星球做一些不过分的改变。', 
+        extra: [
+          { text: '所以这些发现裸猿的事情都是你干的？',
+            branchReply: '是的，不过那些都是投影，你们的世界上没有出现真的裸猿' },
+
+        ],
+        next: 'n3c' },
+      { text: '没有时间差...',
+        branchReply: '我们可以实时对话，而理论上如果你们的星球在我们的探测范围外，我们不太可能做到这样的对话', next: 'n3c' },
+      { text: '网站？……就是这个网站？',
+        branchReply: '对，就是这里。我把它叫做"蠕虫网站"。', next: 'n3c' },
+    ]
+  },
+  'n3c': {
+    reply: '...姑且相信你的话，你是...?',
+    from: 'user',
+    next: 'n5',
+    delay: 2000,
+  },
+  'n5': {
+    reply: '地球人。根据我这几天的观察，地球和昴星几乎一模一样，我猜我说我是高中生你应该听的懂吧。唯一的区别是——地球的智慧生物是人类。',
+    choices: [
+      { text: '我们的智慧生物也是人类啊',
+        branchReply: '抱歉，应该说，地球人类是你们口中的“裸猿”。', next: 'n6' },
+      { text: '……还真奇怪。那我们居然在说同一种语言？',
+        branchReply: '我不清楚。也许是这个网站自动把语言转换成了彼此能够理解的形式。我也不确定我们看见的是否是同一种语言。', next: 'n6' },
+      { text: '天啊，那也太无聊了，我以为外星人能再有趣一点',
+        branchReply: '...如果我是什么不能沟通的外星虫族，说不定你们已经被食物反杀了', next: 'n6' },
+    ]
+  },
+
+'n6': {
+  reply: '说起这个，从别的产物，尤其是上爪来看，你们的科技水平应该足以进行探索宇宙了，怎么会连登月都做不到。',
+  next: 'n6b',
+  delay: 2200,        // 这句停留多久后再说下一句（毫秒）
+},
+'n6b': {
+  reply: '难道你们昴星发生过什么重大的天灾还是战争吗？',
+  choices: [
+    { text: '完全没有...',
+      branchReply: '奇怪，那科技树也能点歪吗？', next: 'n8' },
+    { text: '你的意思是，地球科技已经可以进行宇宙探索了？',
+      branchReply: '当然了，登月已经是很久之前的事情了', next: 'n8' },
+    { text: '可是，宇宙探索和科技发展又有什么关系呢？',
+      branchReply: '这是什么意思？', next: 'n8' },
+  ]
+},
+
+  'n8': {
+    reply: '因为对我们来说宇宙探索天文学更偏向于神秘事物或者宗教',
+    from: 'user', next: 'n9', delay: 2400,
+  },
+  'n9': {
+    reply: '知道地球人登月和知道世界上有沃斯湖水怪几乎没有区别',
+    from: 'user', next: 'n10', delay: 2200,
+  },
+
+  'n10': {
+    reply: '怎么会这样...你们怎么会有这种想法',
+    choices: [
+      { text: '因为*是超&说的，天@学已经不再作为科学!域的研究+向了',
+        branchReply: '等@下……蠕虫￥网站的信%变差了——', next: 'glitch' },
+    ]
+  },
+
+  'glitch': {
+    reply: '总@不要把我……存在）&说出去*！',
+    next: 'g1', delay: 1800,
+  },
+  'g1':  { reply: '我没）恶意的！',  next: 'g2',  delay: 900 },
+  'g2':  { reply: '不要说出去',      next: 'g3',  delay: 900 },
+  'g3':  { reply: '不要说出去',      next: 'g4',  delay: 360 },
+  'g4':  { reply: '不要说出去',      next: 'g5',  delay: 160 },
+  'g5':  { reply: '不要说出去',      next: 'g6',  delay: 160 },
+  'g6':  { reply: '不要说出去',      next: 'g7',  delay: 160 },
+  'g7':  { reply: '不要说出去',      next: 'g8',  delay: 160 },
+  'g8':  { reply: '不要说出去',      next: 'g9',  delay: 160 },
+  'g9':  { reply: '不要说出去',      next: 'g10', delay: 160 },
+  'g10': { reply: '不要说出去',      next: 'g11', delay: 160 },
+  'g11': { reply: '不要说出去',      next: 'g12', delay: 160 },
+  'g12': { reply: '不要说出去',      next: 'g13', delay: 160 },
+  'g13': { reply: '不要说出去',      next: 'END', delay: 160 },
+  'END': { end: true },
+};
+
+// ══════════════════════════════════════════════════════════════
+// 引擎
+// ══════════════════════════════════════════════════════════════
+let busy = false;
+
+function print(text, cls = 'system') {
+  const div = document.createElement('div');
+  div.className = 'line ' + cls;
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+// 锁 / 解锁所有层级的选项按钮（解锁时不会动已经选过的）
+function lockAll(lock) {
+  [...userChoices.querySelectorAll('.uchoice-btn')].forEach(b => {
+    if (lock) b.classList.add('locked');
+    else if (!b.classList.contains('used')) b.classList.remove('locked');
   });
-  document.getElementById('choice-silent').addEventListener('click', () => {
-    window.location.href = 'xhs4.html';
-  });
+}
 
-  function print(text, cls='system') {
-    const div = document.createElement('div');
-    div.className = 'line ' + cls;
-    div.textContent = text;
-    output.appendChild(div);
-    output.scrollTop = output.scrollHeight;
-  }
+// 渲染一层菜单（可多选，选过的灰掉）。
+// 本层全部选完后：移除本层 → 恢复父层 → 调用 onAllUsed()。
+// parentMenuEl 为 null 表示这是顶层主菜单。
+// 子菜单（choice.extra）通过递归调用本函数实现，行为与主菜单完全一致。
+function runMenu(choices, onAllUsed, parentMenuEl) {
+  if (parentMenuEl) parentMenuEl.classList.add('hidden'); // 进子菜单时先把父层藏起来
 
-  // 启动信息
-  const boot = [
-    ['booting tty0 ...',                 'dim'],
-    ['kernel loaded. memory ok.',        'dim'],
-    ['establishing link ............ ok','dim'],
-    ['',                                  'dim'],
-    ['> 这是你与外星人的第一次接触 要好好想想怎么打招呼',     'system'],
-    ['> 试着说点什么吧。', 'system'],
-    ['',                                  'system'],
-  ];
-  let i = 0;
-  (function bootSeq(){
-    if (i >= boot.length) return;
-    print(boot[i][0], boot[i][1]);
-    i++;
-    setTimeout(bootSeq, 220);
-  })();
+  const menuEl = document.createElement('div');
+  menuEl.className = 'menu-level';
+  userChoices.appendChild(menuEl);
 
-  // ═══════════════════════════════════════════════════════
-  // 预设对话脚本 —— 在这里改对话内容
-  // user:  自动替换用户输入的文字（第一项可为空，因为第一句由用户自由输入）
-  // reply: 系统/对面的回复
-  // ═══════════════════════════════════════════════════════
-  const DIALOGUE = [
-    { user: '', reply: '你找来的很快啊' },
+  choices.forEach((c, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'uchoice-btn fade-in';
+    btn.style.animationDelay = (idx * 55) + 'ms';
+    btn.innerHTML = `<span class="idx">${idx + 1}.</span><span class="txt">${c.text}</span>`;
 
-    { user: '这居然真的是个对话框……我还以为是什么无聊的人做出来的解谜游戏', 
-      reply: '某种意义上来说也是吧。因为是我把你引到这里来的。' },
+    btn.addEventListener('click', () => {
+      if (busy || btn.classList.contains('used')) return;
 
-    { user: '你到底是谁？黑客？', 
-      reply: '如果我是黑客，现在应该已经在转移你少的可怜的资产了，而不是陪你聊天。' },
+      // 锁住所有按钮，等回复打完再解锁
+      busy = true;
+      lockAll(true);
+      btn.classList.add('used'); // 立即灰掉自己
 
-    { user: '那你是外星人？', 
-      reply: '……听外星人叫自己外星人的感觉还真奇怪。' },
+      print('guest@local:~$ ' + c.text, 'user');
 
-    { user: '所以你真的不是昴星人？你是月亮上的人吗？最近这些奇怪的事情都是你做的？', 
-      reply: '1.我不是。2.我不是。3.是的。' },
-
-    { user: '你要怎么证明', 
-      reply: '首先，你们被误导了。月亮上没有居民，至少没有你们描述的那种。' },
-
-    { user: '……', 
-      reply: '其次，你现在可以看看你的课本。', delay: 1800 },
-
-    { image: 'images/huajia.png', delay: 1800 },
-
-    { user: '脚印又出现了，所以是真的？！', 
-      reply: '别紧张，我没有恶意。大约一周前，我找到了这个奇怪的网站。它能与你们星球产生直接联系……准确来说，是没有时间差的联系。' },
-
-    { user: '没有时间差？', 
-      reply: '意思是，我们现在的对话不是经过数年传播后才被彼此接收到的。你发出的信息，我几乎是立刻看到。' },
-
-    { user: '你的意思是我们两个星球离得很近？', 
-      reply: '理论上来说应该是这样，但那又不可能。如果我们的距离近到连信号传播都没有延迟，我们早就已经观测到彼此了。可事实上，我们迄今为止从没发现过外星文明。' },
-
-    { user: '那……', 
-      reply: '我目前猜测，是这个“蠕虫网站”的作用。不知道为什么，它似乎能把我们两个星球串联起来。' },
-
-    { user: '所以你是？', 
-      reply: '地球人。' },
-
-    { user: '地球啊……', 
-      reply: '根据我这几天的观察，地球和昴星几乎一模一样。唯一的区别是——地球的智慧生物是人类。' },
-
-    { user: '我们也是啊？', 
-      reply: '抱歉，应该说，地球人类是你们口中的“裸猿”。' },
-
-    { user: '……还真奇怪。那我们居然在说同一种语言？', 
-      reply: '我不清楚。也许是这个网站自动把语言转换成了彼此能够理解的形式。我也不确定我们看见的是否是同一种语言。' },
-
-    { user: '那最近那些灵异事件，还有我的课本……', 
-      reply: '这就是我刚才想说的。' },
-
-    { reply: '在我刚找到这个网站的时候，它就自动联通了你们的星球，并给了我一种权限——每天都可以对你们的世界做出一个小小的改变。' },
-
-    { user: '……权限？', 
-      reply: '嗯。像是在后台里修改一个小参数。你的课本就是我更改的。' },
-
-    { user: '为什么全是和裸猿相关的？', 
-      reply: '因为我想试探你们对地球人类的态度。其实我只是个学生，我没打算做什么大事。' },
-
-    { reply: '我只是很好奇。如果有一天你们真的发现另一个文明，会怎么对待他们。' },
-
-    { user: '所以那些论坛帖子、照片……', 
-      reply: '他们观察到的裸猿都是我用网站执行的。不过那些只是投影，你们的星球上没有出现真的地球人，而且我对所有相关内容都限了流，确保不会传播得太夸张。' },
-
-    { user: '你的调查对象是外星人？外星人和神秘生物可是两码事。', 
-      reply: '没错。但蠕虫似乎会屏蔽所有“真正指向外星文明”的操作。' },
-
-    { reply: '只要我试图直接提及外星人，内容就会消失，或者被替换成乱码。所以我只能用“神秘生物”代替。' },
-
-    { user: '这网站到底是什么东西……', 
-      reply: '不知道。我甚至怀疑它本身就是某种活着的东西。' },
-
-    { user: '你不害怕吗？', 
-      reply: '第一天的时候我甚至以为自己精神出了问题，但更多的是好奇。哪怕这是个别人做出来红我的网站我也认了，这内容做的太真实了！' },
-
-    { reply: '我更震惊的是另一件事。' },
-
-    { user: '什么？', 
-      reply: '经过我这些天的观察，发现99%的人类对待“外星人”的态度，和对待“神秘生物”的态度几乎完全一样。' },
-
-    { reply: '这不像是一个把宇宙视作未来方向的文明。' },
-
-    { user: '当然不是了。天文学是宗教嘛，我们现在已经没什么人信宗教了。', 
-      reply: '……你们的发展进度居然落后到这种程度吗？' },
-
-    { reply: '但如果是这样，不应该反而有更多人信宗教吗？' },
-
-    { user: '因为*是超&说的，天@学已经不再作为科学!域的研究+向了', 
-      reply: '等@下……蠕￥网站的信%变差了——' },
-
-    { reply: '总之不要把我……存在说出去*！' },
-
-    { reply: '我没）恶意的！' },
-
-    { reply: '不要说出去', delay: 1800 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360 },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-    { reply: '不要说出去', delay: 360  },
-
-  ];
-
-  let dialogueTurn = 0;
-  let autoPlaying = false;
-
-  function reply(text) {
-    const t = text.toLowerCase().trim();
-    if (!t) return '...';
-    if (t === 'clear') { output.innerHTML = ''; return null; }
-
-    if (dialogueTurn < DIALOGUE.length) {
-      const line = DIALOGUE[dialogueTurn];
-      dialogueTurn++;
-      // 跳过图片条目
-      if (line.image) {
-        if (dialogueTurn < DIALOGUE.length) {
-          const next = DIALOGUE[dialogueTurn];
-          dialogueTurn++;
-          return next.reply;
+      // 本条分支结束后的收尾：判断【本层】是否全部选完
+      const finalize = () => {
+        const allUsed = [...menuEl.querySelectorAll('.uchoice-btn')]
+                          .every(b => b.classList.contains('used'));
+        if (allUsed) {
+          // 本层全选完 → 移除本层、恢复父层、交给 onAllUsed
+          // （顶层 onAllUsed = 前进到 next；子层 onAllUsed = 父分支的 finalize）
+          setTimeout(() => {
+            menuEl.remove();
+            if (parentMenuEl) parentMenuEl.classList.remove('hidden');
+            onAllUsed();
+          }, 600);
+        } else {
+          // 还有剩余 → 解锁继续选（即"回到本菜单"）
+          busy = false;
+          lockAll(false);
         }
-        return '……（通讯似乎中断了）';
+      };
+
+      setTimeout(() => {
+        print('> ' + c.branchReply, 'system');
+
+        if (c.extra && c.extra.length) {
+          // 这条分支带【子菜单】：和主菜单一样，可以一个个点选；
+          // 子菜单全部选完后回到本层（此期间 busy 维持锁定，由 finalize 解锁）
+          setTimeout(() => runMenu(c.extra, finalize, menuEl), 450);
+        } else {
+          setTimeout(finalize, 500);
+        }
+      }, 380);
+    });
+
+    menuEl.appendChild(btn);
+  });
+
+  busy = false; // 本层渲染完毕，可以点击了
+}
+
+// 顶层菜单入口：所有选项汇合到同一个 next
+function startMenu(choices) {
+  userChoices.classList.add('show');
+  const nextId = choices[0].next;
+  runMenu(choices, () => {
+    userChoices.classList.remove('show');
+    userChoices.innerHTML = '';
+    go(nextId);
+  }, null);
+}
+
+function showImage(src, onDone) {
+  overlayImg.src = src;
+  imgOverlay.classList.add('show');
+  setTimeout(() => {
+    imgOverlay.classList.remove('show');
+    setTimeout(() => { overlayImg.src = ''; onDone(); }, 500);
+  }, 3000);
+}
+
+function go(id) {
+  if (!id) return;
+  const node = NODES[id];
+  if (!node) return;
+
+  // ── 信号崩坏：进入 glitch 序列开始抖动闪烁，刷屏加速时升级为剧烈 ──
+  if (id === 'glitch') screenEl.classList.add('glitching');
+  if (id === 'g3')     screenEl.classList.add('intense');
+
+  if (node.end) {
+    // 连接彻底中断：黑屏闪一下 → 抖动停止 → 画面定住后弹出结局
+    blackout.classList.add('flash');
+    setTimeout(() => screenEl.classList.remove('glitching', 'intense'), 150);
+    setTimeout(() => endingChoices.classList.add('show'), 560);
+    return;
+  }
+
+  if (node.image) {
+    busy = true;
+    setTimeout(() => {
+      showImage(node.image, () => { busy = false; go(node.next); });
+    }, node.delay || 600);
+    return;
+  }
+
+  if (node.reply) {
+    busy = true;
+    // from:'user' → 显示为玩家说的话；否则为对方/系统说
+    const prefix = node.from === 'user' ? 'guest@local:~$ ' : '> ';
+    const cls    = node.from === 'user' ? 'user' : 'system';
+    setTimeout(() => {
+      print(prefix + node.reply, cls);
+      if (node.choices) {
+        setTimeout(() => startMenu(node.choices), 400);
+      } else {
+        setTimeout(() => { busy = false; go(node.next); }, node.delay || 1800);
       }
-      return line.reply;
-    }
-
-    return '……（通讯似乎中断了）';
+    }, 300);
+  } else if (node.choices) {
+    setTimeout(() => startMenu(node.choices), 400);
   }
+}
 
-  function showImage(src, onDone) {
-    autoPlaying = true;
-    input.disabled = true;
-    input.value = '';
-    overlayImg.src = src;
-    imgOverlay.classList.add('show');
-    // 6 秒后图片消失，继续对话
-    setTimeout(() => {
-      imgOverlay.classList.remove('show');
-      setTimeout(() => {
-        overlayImg.src = '';
-        autoPlaying = false;
-        input.disabled = false;
-        if (onDone) onDone();
-      }, 500); // 等淡出动画结束
-    }, 3000);
-  }
-
-  // 检查当前条目：图片 → 展示后继续 / 无 user → 自动连发 reply / 有 user → 等回车
-  function autoAdvance() {
-    if (dialogueTurn >= DIALOGUE.length) {
-      autoPlaying = false;
-      inputRow.style.display = 'none';
-      choiceRow.classList.add('show');
-      return;
-    }
-    const line = DIALOGUE[dialogueTurn];
-    if (line.image) {
-      // 图片条目：先用 delay 停顿，再展示图片
-      dialogueTurn++;
-      autoPlaying = true;
-      input.disabled = true;
-      input.value = '';
-      setTimeout(() => {
-        showImage(line.image, () => autoAdvance());
-      }, line.delay || 1800);
-    } else if (!line.user) {
-      // 只有 reply，自动发送（可用 delay 字段单独控制速度）
-      dialogueTurn++;
-      autoPlaying = true;
-      input.disabled = true;
-      input.value = '';
-      setTimeout(() => {
-        print('> ' + line.reply, 'system');
-        autoAdvance();
-      }, line.delay || 1800);
-    } else {
-      // 有 user，清空输入框等待用户打字（input 事件会自动替换为预设文字）
-      autoPlaying = false;
-      input.disabled = false;
-      input.value = '';
-      input.focus();
-    }
-  }
-
-  input.addEventListener('input', () => {
-    if (dialogueTurn > 0 && dialogueTurn < DIALOGUE.length) {
-      const user = DIALOGUE[dialogueTurn].user;
-      if (user) input.value = user;
-    }
-  });
-
-  input.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
-    if (autoPlaying) return;
-    const value = input.value.trim();
-    if (!value) return;
-    input.value = '';
-
-    print('guest@local:~$ ' + value, 'user');
-
-    const r = reply(value);
-    if (r === null) return;
-    setTimeout(() => {
-      print('> ' + r, 'system');
-      autoAdvance();
-    }, 380);
-  });
-
-  // 点击任何位置都聚焦输入框
-  document.addEventListener('click', () => input.focus());
+// ── 启动 ──
+const boot = [
+  ['booting tty0 ...',                    'dim'],
+  ['kernel loaded. memory ok.',           'dim'],
+  ['establishing link ............ ok',   'dim'],
+  ['',                                    'dim'],
+  ['',                                    'system'],
+];
+let bi = 0;
+(function bootSeq() {
+  if (bi >= boot.length) { go('n0'); return; }
+  print(boot[bi][0], boot[bi][1]);
+  bi++;
+  setTimeout(bootSeq, 220);
+})();
 </script>
-    <script src="nav.js"></script>
 </body>
 </html>

@@ -1615,6 +1615,7 @@
 
         requestAnimationFrame(() => achievementToast.classList.add('show'));
         setTimeout(() => achievementToast.classList.remove('show'), 5500);
+        localStorage.setItem('ach-goldfish', '1');
       }
     })();
   </script>

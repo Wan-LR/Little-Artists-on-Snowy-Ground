@@ -271,6 +271,160 @@
       box-shadow 0.85s ease,
       opacity 0.3s ease 0.7s;
   }
+
+  /* ───────────── 公鸡 NPC（与各 puzzle 同一套） ───────────── */
+  .rooster-container {
+    position: fixed;
+    right: 36px;
+    bottom: 28px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .rooster-container.fade-out { opacity: 0; pointer-events: none; }
+
+  .speech-bubble {
+    position: relative;
+    background: linear-gradient(135deg, rgba(244, 233, 210, 0.97), rgba(220, 207, 178, 0.95));
+    color: #2a1a0a;
+    padding: 14px 18px 22px 18px;
+    border-radius: 4px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.86rem;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    max-width: 300px;
+    min-width: 180px;
+    box-shadow:
+      0 6px 24px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(139, 90, 43, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    margin-right: 40px;
+    will-change: transform, opacity;
+  }
+  .speech-bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 32px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgba(228, 215, 186, 0.96);
+    filter: drop-shadow(0 2px 1px rgba(139, 90, 43, 0.4));
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed rgba(139, 90, 43, 0.35);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .next-arrow {
+    position: absolute;
+    right: 12px;
+    bottom: 4px;
+    font-size: 0.85rem;
+    color: #8b5a2b;
+    animation: arrow-blink 1.2s ease-in-out infinite;
+  }
+  @keyframes arrow-blink {
+    0%, 100% { opacity: 0.25; transform: translateX(0); }
+    50%      { opacity: 1;    transform: translateX(3px); }
+  }
+
+  .rooster {
+    width: 180px;
+    height: 180px;
+    cursor: pointer;
+    user-select: none;
+    pointer-events: auto;
+    position: relative;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.6));
+    transition: filter 0.3s ease, transform 0.2s ease;
+  }
+  .rooster.bobbing { animation: rooster-bob 0.8s ease-in-out 5; }
+  @keyframes rooster-bob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25%      { transform: translateY(-9px) rotate(-2.5deg); }
+    50%      { transform: translateY(0) rotate(0deg); }
+    75%      { transform: translateY(-9px) rotate(2.5deg); }
+  }
+  .rooster:hover {
+    filter: drop-shadow(0 10px 20px rgba(74,144,217,0.5))
+            drop-shadow(0 8px 14px rgba(0,0,0,0.55));
+  }
+  .rooster img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+  .rooster-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8rem; line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ── 公鸡掏出的「笔」（用你的图案代替）── */
+  .pen {
+    position: absolute;
+    right: 70px;
+    bottom: 60px;
+    width: 96px;
+    height: 96px;
+    transform-origin: bottom center;
+    opacity: 0;
+    transform: translateY(46px) scale(0.3) rotate(-38deg);
+    pointer-events: none;
+    z-index: 60;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6))
+            drop-shadow(0 0 16px rgba(74,144,217,0.55));
+  }
+  .pen img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+  .pen-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem; line-height: 1;
+  }
+  .pen.show { animation: penOut 0.85s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes penOut {
+    0%   { opacity: 0; transform: translateY(46px) scale(0.3) rotate(-38deg); }
+    60%  { opacity: 1; transform: translateY(-10px) scale(1.14) rotate(-12deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(-18deg); }
+  }
+
+  /* ── 收尾白光 ── */
+  #white-flash {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.6s ease;
+  }
+  #white-flash.show { opacity: 1; pointer-events: auto; }
 </style>
 </head>
 <body>
@@ -291,18 +445,38 @@
 
 <img id="fly-in-img" alt="">
 
+<!-- ───────────── 公鸡 NPC ───────────── -->
+<div class="rooster-container" id="rooster-container">
+  <div class="speech-bubble" id="speech-bubble">
+    <span id="bubble-text"></span>
+    <span class="next-arrow">▸</span>
+  </div>
+
+  <!-- 公鸡掏出的笔：把 PEN_IMAGE 换成你的图案即可 -->
+  <div class="pen" id="pen">
+    <img id="pen-img" alt="笔"
+         onerror="this.style.display='none';document.getElementById('pen-fallback').style.display='flex';">
+    <span class="pen-fallback" id="pen-fallback" style="display:none;">🖊️</span>
+  </div>
+
+  <div class="rooster" id="rooster">
+    <img id="rooster-img" alt="公鸡"
+         onerror="this.style.display='none';document.getElementById('rooster-fallback').style.display='flex';">
+    <div class="rooster-fallback" id="rooster-fallback" style="display:none;">🐓</div>
+  </div>
+</div>
+
+<!-- 收尾白光层 -->
+<div id="white-flash"></div>
+
 <script>
   // ═══════════════════════════════════════════════════════════════
   // 9 个格子的配置
-  //   id    : localStorage 标记键
-  //   emoji : 该格"可挑战"时显示的入口提示 emoji（你可以随时替换）
-  //   image : 该题通关后显示的原图
-  //   url   : 谜题页面
   // ═══════════════════════════════════════════════════════════════
   const PUZZLES = [
     { id: 'puzzle_1', emoji: '🍎', image: 'images/gongyegeming.png', url: 'puzzle_1.html' },
-    { id: 'puzzle_2', emoji: '🦆', image: 'images/p2.png',           url: 'puzzle_2.html' },
-    { id: 'puzzle_3', emoji: '🥣', image: 'images/p3.png',           url: 'puzzle_3.html' },
+    { id: 'puzzle_2', emoji: '🦆', image: 'images/yazi.png',           url: 'puzzle_2.html' },
+    { id: 'puzzle_3', emoji: '🥣', image: 'images/aizheng.png',           url: 'puzzle_3.html' },
     { id: 'puzzle_4', emoji: '🥚', image: 'images/p4.png',           url: 'puzzle_4.html' },
     { id: 'puzzle_5', emoji: '💻', image: 'images/p5.png',           url: 'puzzle_5.html' },
     { id: 'puzzle_6', emoji: '💥', image: 'images/p6.png',           url: 'puzzle_6.html' },
@@ -310,15 +484,84 @@
     { id: 'puzzle_8', emoji: '🧠', image: 'images/p8.png',           url: 'puzzle_8.html' },
     { id: 'puzzle_9', emoji: '👁️', image: 'images/p9.png',           url: 'puzzle_9.html' },
   ];
+
   // ═══════════════════════════════════════════════════════════════
+  // 收尾相关配置 —— 这几样换成你自己的
+  // ═══════════════════════════════════════════════════════════════
+  const ROOSTER_IMAGE = 'images/mojingji.png';  // 公鸡图（和各 puzzle 一致）
+  const PEN_IMAGE      = 'images/pen.png';       // ← 「笔」用你的图案代替
+  const NEXT_URL       = 'ending.html';          // ← 白光之后要跳转到的界面
+
+  // ↓↓↓【你来写】刚进入大九宫格时，公鸡先说的开场白（想加几句就加几句）
+  //   只在“还没解开任何一关”的第一次进入时播放一次；台词里同样可用 {name}
+  const INTRO_SPEECH = [
+    '咯咯咯——欢迎啊',
+    '这里锁着九张图，是我们昴星的九段过去',
+    '从第一格开始，一格一格把它们解开',
+    '每解开一张，下一张就会亮起来',
+    '试着点点吧',
+  ];
+
+  // ↓↓↓【你来写】九张图全部解锁后，公鸡说的一大段话（想加几句就加几句）
+  const SPEECH = [
+    '这就是我们的全部过去了',
+    '而你是我们的现在，关策喆',
+    '根据超脑的计算，我们在许久之前就知道，有一个时间点发生了急剧熵增，这个时间点后的昴星不再是一条直线，而是多出了不少的可能性',
+    '这个时间点就是现在',
+    '在此之后，我们不会再受之前的不可控变量控制，但我们有了新的观测者',
+    '之所以需要你，是因为我们需要你把ta带来我们面前',
+    '所以你已经完成使命了，关策喆',
+  ];
+  // ↓↓↓【你来写】公鸡掏出笔之后、拿着笔说的话
+  //   台词里写 {name} 会被替换成玩家在引导页输入的 id（见下方 PLAYER_NAME）
+  const PEN_SPEECH = [
+    '你好，屏幕后的{name}',
+    '以后就需要拜托你了吧',
+    '有时候一念之间可以决定很多事情',
+    '我们一定控制不了了，只能向你祈祷了',
+    '噢还有就是得委屈你一下，关策喆和你用的是同一个屏幕，为了消除ta的记忆，这个光也会闪到你，但放心，对你不会有效',
+    '不用担心肖佑袅噢，ta的记忆已经完全被消除了',
+    '好吧，其实是超脑说前任观测者强烈表达了想让下一任观测者吃个闪的意愿',
+    '昴星就交给你了'
+  ];
+  // 还没集齐 9 张时，点公鸡会说的闲话（不需要就把数组清空 []）
+  const IDLE_LINES = [
+    '咯咯咯，九张都点亮了，再来找我',
+  ];
+  // ═══════════════════════════════════════════════════════════════
+
+  // 玩家在引导页输入的 id：引导页用 localStorage.setItem('nickname', ...) 存的；
+  // 这里再兼容 ?name= 传参；都读不到时用兜底词。
+  // 用法：在任意台词（INTRO_SPEECH / SPEECH / PEN_SPEECH / IDLE_LINES）里写 {name}，显示时会替换成它。
+  const PLAYER_NAME = (
+    localStorage.getItem('nickname') ||
+    new URLSearchParams(location.search).get('name') ||
+    '观测者'                                    // ← 兜底：万一没读到 id，就用这个
+  ).trim();
 
   let unlockedCount = 0;
 
+  // 公鸡对话状态
+  let roosterPhase = 'idle';   // intro → idle → speech → penAnim → pen → done
+  let dialogueIndex = 0;
+  let endingStarted = false;
+  let introSeen = localStorage.getItem('hub_intro_seen') === 'true';   // 开场白只播一次
+  function markIntroSeen() { introSeen = true; localStorage.setItem('hub_intro_seen', 'true'); }
+
   window.onload = () => {
-    buildBoard();
-    handleReturnAnimation();
+    document.getElementById('rooster-img').src = ROOSTER_IMAGE;
+    document.getElementById('pen-img').src = PEN_IMAGE;
+    document.getElementById('rooster').addEventListener('click', clickRooster);
+
+    buildBoard();   // 内部会 refreshAll，算出 unlockedCount
+
+    // 返回动画（若刚从某关回来）放完后：先判断结局，否则尝试播放开场白
+    handleReturnAnimation(() => {
+      if (!maybeStartEnding()) maybeStartIntro();
+    });
+
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') refreshAll();
+      if (document.visibilityState === 'visible') { refreshAll(); maybeStartEnding(); }
     });
   };
 
@@ -376,10 +619,6 @@
     refreshAll();
   }
 
-  // 判断某格当前状态
-  // done       : 已通关 → 显示原图，可点击重看
-  // available  : 可挑战 → 显示 emoji，可点击进入
-  // locked     : 前置未通关 → 显示锁，不可点击
   function getCellState(i) {
     if (isPuzzleDone(i)) return 'done';
     if (i === 0) return 'available';
@@ -428,6 +667,7 @@
   }
 
   function onCellClick(i) {
+    if (endingStarted) return;   // 结局演出中，禁止再点格子离开
     const state = getCellState(i);
     if (state === 'locked') {
       shakeCell(i);
@@ -464,19 +704,22 @@
     window.location.href = url;
   }
 
-  function handleReturnAnimation() {
+  // onComplete: 返回动画结束（或本来就没有动画）后回调
+  function handleReturnAnimation(onComplete) {
+    const done = () => { if (onComplete) onComplete(); };
+
     const raw = sessionStorage.getItem('puzzle_returning');
-    if (!raw) return;
+    if (!raw) { done(); return; }
 
     let data;
-    try { data = JSON.parse(raw); } catch (e) { sessionStorage.removeItem('puzzle_returning'); return; }
+    try { data = JSON.parse(raw); } catch (e) { sessionStorage.removeItem('puzzle_returning'); done(); return; }
     sessionStorage.removeItem('puzzle_returning');
 
     const i = data.index;
-    if (i == null || !PUZZLES[i]) return;
+    if (i == null || !PUZZLES[i]) { done(); return; }
 
     const p = PUZZLES[i];
-    if (!isPuzzleDone(i)) return;
+    if (!isPuzzleDone(i)) { done(); return; }
 
     const targetImg = document.getElementById('img_' + i);
     const targetCell = document.getElementById('cell_' + i);
@@ -529,6 +772,8 @@
           nextCell.classList.add('just-available');
           setTimeout(() => nextCell.classList.remove('just-available'), 1500);
         }
+
+        done();   // ← 飞入动画完成
       }, 900);
     };
 
@@ -542,11 +787,142 @@
     }
   }
 
-  // 开发用
+  // ═══════════════════════════════════════════════════════════════
+  // 公鸡说话 / 开场白 / 结局演出
+  // ═══════════════════════════════════════════════════════════════
+  function showDialogue(text) {
+    const bubble = document.getElementById('speech-bubble');
+    const bubbleText = document.getElementById('bubble-text');
+    const rooster = document.getElementById('rooster');
+    bubbleText.textContent = String(text).replace(/\{name\}/g, PLAYER_NAME);   // {name} → 玩家 id
+    bubble.classList.remove('show');
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+    rooster.classList.remove('bobbing');
+    void rooster.offsetWidth;
+    rooster.classList.add('bobbing');
+  }
+  function hideDialogue() {
+    document.getElementById('speech-bubble').classList.remove('show');
+    document.getElementById('rooster').classList.remove('bobbing');
+  }
+
+  // 第一次进入大九宫格时的开场白（只触发一次；已开始解关或已全解锁都不再播）
+  function maybeStartIntro() {
+    if (endingStarted || introSeen) return;
+    if (unlockedCount !== 0) return;           // 已经动过格子了，就不再当开场
+    if (!INTRO_SPEECH.length) { markIntroSeen(); return; }
+    setTimeout(startIntroSpeech, 500);
+  }
+  function startIntroSpeech() {
+    if (endingStarted || introSeen) return;
+    roosterPhase = 'intro';
+    dialogueIndex = 0;
+    showDialogue(INTRO_SPEECH[0]);
+  }
+
+  // 全部解锁后触发（只触发一次）。返回 true 表示结局已安排启动。
+  function maybeStartEnding() {
+    if (endingStarted) return false;
+    if (unlockedCount >= PUZZLES.length) {
+      setTimeout(startEndingSpeech, 600);
+      return true;
+    }
+    return false;
+  }
+
+  function startEndingSpeech() {
+    if (endingStarted) return;
+    endingStarted = true;
+    roosterPhase = 'speech';
+    dialogueIndex = 0;
+    if (SPEECH.length) showDialogue(SPEECH[0]);
+    else startPenScene();   // 没写台词就直接进掏笔环节
+  }
+
+  // 掏出笔的动画
+  function startPenScene() {
+    roosterPhase = 'penAnim';   // 动画中，点击无效
+    hideDialogue();
+
+    const pen = document.getElementById('pen');
+    pen.classList.add('show');
+
+    const rooster = document.getElementById('rooster');
+    rooster.classList.remove('bobbing'); void rooster.offsetWidth; rooster.classList.add('bobbing');
+
+    setTimeout(() => {
+      roosterPhase = 'pen';
+      dialogueIndex = 0;
+      if (PEN_SPEECH.length) showDialogue(PEN_SPEECH[0]);
+      else startWhiteFlash();
+    }, 1000);
+  }
+
+  // 白光 → 跳转
+  function startWhiteFlash() {
+    roosterPhase = 'done';
+    hideDialogue();
+
+    // 公鸡与笔淡出
+    document.getElementById('rooster-container').classList.add('fade-out');
+
+    // 一阵白光
+    const flash = document.getElementById('white-flash');
+    flash.classList.add('show');
+
+    setTimeout(() => { window.location.href = NEXT_URL; }, 1100);
+  }
+
+  function clickRooster() {
+    if (roosterPhase === 'intro') {
+      dialogueIndex++;
+      if (dialogueIndex < INTRO_SPEECH.length) {
+        showDialogue(INTRO_SPEECH[dialogueIndex]);
+      } else {
+        hideDialogue();          // 开场白说完 → 进入普通(闲话)状态
+        markIntroSeen();
+        roosterPhase = 'idle';
+        dialogueIndex = 0;
+      }
+
+    } else if (roosterPhase === 'idle') {
+      if (!IDLE_LINES.length) return;
+      dialogueIndex = (dialogueIndex + 1) % IDLE_LINES.length;
+      showDialogue(IDLE_LINES[dialogueIndex]);
+
+    } else if (roosterPhase === 'speech') {
+      dialogueIndex++;
+      if (dialogueIndex < SPEECH.length) {
+        showDialogue(SPEECH[dialogueIndex]);
+      } else {
+        startPenScene();          // 大段话说完 → 掏笔
+      }
+
+    } else if (roosterPhase === 'pen') {
+      dialogueIndex++;
+      if (dialogueIndex < PEN_SPEECH.length) {
+        showDialogue(PEN_SPEECH[dialogueIndex]);
+      } else {
+        startWhiteFlash();        // 拿着笔说完 → 白光跳转
+      }
+    }
+    // penAnim / done：忽略点击
+  }
+
+  // ── 开发用 ──
   window.resetAll = () => {
     PUZZLES.forEach(p => localStorage.removeItem(p.id + '_unlocked'));
+    localStorage.removeItem('hub_intro_seen');     // 让开场白能重新播放
     sessionStorage.clear();
+    location.reload();
+  };
+  // 一键解锁全部（方便测试结局演出）
+  window.unlockAll = () => {
+    PUZZLES.forEach(p => localStorage.setItem(p.id + '_unlocked', 'true'));
     refreshAll();
+    endingStarted = false;
+    maybeStartEnding();
   };
 </script>
 </body>

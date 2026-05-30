@@ -483,12 +483,12 @@
             <div class="quiz-question" id="quiz-question"></div>
             <div class="quiz-round-no" id="quiz-round-no"></div>
             <div class="bowls-row" id="bowls-row"></div>
-            <div id="success-msg">三段已现 · 归洞了</div>
+            <div id="success-msg">你的运气很不错呢</div>
           </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="images/persephone.png" alt="背面">
+        <img id="back-img" src="images/aizheng.png" alt="背面">
       </div>
     </div>
   </div>
@@ -523,7 +523,7 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/persephone.png';  // ← 换成你的背面图
+  const BACK_IMAGE  = 'images/aizheng.png';  // ← 换成你的背面图
   const PASSWORD    = 'persephone';
   const PUZZLE_ID   = 'puzzle_3';
   const PUZZLE_INDEX = 2;          // 九宫格里的第 3 格（索引 2）
@@ -548,25 +548,26 @@
 
   const dialogues = {
     intro: [
-      '咯咯咯——你又来了',
-      '这一摊，叫"三仙归洞"',
-      '三只碗，我把一段字藏在其中一只底下',
-      '你来猜，它藏在哪只碗里',
-      '放心——你掀开的那只，底下就有字',
-      '一共三轮，三段连起来就是密码'
+      '咯咯咯——欢迎',
+      '你听说过"三仙归洞"吗',
+      '三只碗，其中一只底下有东西',
+      '猜猜它藏在哪只碗里',
     ],
     playing: [
       '咯咯咯，挑一只吧',
-      '哪只都行——反正都归洞',
-      '把掀出来的那段字记牢'
+      '当然是纯猜了',
+      '只要你想 就能找到',
     ],
     ending: [
-      '你拼出的，又是一个名字。',
-      '她叫珀耳塞福涅——被带进地底的那一位',
-      '一年里，总有几个月，她得回到洞里去',
-      '三仙归洞，归的也是同一个地方',
-      '有些归途，掀哪只碗都躲不掉',
-      '昴星人懂这个，所以从不与命争碗',
+      '你的运气真的不错噢？',
+      '想做什么都能做到',
+      '昴星当时的科技发展就是这样',
+      '如果我们想要什么成果，只要去做了就能成功',
+      '你能想象第一遍程序就能直接运行的几率吗',
+      '解决癌症和常温超导在地球上依旧是个难题吧？',
+      '但因为我们愿意，所以它们都会被解决',    
+      '这还是科学吗',
+      '但我们又真的了解科学吗', 
       '让它归位吧,咯咯咯——'
     ]
   };
@@ -683,7 +684,7 @@
     if (currentRound >= ROUNDS.length) { onGameComplete(); return; }
 
     const round = ROUNDS[currentRound];
-    document.getElementById('quiz-question').textContent = '这一段，藏在哪只碗下？';
+    document.getElementById('quiz-question').textContent = '哪只碗会有东西呢？';
     document.getElementById('quiz-round-no').textContent =
       '第 ' + (currentRound + 1) + ' / ' + ROUNDS.length + ' 轮';
 

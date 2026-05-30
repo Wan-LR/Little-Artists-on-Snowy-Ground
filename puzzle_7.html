@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>能吃与不能吃</title>
+<title>消除</title>
 <style>
   @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
@@ -135,111 +135,96 @@
   /* 题目 */
   .quiz-question {
     position: absolute;
-    top: 28px;
+    top: 20px;
     left: 0; right: 0;
     text-align: center;
     color: var(--white);
     font-family: 'Noto Serif SC', serif;
-    font-size: 1.08rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 0 22px;
+    letter-spacing: 0.06em;
+    padding: 0 18px;
     text-shadow: 0 0 12px rgba(74,144,217,0.4);
   }
-  .quiz-round-no {
-    position: absolute;
-    top: 60px;
-    left: 0; right: 0;
-    text-align: center;
-    color: rgba(168,204,240,0.4);
-    font-family: 'Noto Serif SC', serif;
-    font-size: 0.66rem;
-    letter-spacing: 0.24em;
-  }
 
-  /* 选项行 */
-  .options-row {
+  /* ── 消消乐区域：背景词 + 上层方块 ── */
+  .board-area {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    gap: 22px;
-  }
-  .options-row.locked .option-tile { pointer-events: none; }
-
-  .option-tile {
-    position: relative;
-    width: 104px;
-    height: 104px;
-    background: linear-gradient(135deg, rgba(74,144,217,0.12), rgba(20,60,140,0.20));
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
-    box-shadow: inset 0 1px 0 rgba(74,144,217,0.15), 0 4px 10px rgba(0,0,0,0.45);
-    /* 让卡片处于 3D 上下文里时，瓦片始终正面朝向、独立成层，避免抖动时被剔除而"消失" */
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
-    transform: translateZ(0);
-  }
-  .option-tile:hover {
-    transform: translateZ(0) translateY(-4px) scale(1.04);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(74,144,217,0.25), 0 8px 16px rgba(0,0,0,0.55);
-  }
-  .option-tile:active { transform: translateZ(0) scale(0.97); }
-
-  .option-tile .letter-badge {
-    position: absolute;
-    right: -7px; bottom: -7px;
-    width: 27px; height: 27px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 50%;
+    top: 54px; left: 0; right: 0; bottom: 14px;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Noto Serif SC', serif;
-    font-size: 0.86rem; font-weight: 700;
-    letter-spacing: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.35);
   }
 
-  .option-tile.correct {
-    border-color: #4ad980;
-    box-shadow: 0 0 0 2px rgba(74,217,128,0.45), 0 0 22px rgba(74,217,128,0.32);
+  .board-stack {
+    position: relative;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(8,18,36,0.35);
+    box-shadow: inset 0 0 22px rgba(0,0,0,0.5);
+    overflow: hidden;
   }
-  .option-tile.correct .letter-badge { background: #4ad980; }
-  .option-tile.wrong {
-    border-color: #d94a4a !important;
-    background: rgba(217,74,74,0.22);
-    box-shadow: 0 0 0 2px rgba(217,74,74,0.5), 0 0 18px rgba(217,74,74,0.35);
-    animation: tile-shake 0.4s ease;
-  }
-  .option-tile.wrong .letter-badge { background: #d94a4a; }
-  /* 抖动保留 translateZ(0)，避免在 3D 卡片里被剔除而消失 */
-  @keyframes tile-shake {
-    0%,100% { transform: translateZ(0) translateX(0); }
-    25%     { transform: translateZ(0) translateX(-6px); }
-    75%     { transform: translateZ(0) translateX(6px); }
-  }
-  .option-tile.dimmed { opacity: 0.3; }
 
-  #success-msg {
-    display: none;
+  /* 背后的单词（被方块盖住，方块消失后从空格里透出来） */
+  .word-bg {
     position: absolute;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--light);
-    letter-spacing: 0.2em;
-    animation: fadeInUp 0.6s ease forwards;
+    inset: 6px;
+    z-index: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.92;
+    pointer-events: none;
+    filter: drop-shadow(0 0 7px rgba(74,144,217,0.55));
+    transition: opacity 0.6s ease, filter 0.6s ease;
   }
+  .word-bg svg { width: 100%; height: 100%; display: block; }
+  .wtext {
+    fill: #d4e8ff;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+  }
+  .board-stack.revealed .word-bg {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(74,144,217,0.9));
+  }
+
+  /* 方块网格（透明，空格处能看见背景词） */
+  .match-board {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 4px;
+    background: transparent;
+  }
+
+  .gem, .cell-empty { width: 100%; height: 100%; }
+  .cell-empty { background: transparent; }   /* 已消除：透出背景词 */
+
+  .gem {
+    border-radius: 11px;
+    cursor: pointer;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; line-height: 1;
+    box-shadow:
+      inset -3px -4px 8px rgba(0,0,0,0.32),
+      inset 3px 3px 7px rgba(255,255,255,0.22);
+    transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    -webkit-user-select: none; user-select: none;
+  }
+  .gem:hover { transform: scale(1.06); z-index: 2; }
+  .gem.selected {
+    box-shadow: 0 0 0 3px var(--white), 0 0 14px rgba(232,242,255,0.85),
+                inset -3px -4px 8px rgba(0,0,0,0.3);
+    transform: scale(1.08); z-index: 3;
+  }
+  .gem.clearing { animation: gemClear 0.26s ease forwards; pointer-events: none; }
+  @keyframes gemClear { to { transform: scale(0.15) rotate(45deg); opacity: 0; } }
+
+  /* 方块底色（不透明，盖住背景词）+ 上面的 emoji */
+  .gem.t0 { background: radial-gradient(circle at 34% 30%, #ff7a6e, #c23a2e); }
+  .gem.t1 { background: radial-gradient(circle at 34% 30%, #ffb35a, #d87a1e); }
+  .gem.t2 { background: radial-gradient(circle at 34% 30%, #f7e07a, #d8b82a); }
+  .gem.t3 { background: radial-gradient(circle at 34% 30%, #7ee0a0, #2a9c5c); }
+  .gem.t4 { background: radial-gradient(circle at 34% 30%, #c79ae8, #8a46c0); }
 
   /* ── 底部交互区 ── */
   .action-area {
@@ -285,7 +270,7 @@
     background: rgba(8,18,36,0.8);
     color: var(--white);
     border-radius: 3px;
-    width: 180px;
+    width: 200px;
     outline: none;
     transition: border-color 0.25s, box-shadow 0.25s;
     text-align: center;
@@ -414,7 +399,7 @@
     pointer-events: auto;
     position: relative;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,0.6));
-    transition: filter 0.3s ease;
+    transition: filter 0.3s ease, transform 0.2s ease;
   }
   .rooster.bobbing { animation: rooster-bob 0.8s ease-in-out 5; }
   @keyframes rooster-bob {
@@ -452,14 +437,19 @@
         <div class="board-wrap">
           <div id="game-board">
             <div class="quiz-question" id="quiz-question"></div>
-            <div class="quiz-round-no" id="quiz-round-no"></div>
-            <div class="options-row" id="options-row"></div>
-            <div id="success-msg">六轮作答完毕</div>
+
+            <!-- 消消乐：背景词 + 上层方块 -->
+            <div class="board-area" id="board-area">
+              <div class="board-stack" id="board-stack">
+                <div class="word-bg" id="word-bg"></div>
+                <div class="match-board" id="match-board"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div class="card-face card-back" id="card-back">
-        <img id="back-img" src="images/yazi.png" alt="背面">
+        <img id="back-img" src="images/minerva.png" alt="背面">
       </div>
     </div>
   </div>
@@ -467,7 +457,7 @@
   <div class="action-area" id="action-area">
     <div class="word-input-wrap">
       <input class="word-input" id="word-input" type="text"
-             placeholder="输入密码…" autocomplete="off" spellcheck="false">
+             placeholder="输入最终密码…" autocomplete="off" spellcheck="false">
     </div>
     <div class="btn-row">
       <button class="btn-replay" id="btn-replay" onclick="resetGame()">↻ 重新作答</button>
@@ -494,85 +484,291 @@
 
 <script>
   // ═══════════════════════════════════════════
-  const BACK_IMAGE  = 'images/yazi.png';   // ← 换成你的背面图
-  const PASSWORD    = 'sawney';
-  const PUZZLE_ID   = 'puzzle_2';
-  const PUZZLE_INDEX = 1;          // 九宫格里的第 2 格（索引 1）
+  const BACK_IMAGE  = 'images/minerva.png';  // ← 换成你的背面图
+  const PASSWORD    = 'minerva';
+  const PUZZLE_ID   = 'puzzle_7';
+  const PUZZLE_INDEX = 6;          // 九宫格里的第 7 格（索引 6）
   const RETURN_URL  = 'mxhuitu.html';
   // ═══════════════════════════════════════════
 
-  // ── 六轮题目 ──────────────────────────────────────────────
-  // canEat:true  → 题目“选出能吃的东西”，正确答案是【食物】
-  // canEat:false → 题目“选出不能吃的东西”，正确答案是【杂物】
-  // 每轮 options 里 correct:true 的那一项带着答案字母（按顺序拼成 sawney）
-  // 其余两项是干扰项，字母随意（不影响答案）
-  const ROUNDS = [
-    { canEat: true,  options: [
-        { emoji: '🌽', letter: 's', correct: true  },   // 面包 = 能吃
-        { emoji: '🪨', letter: 'k', correct: false },   // 石头
-        { emoji: '🧼', letter: 'q', correct: false } ]  // 肥皂
-    },
-    { canEat: false, options: [
-        { emoji: '🐛', letter: 't', correct: false },   // 苹果
-        { emoji: '🔩', letter: 'a', correct: true  },   // 螺丝 = 不能吃
-        { emoji: '🍇', letter: 'm', correct: false } ]  // 葡萄
-    },
-    { canEat: true,  options: [
-        { emoji: '🪵', letter: 'r', correct: false },   // 木头
-        { emoji: '🍐', letter: 'w', correct: true  },   // 披萨 = 能吃
-        { emoji: '🧷', letter: 'z', correct: false } ]  // 别针
-    },
-    { canEat: false, options: [
-        { emoji: '🍌', letter: 'b', correct: false },   // 香蕉
-        { emoji: '🥕', letter: 'f', correct: false },   // 胡萝卜
-        { emoji: '💡', letter: 'n', correct: true  } ]  // 灯泡 = 不能吃
-    },
-    { canEat: true,  options: [
-        { emoji: '🔧', letter: 'x', correct: false },   // 扳手
-        { emoji: '🥚', letter: 'e', correct: true  },   // 鸡蛋 = 能吃
-        { emoji: '⛓️', letter: 'g', correct: false } ]  // 铁链
-    },
-    { canEat: true, options: [
-        { emoji: '🌽', letter: 'd', correct: false },   // 草莓
-        { emoji: '🦆', letter: 'y', correct: true  },   // 硬币 = 不能吃
-        { emoji: '🐛', letter: 'p', correct: false } ]  // 樱桃
-    },
-  ];
+  const WORD = 'MINERVA';          // 画在方块背后的词（= 密码，大写显示）
+  // 方块上的 emoji（种类数 = 数组长度，可随意替换）
+  const EMOJIS = ['🪖', '🔫', '⚔️', '🛡️', '♟️'];
+  const ROWS = 5, COLS = 7, CELL = 46, GAP = 4;
+  const NUM_TYPES = EMOJIS.length;
+  // 消掉这么大比例的方块（剩下的会一起化开，露出完整的词）
+  const REVEAL_TARGET = 0.6;
 
-  const targetWord = PASSWORD.split('');   // ['s','a','w','n','e','y']
-  let currentRound = 0;
-  let isAnimating = false;
+  let grid = [];          // grid[r][c] = 方块种类(0..NUM_TYPES-1) 或 null(已消除)
+  let sel = null;
+  let busy = false;
+  let clearedCount = 0;
+
   let gameSolved = false;
-
-  let gamePhase = 'intro';
+  let gamePhase = 'intro';   // intro → playing → answer → ending → done
   let dialogueIndex = 0;
+  let hintIdx = -1;
 
   const dialogues = {
     intro: [
-      '咯咯咯——旗开得胜啊',
-      '顺便说一句 你看到的画面都是按照时间顺序来的哟',
-      '这一题与吃的有关',
-      '民以食为天嘛',
-      '根据问题选择，记得记住密码哟',
-      
-    ],
-    playing: [
-      '咯咯咯，再想想',
-      '是不是食物，有时候在一念之间',
+      '咯咯咯——消消乐',
+      '我想应该不用解释吧',
 
     ],
+    playHint: [
+      'Unbelievable！',
+      'Good!',
+      'Exellent!'
+    ],
     ending: [
-      '我们曾经认为鸭子也是拥有智慧的生物',
-      '所以很少会有人去食用鸭子',
-      '直到有一段时间我们平常吃的食物，比如谷物和虫类，突然大量枯死或死亡',
-      '于是大家将目光放到了鸭子上',
-      '更加奇怪的是，开始吃鸭子之后，那些食物的来源又开始稳定起来，而一旦停止食用，我们又会陷入同样的境地',
-      '就好像是有谁想让我们将鸭子加入食谱一样',
-      '当然了，我们也无法抵抗',
+      '如果说之前的所有事件都还有可以解释的余地',
+      '那么这次完全不一样了',
+      '昴星的一处爆发了热点',
+      '而在宣布开战的一个小时内，两个国家的所有武器包括军队，全部消失了',
+      '而这个结果，超脑竟然在一个小时前就已经预测到了',
+      '自此我们确定——————确实有人在操纵着这一切，从吃鸭子开始就是了',
+      '我们终于放弃了与命运抗衡，因为我们掌握的一切都毫无规律可言',
       '让它归位吧,咯咯咯——'
     ]
   };
 
+  // ═══════════ 消消乐核心逻辑（消掉不补位） ═══════════
+  function makeGem() { return Math.floor(Math.random() * NUM_TYPES); }
+
+  // 生成一个没有现成三连的满棋盘
+  function initGrid() {
+    grid = [];
+    for (let r = 0; r < ROWS; r++) {
+      grid[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        let t;
+        do { t = makeGem(); }
+        while ((c >= 2 && grid[r][c-1] === t && grid[r][c-2] === t) ||
+               (r >= 2 && grid[r-1][c] === t && grid[r-2][c] === t));
+        grid[r][c] = t;
+      }
+    }
+  }
+  function initGridSafe() {
+    let guard = 0;
+    do { initGrid(); guard++; } while (!hasAnyMove() && guard < 50);
+  }
+
+  function swapCells(r1, c1, r2, c2) {
+    const t = grid[r1][c1]; grid[r1][c1] = grid[r2][c2]; grid[r2][c2] = t;
+  }
+  function isAdjacent(a, b) { return (Math.abs(a.r - b.r) + Math.abs(a.c - b.c)) === 1; }
+
+  // 找出所有处于 3+ 连线中的格子（忽略 null）
+  function findMatches(g) {
+    const matched = new Set();
+    for (let r = 0; r < ROWS; r++) {
+      let run = 1;
+      for (let c = 1; c < COLS; c++) {
+        if (g[r][c] != null && g[r][c] === g[r][c-1]) run++;
+        else { if (run >= 3) for (let k = c - run; k < c; k++) matched.add(r + ',' + k); run = 1; }
+      }
+      if (run >= 3) for (let k = COLS - run; k < COLS; k++) matched.add(r + ',' + k);
+    }
+    for (let c = 0; c < COLS; c++) {
+      let run = 1;
+      for (let r = 1; r < ROWS; r++) {
+        if (g[r][c] != null && g[r][c] === g[r-1][c]) run++;
+        else { if (run >= 3) for (let k = r - run; k < r; k++) matched.add(k + ',' + c); run = 1; }
+      }
+      if (run >= 3) for (let k = ROWS - run; k < ROWS; k++) matched.add(k + ',' + c);
+    }
+    return matched;
+  }
+
+  // 是否还存在能凑出三连的一步（只在两个都是方块时交换）
+  function hasAnyMove() {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (grid[r][c] == null) continue;
+        if (c + 1 < COLS && grid[r][c+1] != null) {
+          swapCells(r, c, r, c+1);
+          const ok = findMatches(grid).size > 0;
+          swapCells(r, c, r, c+1);
+          if (ok) return true;
+        }
+        if (r + 1 < ROWS && grid[r+1][c] != null) {
+          swapCells(r, c, r+1, c);
+          const ok = findMatches(grid).size > 0;
+          swapCells(r, c, r+1, c);
+          if (ok) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // 重力下落：方块往下掉，空格升到列顶（不补新方块）
+  function collapse() {
+    for (let c = 0; c < COLS; c++) {
+      let writeR = ROWS - 1;
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (grid[r][c] != null) {
+          grid[writeR][c] = grid[r][c];
+          if (writeR !== r) grid[r][c] = null;
+          writeR--;
+        }
+      }
+      for (let r = writeR; r >= 0; r--) grid[r][c] = null;
+    }
+  }
+
+  // 快没招时，把剩余方块重新摆一摆（同样数量，确保有一步可走、且无现成三连）
+  function shuffleArr(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+  }
+  function reshuffleRemaining() {
+    const gems = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (grid[r][c] != null) gems.push(grid[r][c]);
+    const N = gems.length;
+    if (N < 3) return false;
+    for (let tries = 0; tries < 80; tries++) {
+      shuffleArr(gems);
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) grid[r][c] = null;
+      let idx = 0;
+      for (let r = ROWS - 1; r >= 0 && idx < N; r--) {
+        for (let c = 0; c < COLS && idx < N; c++) grid[r][c] = gems[idx++];
+      }
+      if (findMatches(grid).size === 0 && hasAnyMove()) return true;
+    }
+    return false;
+  }
+
+  function renderBoard() {
+    const board = document.getElementById('match-board');
+    board.style.gridTemplateColumns = 'repeat(' + COLS + ', ' + CELL + 'px)';
+    board.style.gridTemplateRows = 'repeat(' + ROWS + ', ' + CELL + 'px)';
+    board.innerHTML = '';
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const t = grid[r][c];
+        if (t == null) {
+          const e = document.createElement('div');
+          e.className = 'cell-empty';
+          board.appendChild(e);
+          continue;
+        }
+        const g = document.createElement('div');
+        g.className = 'gem t' + t;
+        g.textContent = EMOJIS[t] || '';
+        if (sel && sel.r === r && sel.c === c) g.classList.add('selected');
+        const rr = r, cc = c;
+        g.addEventListener('click', () => onGemClick(rr, cc));
+        board.appendChild(g);
+      }
+    }
+  }
+
+  function onGemClick(r, c) {
+    if (busy || gamePhase !== 'playing' || grid[r][c] == null) return;
+    if (sel && sel.r === r && sel.c === c) { sel = null; renderBoard(); return; }
+    if (!sel) { sel = { r, c }; renderBoard(); return; }
+    if (isAdjacent(sel, { r, c })) {
+      const a = { r: sel.r, c: sel.c };
+      sel = null;
+      trySwap(a.r, a.c, r, c);
+    } else {
+      sel = { r, c }; renderBoard();
+    }
+  }
+
+  function trySwap(r1, c1, r2, c2) {
+    busy = true;
+    swapCells(r1, c1, r2, c2);
+    renderBoard();
+    if (findMatches(grid).size === 0) {
+      setTimeout(() => { swapCells(r1, c1, r2, c2); renderBoard(); busy = false; }, 220);
+    } else {
+      setTimeout(resolveMatches, 200);
+    }
+  }
+
+  // 消除 → 下落（不补位）→ 连锁
+  function resolveMatches() {
+    const m = findMatches(grid);
+    if (m.size === 0) { busy = false; afterSettle(); return; }
+    const board = document.getElementById('match-board');
+    m.forEach(key => {
+      const [r, c] = key.split(',').map(Number);
+      const el = board.children[r * COLS + c];
+      if (el) el.classList.add('clearing');
+    });
+    setTimeout(() => {
+      m.forEach(key => { const [r, c] = key.split(',').map(Number); grid[r][c] = null; });
+      clearedCount += m.size;
+      collapse();               // 只下落，不补新方块
+      renderBoard();
+      setTimeout(resolveMatches, 200);
+    }, 260);
+  }
+
+  // 一轮稳定后：够了就揭晓；没招了就重排；否则继续玩
+  function afterSettle() {
+    if (gamePhase !== 'playing') return;
+    const ratio = clearedCount / (ROWS * COLS);
+    if (ratio >= REVEAL_TARGET) { completeReveal(); return; }
+    if (!hasAnyMove()) {
+      if (reshuffleRemaining()) {
+        renderBoard();
+        showDialogue('咯咯咯，凑不上了，我把剩下的重新摆一摆');
+      } else {
+        completeReveal();   // 实在没法继续 → 把剩下的也化开，露出整词
+      }
+    }
+  }
+
+  // 整个词露出：把剩余方块全化开，背景词点亮
+  function completeReveal() {
+    if (gamePhase === 'answer' || gamePhase === 'ending' || gamePhase === 'done') return;
+    gamePhase = 'answer';
+    busy = true; sel = null;
+
+    const board = document.getElementById('match-board');
+    [...board.querySelectorAll('.gem')].forEach(el => el.classList.add('clearing'));
+
+    setTimeout(() => {
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) grid[r][c] = null;
+      renderBoard();
+      document.getElementById('board-stack').classList.add('revealed');
+      document.getElementById('quiz-question').textContent = '后面的词，全露出来了';
+      document.getElementById('main-hint').textContent = '';
+
+      const rooster = document.getElementById('rooster');
+      rooster.classList.remove('bobbing'); void rooster.offsetWidth; rooster.classList.add('bobbing');
+      showDialogue(dialogues.answer[0]);
+      setTimeout(() => showDialogue(dialogues.answer[1]), 1900);
+      setTimeout(() => {
+        document.getElementById('action-area').classList.add('show');
+        document.getElementById('main-hint').textContent = '把后面露出来的词，填进下面的框';
+        document.getElementById('word-input').focus();
+        busy = false;
+      }, 2200);
+    }, 320);
+  }
+
+  // 背景词（SVG，按棋盘大小铺满）
+  function buildWordBg() {
+    const W = COLS * CELL + (COLS - 1) * GAP;
+    const H = ROWS * CELL + (ROWS - 1) * GAP;
+    const tl = Math.round(W * 0.9);
+    const fs = Math.round(H * 0.52);
+    document.getElementById('word-bg').innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+        '<text class="wtext" x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" ' +
+        'dominant-baseline="central" textLength="' + tl + '" lengthAdjust="spacingAndGlyphs" ' +
+        'font-size="' + fs + '">' + WORD + '</text>' +
+      '</svg>';
+  }
+
+  // ═══════════ 通用框架（与其它 puzzle 一致） ═══════════
   window.onload = () => {
     document.getElementById('back-img').src = BACK_IMAGE;
 
@@ -586,18 +782,20 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    buildOptionsAndStart();
+    setupBoard();
 
     playEnterAnimation(() => {
       setTimeout(() => { showDialogue(dialogues.intro[0]); }, 250);
     });
   };
 
-  function buildOptionsAndStart() {
-    setupRound(); // intro 阶段 setupRound 会自动把选项锁住
+  function setupBoard() {
+    document.getElementById('quiz-question').textContent = '消掉方块，露出后面藏的词';
+    buildWordBg();
+    initGridSafe();
+    renderBoard();
   }
 
-  // ── 入场展开动画（与 puzzle1 完全一致）──
   function playEnterAnimation(onDone) {
     let originRaw = sessionStorage.getItem('puzzle_origin');
     let origin = null;
@@ -635,7 +833,6 @@
     }, 720);
   }
 
-  // ── 公鸡说话与摆动（与 puzzle1 一致）──
   function showDialogue(text) {
     const bubble = document.getElementById('speech-bubble');
     const bubbleText = document.getElementById('bubble-text');
@@ -661,13 +858,15 @@
       } else {
         gamePhase = 'playing';
         dialogueIndex = -1;
+        hintIdx = -1;
         hideDialogue();
-        document.getElementById('options-row').classList.remove('locked');
-        document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+        document.getElementById('main-hint').textContent = '点两个相邻方块交换，凑成三连消除';
       }
     } else if (gamePhase === 'playing') {
-      dialogueIndex = (dialogueIndex + 1) % dialogues.playing.length;
-      showDialogue(dialogues.playing[dialogueIndex]);
+      hintIdx = (hintIdx + 1) % dialogues.playHint.length;
+      showDialogue(dialogues.playHint[hintIdx]);
+    } else if (gamePhase === 'answer') {
+      showDialogue(dialogues.answer[1]);
     } else if (gamePhase === 'ending') {
       dialogueIndex++;
       if (dialogueIndex < dialogues.ending.length) {
@@ -680,114 +879,22 @@
     }
   }
 
-  // ── 游戏核心逻辑 ──────────────────────────────────────────────
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function setupRound() {
-    if (currentRound >= ROUNDS.length) { onGameComplete(); return; }
-
-    const round = ROUNDS[currentRound];
-    document.getElementById('quiz-question').textContent =
-      round.canEat ? '选出昴星人能吃的东西' : '选出昴星人不能吃的东西';
-    document.getElementById('quiz-round-no').textContent =
-      '第 ' + (currentRound + 1) + ' / ' + ROUNDS.length + ' 轮';
-
-    const row = document.getElementById('options-row');
-    row.innerHTML = '';
-
-    shuffle(round.options).forEach(opt => {
-      const tile = document.createElement('div');
-      tile.className = 'option-tile';
-      tile.innerHTML = opt.emoji + '<span class="letter-badge">' +
-                       opt.letter.toUpperCase() + '</span>';
-      tile.addEventListener('click', () => selectOption(opt, tile));
-      row.appendChild(tile);
-    });
-
-    // intro 阶段锁住选项，进入 playing 后解锁（修复"第二轮点不动"）
-    if (gamePhase === 'intro') row.classList.add('locked');
-    else                       row.classList.remove('locked');
-
-    isAnimating = false;
-  }
-
-  function selectOption(opt, tile) {
-    // intro 阶段：点选项 → 让公鸡接着说，不计入答题
-    if (gamePhase === 'intro') {
-      const rooster = document.getElementById('rooster');
-      rooster.classList.remove('bobbing');
-      void rooster.offsetWidth;
-      rooster.classList.add('bobbing');
-      const bubble = document.getElementById('speech-bubble');
-      if (!bubble.classList.contains('show')) {
-        showDialogue(dialogues.intro[dialogueIndex] || dialogues.intro[0]);
-      }
-      return;
-    }
-    if (isAnimating || currentRound >= ROUNDS.length) return;
-
-    if (opt.correct) {
-      isAnimating = true;
-      tile.classList.add('correct');
-      document.getElementById('options-row').classList.add('locked');
-      // 把其他项淡掉
-      [...document.querySelectorAll('.option-tile')].forEach(t => {
-        if (t !== tile) t.classList.add('dimmed');
-      });
-
-      // 停留一会儿让你看清这一项的字母，再进入下一轮（不汇总、不剧透整词）
-      setTimeout(() => {
-        currentRound++;
-        setupRound();
-      }, 850);
-    } else {
-    // 选错：该选项直接消失（保留占位，其余选项不位移）
-    tile.style.pointerEvents = 'none';
-    tile.style.opacity = '0';
-    showDialogue(dialogues.playing[0]);
-    }
-  }
-
-  function onGameComplete() {
-    gameSolved = true;
-
-    document.getElementById('quiz-question').style.display = 'none';
-    document.getElementById('quiz-round-no').style.display = 'none';
-    document.getElementById('options-row').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'flex';
-
-    document.getElementById('action-area').classList.add('show');
-    document.getElementById('main-hint').style.opacity = '0';
-
-    setTimeout(() => { document.getElementById('word-input').focus(); }, 400);
-  }
-
   function resetGame() {
-    currentRound = 0;
     gameSolved = false;
+    busy = false;
+    sel = null;
+    clearedCount = 0;
+    hintIdx = -1;
+    gamePhase = 'playing';
+    hideDialogue();
 
-    if (gamePhase === 'ending' || gamePhase === 'done') {
-      gamePhase = 'playing';
-      dialogueIndex = -1;
-      hideDialogue();
-    }
-
-    document.getElementById('quiz-question').style.display = '';
-    document.getElementById('quiz-round-no').style.display = '';
-    document.getElementById('options-row').style.display = '';
-    document.getElementById('options-row').classList.remove('locked');
-    document.getElementById('success-msg').style.display = 'none';
+    document.getElementById('board-stack').classList.remove('revealed');
+    document.getElementById('quiz-question').textContent = '消掉方块，露出后面藏的词';
+    initGridSafe();
+    renderBoard();
 
     document.getElementById('action-area').classList.remove('show');
-    document.getElementById('main-hint').style.opacity = '';
-    document.getElementById('main-hint').textContent = '点击你认为正确的那一项';
+    document.getElementById('main-hint').textContent = '点两个相邻方块交换，凑成三连消除';
 
     const input = document.getElementById('word-input');
     input.value = '';
@@ -797,8 +904,6 @@
     const card = document.getElementById('card');
     if (card.classList.contains('flipped')) card.classList.remove('flipped');
     document.getElementById('flip-hint').classList.remove('show');
-
-    setupRound();
   }
 
   function flipCard() {
@@ -818,7 +923,6 @@
     }
   }
 
-  // ── 飞回九宫格（与 puzzle1 完全一致）──
   function triggerFlyOut() {
     const scene = document.getElementById('card-scene');
     const r = scene.getBoundingClientRect();
@@ -859,6 +963,7 @@
     if (val.toLowerCase() === PASSWORD.toLowerCase()) {
       input.classList.remove('wrong');
       input.classList.add('correct');
+      gameSolved = true;
 
       const card = document.getElementById('card');
       if (!card.classList.contains('flipped')) flipCard();

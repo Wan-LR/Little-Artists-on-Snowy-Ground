@@ -842,25 +842,20 @@
   // ── Q4: 成就计分 ──
   function calcAchieveScore() {
     const achievements = [
-      { key: 'xhs-allposts-ach-shown', name: '西红柿十级学者', pts: 15 },
-      { key: 'xhs-cases-ach-shown',    name: '工单清道夫',     pts: 10 },
-      { key: 'ji-modal-shown',         name: '三小知识全部学完', pts: 10 },
-      { key: 'qbd-has-youxiandaan',   name: '有限大暗',       pts: 5 },
-      { key: 'qbd-search-master',      name: '搜索大师',       pts: 10 },
+      { key: 'xhs-allposts-ach-shown', name: '西红柿重度依赖',   pts: 15 },
+      { key: 'xhs-cases-ach-shown',    name: '工作狂',           pts: 10 },
+      { key: 'ji-modal-shown',         name: '计算机0.5级',      pts: 10 },
+      { key: 'ach-console',            name: '有些事情没那么难',  pts: 5 },
+      { key: 'ach-goldfish',           name: 'Tell me tell me',  pts: 5 },
+      { key: 'ach-chirp',              name: '布谷布谷',         pts: 5 },
+      { key: 'ach-leave',              name: '还得谢谢咱',       pts: 5 },
+      { key: 'ach-youxiandaan',        name: '有限大暗',         pts: 5 },
+      { key: 'ach-searchmaster',       name: '搜索大师',         pts: 10 },
     ];
-
-    // 检查有限大暗
-    let found = [];
-    try { found = JSON.parse(localStorage.getItem('qbd-found') || '[]'); } catch(e) {}
-    if (found.indexOf('有限大暗') !== -1) localStorage.setItem('qbd-has-youxiandaan', '1');
-
-    // 检查搜索大师 (两组都解锁)
-    let groups = [];
-    try { groups = JSON.parse(localStorage.getItem('qbd-groups-unlocked') || '[]'); } catch(e) {}
-    if (groups.length >= 2) localStorage.setItem('qbd-search-master', '1');
 
     scoreQ4 = 0;
     let html = '';
+
     achievements.forEach(a => {
       const unlocked = localStorage.getItem(a.key) === '1';
       if (unlocked) scoreQ4 += a.pts;
@@ -869,12 +864,13 @@
         <span class="achieve-pts">${unlocked ? '+' + a.pts : '0'}</span>
       </div>`;
     });
+
     html += `<div class="achieve-total">成就积分: ${scoreQ4}</div>`;
     document.getElementById('achieveScores').innerHTML = html;
   }
 
   // ── 最终总分 ──
-  const NEXT_PAGE = 'xhs4.html';  // ← 跳转目标
+  const NEXT_PAGE = 'guodu.html';  // ← 跳转目标
 
   function showFinalScore() {
     const total = scoreQ1 + scoreQ2 + scoreQ3 + scoreQ4;

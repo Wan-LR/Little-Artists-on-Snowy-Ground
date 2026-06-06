@@ -644,36 +644,67 @@
 
     /* 锯齿状撕边 (下方) */
     .tear-jagged {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 14px;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 20px;
       background: var(--bg);
       transform: translateY(50%);
       -webkit-mask-image:
         repeating-linear-gradient(
           135deg,
-          transparent 0px, transparent 7px,
-          black 7px, black 10px
+          transparent 0px, transparent 9px,
+          black 9px, black 12px
         );
       mask-image:
         repeating-linear-gradient(
           135deg,
-          transparent 0px, transparent 7px,
-          black 7px, black 10px
+          transparent 0px, transparent 9px,
+          black 9px, black 12px
         );
+    }
+
+    /* 纸上阴影 — 暗示下方有内容 */
+    .tear-paper {
+      box-shadow: inset 0 -4px 12px rgba(0,0,0,0.06);
     }
 
     /* 纸上提示文字 */
     .tear-paper::before {
       content: '向下撕开';
-      position: absolute; bottom: 28px; left: 50%;
+      position: absolute; bottom: 44px; left: 50%;
       transform: translateX(-50%);
-      font-family: var(--font-body);
-      font-size: 13px; color: var(--ink-faint);
-      letter-spacing: 2px;
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 700;
+      color: var(--ink-soft);
+      letter-spacing: 4px;
       animation: tearHint 2s ease-in-out infinite;
     }
+    /* 下拉箭头 */
+    .tear-paper::after {
+      content: '';
+      position: absolute; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      width: 24px; height: 24px;
+      border-left: 2.5px solid var(--ink-soft);
+      border-bottom: 2.5px solid var(--ink-soft);
+      transform: translateX(-50%) rotate(-45deg);
+      animation: tearArrow 2s ease-in-out infinite;
+    }
     @keyframes tearHint {
-      0%,100% { opacity: .4; }
+      0%,100% { opacity: .5; }
       50%     { opacity: 1; }
+    }
+    @keyframes tearArrow {
+      0%,100% { opacity: .4; transform: translateX(-50%) rotate(-45deg) translateY(0); }
+      50%     { opacity: 1; transform: translateX(-50%) rotate(-45deg) translateY(6px); }
+    }
+
+    /* 纸层悬停 — 微微掀起 */
+    .tear-paper:hover {
+      transform: translateY(-6px);
+      cursor: pointer;
+    }
+    .tear-paper.peeled:hover {
+      transform: translateY(105%);  /* 撕开后恢复正常 */
+      cursor: default;
     }
 
     /* ── Steam 成就弹窗 ── */

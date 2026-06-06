@@ -421,6 +421,10 @@
     for (const k in ACHIEVEMENT_ONLY) {
       allKeywords[k.toLowerCase()] = k;
     }
+    // KEYWORD_PAGES 中的词也加入搜索（不在 GROUPS 也不在 ACHIEVEMENT_ONLY 的词）
+    for (const k in KEYWORD_PAGES) {
+      allKeywords[k.toLowerCase()] = k;
+    }
 
     const totalKeywords = Object.keys(keywordGroup).length; // 不含成就关键词
 
